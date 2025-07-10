@@ -1,12 +1,17 @@
-import {Button} from "./components/ui/button"
-import { Calendar } from "./components/ui/calendar";
-import {Input} from "./components/ui/input"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import {Toaster} from "react-hot-toast"
+import { RouterProvider } from "react-router";
+import { router } from "./router";
+
 function App() {
-  return <>
-  <Button>Hello there</Button>
-  <Calendar mode="range" className="rounded-lg border"/>
-  <Input></Input>
+  return (
+  <>
+    <QueryClientProvider client={new QueryClient()}>
+      <Toaster position="bottom-left"/>
+      <RouterProvider router={router}/>
+    </QueryClientProvider>
   </>
+  )
 }
 
 export default App;
