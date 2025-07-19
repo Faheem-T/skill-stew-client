@@ -14,6 +14,7 @@ import { Button } from "../components/ui/button";
 import { useMutation } from "@tanstack/react-query";
 import { loginRequest } from "../api/auth/LoginRequest";
 import type { ApiErrorResponseType, ApiResponseType } from "../api/baseApi";
+import { useNavigate } from "react-router";
 
 export const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address."),
@@ -21,7 +22,7 @@ export const loginSchema = z.object({
 });
 
 export const LoginPage = () => {
-    
+  const navigate = useNavigate();
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -30,21 +31,26 @@ export const LoginPage = () => {
     },
   });
 
-  const { isPending, isError, error, data, mutate } = useMutation<ApiResponseType<{}>, ApiErrorResponseType, z.infer<typeof loginSchema>>({
+  const { isPending, isError, error, data, mutate } = useMutation<
+    ApiResponseType<{}>,
+    ApiErrorResponseType,
+    z.infer<typeof loginSchema>
+  >({
     mutationFn: loginRequest,
     onError(error, variables, context) {
-        if (error.response?.data) {
-            if (error.response.data.errors) {
-            for (const {error: message, field} of error.response.data.errors){
-                if (field) form.setError(field as keyof typeof variables, {message})
-            }}
-            if (error.response.data.message) {
-                form.setError("root", {message: error.response.data.message})
-            }
+      if (error.response?.data) {
+        if (error.response.data.errors) {
+          for (const { error: message, field } of error.response.data.errors) {
+            if (field)
+              form.setError(field as keyof typeof variables, { message });
+          }
         }
+        if (error.response.data.message) {
+          form.setError("root", { message: error.response.data.message });
+        }
+      }
     },
   });
-
 
   async function onSubmit(values: z.infer<typeof loginSchema>) {
     mutate(values);
@@ -52,6 +58,15 @@ export const LoginPage = () => {
 
   return (
     <div className="flex flex-col items-center justify-center p-8 h-screen">
+      <div className="fixed right-8 top-8">
+        Don't have an account?{" "}
+        <span
+          className="font-bold underline hover:cursor-pointer"
+          onClick={() => navigate("/register")}
+        >
+          Sign up
+        </span>
+      </div>
       <h1 className="text-3xl font-bold">Welcome back!</h1>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -81,9 +96,11 @@ export const LoginPage = () => {
               </FormItem>
             )}
           />
-          {form.formState.errors.root &&
-                    <div className="text-red-500 text-sm">{form.formState.errors.root.message}</div>
-            }
+          {form.formState.errors.root && (
+            <div className="text-red-500 text-sm">
+              {form.formState.errors.root.message}
+            </div>
+          )}
           <Button type="submit">Login</Button>
         </form>
       </Form>
