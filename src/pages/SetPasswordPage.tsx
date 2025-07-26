@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
-import { useParams, useSearchParams } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 import z from "zod";
 import {
   api,
@@ -47,6 +47,7 @@ interface SetPasswordBody {
 
 type SetPasswordSchemaType = z.infer<typeof setPasswordSchema>;
 export const SetPasswordPage = () => {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
 
@@ -59,7 +60,7 @@ export const SetPasswordPage = () => {
   });
 
   const { isPending, mutate } = useMutation<
-    ApiResponseType<{}>,
+    ApiResponseType,
     ApiErrorResponseType,
     SetPasswordBody
   >({
@@ -67,7 +68,7 @@ export const SetPasswordPage = () => {
       return api.post("/auth/set-password", body);
     },
 
-    onError(error, variables, context) {
+    onError(error) {
       if (error.response?.data) {
         if (error.response.data.errors) {
           for (const { error: message, field } of error.response.data.errors) {
@@ -80,8 +81,9 @@ export const SetPasswordPage = () => {
         }
       }
     },
-    onSuccess(data, variables, context) {
+    onSuccess(data) {
       if (data.data.message) toast.success(data.data.message);
+      navigate("/");
     },
   });
 

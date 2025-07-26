@@ -6,7 +6,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "../components/ui/form";
 import { Input } from "../components/ui/input";
@@ -19,7 +18,7 @@ import {
 } from "../api/baseApi";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { Check, CheckCircle2 } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import { Carousel } from "../components/ui/Carousel";
 import { useNavigate } from "react-router";
 
@@ -39,14 +38,14 @@ export const RegisterPage = () => {
   });
 
   const { isPending, mutate } = useMutation<
-    ApiResponseType<{}>,
+    ApiResponseType,
     ApiErrorResponseType,
     z.infer<typeof registerSchema>
   >({
     mutationFn: async (body: z.infer<typeof registerSchema>) => {
       return api.post("/auth/register", body);
     },
-    onError(error, variables, context) {
+    onError(error, variables) {
       if (error.response?.data) {
         if (error.response.data.errors) {
           for (const { error: message, field } of error.response.data.errors) {
@@ -59,7 +58,7 @@ export const RegisterPage = () => {
         }
       }
     },
-    onSuccess(data, variables, context) {
+    onSuccess(data) {
       if (data.data.message) toast.success(data.data.message);
       setRegistered(true);
     },

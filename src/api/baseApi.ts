@@ -6,15 +6,21 @@ export const api = axios.create({
   withCredentials: true,
 });
 
-export type ApiResponseType<T> = AxiosResponse<{
+export type ApiResponseType = AxiosResponse<{
   success: true;
   message?: string;
-  data?: T;
+  data?: any;
+}>;
+
+export type ApiResponseWithData<T> = AxiosResponse<{
+  success: true;
+  data: T;
+  message?: string;
 }>;
 
 export type ApiErrorResponseType = AxiosError<{
   success: false;
   message: string;
   error: string;
-  errors?: {error: string, field?: string}[]
+  errors?: { error: string; field?: string }[];
 }>;
