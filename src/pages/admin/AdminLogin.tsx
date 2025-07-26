@@ -8,45 +8,41 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../components/ui/form";
-import { Input } from "../components/ui/input";
-import { Button } from "../components/ui/button";
+} from "../../components/ui/form";
+import { Input } from "../../components/ui/input";
+import { Button } from "../../components/ui/button";
 import { useMutation } from "@tanstack/react-query";
-import { loginRequest } from "../api/auth/LoginRequest";
-import type { ApiErrorResponseType } from "../api/baseApi";
+import type { ApiErrorResponseType } from "../../api/baseApi";
 import { useNavigate } from "react-router";
+import { adminLoginRequest } from "@/api/auth/AdminLoginRequest";
 import { useAppStore } from "@/store";
 
-export const loginSchema = z.object({
-  email: z.string().email("Please enter a valid email address."),
+export const adminLoginSchema = z.object({
+  username: z.string(),
   password: z.string(),
 });
 
-export const LoginPage = () => {
+export const AdminLoginPage = () => {
   const navigate = useNavigate();
 
-  const user = useAppStore((state) => state.user);
   const setAccessToken = useAppStore((state) => state.setAccessToken);
+  const setUser = useAppStore((state) => state.setUser);
 
-  if (user) {
-    navigate("/");
-  }
-
-  const form = useForm<z.infer<typeof loginSchema>>({
-    resolver: zodResolver(loginSchema),
+  const form = useForm<z.infer<typeof adminLoginSchema>>({
+    resolver: zodResolver(adminLoginSchema),
     defaultValues: {
-      email: "",
+      username: "",
       password: "",
     },
   });
 
   const { mutate } = useMutation<
-    Awaited<ReturnType<typeof loginRequest>>,
+    Awaited<ReturnType<typeof adminLoginRequest>>,
     ApiErrorResponseType,
-    z.infer<typeof loginSchema>
+    z.infer<typeof adminLoginSchema>
   >({
-    mutationFn: loginRequest,
-    onError(error, variables) {
+    mutationFn: adminLoginRequest,
+    onError(error, variables, _context) {
       if (error.response?.data) {
         if (error.response.data.errors) {
           for (const { error: message, field } of error.response.data.errors) {
@@ -61,37 +57,29 @@ export const LoginPage = () => {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof loginSchema>) {
+  async function onSubmit(values: z.infer<typeof adminLoginSchema>) {
     mutate(values, {
-      onSuccess(data) {
+      onSuccess: (data) => {
         setAccessToken(data.data.data.accessToken);
-        navigate("/");
+        setUser({ role: "ADMIN", username: "something" });
+        navigate("/admin/dashboard");
       },
     });
   }
 
   return (
     <div className="flex flex-col items-center justify-center p-8 h-screen">
-      <div className="fixed right-8 top-8">
-        Don't have an account?{" "}
-        <span
-          className="font-bold underline hover:cursor-pointer"
-          onClick={() => navigate("/register")}
-        >
-          Sign up
-        </span>
-      </div>
       <h1 className="text-3xl font-bold">Welcome back!</h1>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <FormField
-            name="email"
+            name="username"
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>Username</FormLabel>
                 <FormControl>
-                  <Input placeholder="email" {...field} />
+                  <Input {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -110,12 +98,12 @@ export const LoginPage = () => {
               </FormItem>
             )}
           />
-          <Button type="submit">Login</Button>
           {form.formState.errors.root && (
             <div className="text-red-500 text-sm">
               {form.formState.errors.root.message}
             </div>
           )}
+          <Button type="submit">Login</Button>
         </form>
       </Form>
     </div>
