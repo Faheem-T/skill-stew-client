@@ -6,11 +6,12 @@ import { HomePage } from "./pages/HomePage";
 import { AdminLoginPage } from "./pages/admin/AdminLogin";
 import { AdminDashboard } from "./pages/admin/AdminDashboard";
 import { ProtectedRoute } from "./pages/ProtectedRoute";
+import { AdminSidebarProvider } from "./components/custom/AdminSidebarProvider";
 
 export const router = createBrowserRouter([
   {
     path: "test",
-    element: <AdminDashboard />,
+    element: <></>,
   },
   {
     path: "/",
@@ -34,6 +35,11 @@ export const router = createBrowserRouter([
   },
   {
     element: <ProtectedRoute roles={["ADMIN"]} />,
-    children: [{ path: "/admin/dashboard", element: <AdminDashboard /> }],
+    children: [
+      {
+        element: <AdminSidebarProvider />,
+        children: [{ path: "/admin/dashboard", element: <AdminDashboard /> }],
+      },
+    ],
   },
 ]);
