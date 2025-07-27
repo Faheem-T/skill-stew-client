@@ -9,7 +9,7 @@ interface ProtectedRouteProps {
 }
 
 export const ProtectedRoute = ({ roles, children }: ProtectedRouteProps) => {
-  return children;
+  return <>{children}</>;
   const user = useAppStore((state) => state.user);
   if (!user || !roles.includes(user.role)) {
     toast("You do not have permission to access this route");
