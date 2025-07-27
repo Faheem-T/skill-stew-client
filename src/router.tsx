@@ -11,11 +11,7 @@ import { AdminSidebarProvider } from "./components/custom/AdminSidebarProvider";
 export const router = createBrowserRouter([
   {
     path: "test",
-    element: (
-      <AdminSidebarProvider>
-        <AdminDashboard />
-      </AdminSidebarProvider>
-    ),
+    element: <></>,
   },
   {
     path: "/",
