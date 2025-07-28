@@ -1,6 +1,6 @@
 import { api, type ApiResponseWithData } from "../baseApi"
 
-interface User {
+export interface User {
     id: string;
     role: "USER";
     email: string;

@@ -46,6 +46,11 @@ export type ApiResponseType = AxiosResponse<{
   data?: any;
 }>;
 
+export type ApiResponseWithMessage = AxiosResponse<{
+  success: true;
+  message: string;
+}>;
+
 export type ApiResponseWithData<T> = AxiosResponse<{
   success: true;
   data: T;
