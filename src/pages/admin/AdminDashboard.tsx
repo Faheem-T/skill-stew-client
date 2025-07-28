@@ -1,6 +1,4 @@
 import { AdminTopBar } from "@/components/custom/AdminTopbar";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -12,29 +10,10 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-  type ChartConfig,
 } from "@/components/ui/chart";
 import { useAppStore } from "@/store";
-import {
-  ArrowUp,
-  Bell,
-  DollarSign,
-  MessageSquareDotIcon,
-  Users,
-} from "lucide-react";
-import {
-  Area,
-  AreaChart,
-  CartesianGrid,
-  Line,
-  LineChart,
-  XAxis,
-  YAxis,
-} from "recharts";
-
-const getAccessToken = () => {
-  return useAppStore.getState().accessToken;
-};
+import { DollarSign, Users } from "lucide-react";
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 export const AdminDashboard = () => {
   const user = useAppStore((state) => state.user);
@@ -43,14 +22,6 @@ export const AdminDashboard = () => {
       <AdminTopBar mainText={`Welcome back ${user?.username}!`} />
       <div className="flex gap-4">
         <RevenueChart />
-        {/* <Card className="w-full flex flex-col justify-center items-center">
-          <CardHeader className="w-full flex flex-col items-center">
-            <CardTitle className="text-6xl flex items-center">
-              <ArrowUp className="size-14" color="green" /> $20,350
-            </CardTitle>
-            <CardDescription>Profit this month</CardDescription>
-          </CardHeader>
-        </Card> */}
       </div>
     </div>
   );
