@@ -60,6 +60,7 @@ export const AdminLoginPage = () => {
   async function onSubmit(values: z.infer<typeof adminLoginSchema>) {
     mutate(values, {
       onSuccess: (data) => {
+        console.log(data.data.data.accessToken);
         setAccessToken(data.data.data.accessToken);
         setUser({ role: "ADMIN", username: "something" });
         navigate("/admin/dashboard");

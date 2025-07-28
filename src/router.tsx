@@ -7,6 +7,7 @@ import { AdminLoginPage } from "./pages/admin/AdminLogin";
 import { AdminDashboard } from "./pages/admin/AdminDashboard";
 import { ProtectedRoute } from "./pages/ProtectedRoute";
 import { AdminSidebarProvider } from "./components/custom/AdminSidebarProvider";
+import { UserManagement } from "./pages/admin/UserManagement";
 
 export const router = createBrowserRouter([
   {
@@ -38,7 +39,13 @@ export const router = createBrowserRouter([
     children: [
       {
         element: <AdminSidebarProvider />,
-        children: [{ path: "/admin/dashboard", element: <AdminDashboard /> }],
+        children: [
+          { path: "/admin/dashboard", element: <AdminDashboard /> },
+          {
+            path: "/admin/users",
+            element: <UserManagement />,
+          },
+        ],
       },
     ],
   },
