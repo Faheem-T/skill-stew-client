@@ -31,8 +31,13 @@ import {
   YAxis,
 } from "recharts";
 
+const getAccessToken = () => {
+  return useAppStore.getState().accessToken;
+};
+
 export const AdminDashboard = () => {
   const user = useAppStore((state) => state.user)!;
+  const accessToken = getAccessToken();
 
   return (
     <div className="">
@@ -40,6 +45,7 @@ export const AdminDashboard = () => {
         <div className="font-bold text-3xl">
           Welcome back {user?.username ?? "Jack"}!
         </div>
+        <div>Your access token is {accessToken}</div>
         <div className="flex gap-4">
           <Button type="button" variant="outline" size="icon">
             <Bell />
