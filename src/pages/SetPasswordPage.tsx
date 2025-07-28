@@ -83,7 +83,7 @@ export const SetPasswordPage = () => {
     },
     onSuccess(data) {
       if (data.data.message) toast.success(data.data.message);
-      navigate("/");
+      navigate("/login");
     },
   });
 

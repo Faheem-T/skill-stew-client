@@ -1,5 +1,4 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import { AdminTopBar } from "@/components/custom/AdminTopbar";
 import {
   Card,
   CardContent,
@@ -11,60 +10,18 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-  type ChartConfig,
 } from "@/components/ui/chart";
 import { useAppStore } from "@/store";
-import {
-  ArrowUp,
-  Bell,
-  DollarSign,
-  MessageSquareDotIcon,
-  Users,
-} from "lucide-react";
-import {
-  Area,
-  AreaChart,
-  CartesianGrid,
-  Line,
-  LineChart,
-  XAxis,
-  YAxis,
-} from "recharts";
+import { DollarSign, Users } from "lucide-react";
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 export const AdminDashboard = () => {
-  const user = useAppStore((state) => state.user)!;
-
+  const user = useAppStore((state) => state.user);
   return (
     <div className="">
-      <div className="flex justify-between items-center m-4 h-14">
-        <div className="font-bold text-3xl">
-          Welcome back {user?.username ?? "Jack"}!
-        </div>
-        <div className="flex gap-4">
-          <Button type="button" variant="outline" size="icon">
-            <Bell />
-          </Button>
-          <Button type="button" variant="outline" size="icon">
-            <MessageSquareDotIcon />
-          </Button>
-          <Avatar className="rounded-full">
-            <AvatarImage src="person.jpg" className="object-cover" />
-            <AvatarFallback>
-              {user?.username?.slice(0, 2) ?? "A"}
-            </AvatarFallback>
-          </Avatar>
-        </div>
-      </div>
+      <AdminTopBar mainText={`Welcome back ${user?.username}!`} />
       <div className="flex gap-4">
         <RevenueChart />
-        {/* <Card className="w-full flex flex-col justify-center items-center">
-          <CardHeader className="w-full flex flex-col items-center">
-            <CardTitle className="text-6xl flex items-center">
-              <ArrowUp className="size-14" color="green" /> $20,350
-            </CardTitle>
-            <CardDescription>Profit this month</CardDescription>
-          </CardHeader>
-        </Card> */}
       </div>
     </div>
   );
