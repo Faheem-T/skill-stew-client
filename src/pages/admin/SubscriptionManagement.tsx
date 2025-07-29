@@ -1,0 +1,491 @@
+import type { ApiErrorResponseType, ApiResponseWithData } from "@/api/baseApi";
+import {
+  createPlan,
+  createSubscriptionPlanSchema,
+  editPlan,
+  editSubscriptionPlanSchema,
+  getSubscriptionPlans,
+  type SubscriptionPlan,
+} from "@/api/subscriptions";
+import { AdminTopBar } from "@/components/custom/AdminTopbar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { DialogTitle } from "@radix-ui/react-dialog";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Clock, Edit, Trash } from "lucide-react";
+import React from "react";
+import { useForm } from "react-hook-form";
+import type z from "zod";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "../../components/ui/form";
+import { Input } from "@/components/ui/input";
+import toast from "react-hot-toast";
+import { Switch } from "@/components/ui/switch";
+import { produce } from "immer";
+
+export const SubscriptionManagement: React.FC<{}> = () => {
+  const [modalOpen, setModalOpen] = React.useState<boolean>(false);
+  return (
+    <div>
+      <AdminTopBar
+        mainText="Subscription Management"
+        subText="Manage"
+        sideItems={
+          <Dialog open={modalOpen} onOpenChange={setModalOpen}>
+            <DialogTrigger asChild>
+              <Button>Create Plan</Button>
+            </DialogTrigger>
+            <PlanFormDialog
+              closeModal={() => {
+                setModalOpen(false);
+              }}
+            />
+          </Dialog>
+        }
+      />
+      <div className="p-8">
+        <SubscriptionPlansTable />
+      </div>
+    </div>
+  );
+};
+
+const SubscriptionPlansTable: React.FC = () => {
+  const { data, isLoading, isFetching, isError } = useQuery({
+    queryFn: getSubscriptionPlans,
+    queryKey: ["subscription-plans"],
+  });
+
+  if (isFetching || isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (isError) {
+    return <div>Error...</div>;
+  }
+
+  if (!data) {
+    return <div>Couldn't fetch data!</div>;
+  }
+
+  const plans = data.data.data;
+  return (
+    <Table className="">
+      <TableHeader>
+        <TableRow>
+          <TableHead>Plan</TableHead>
+          <TableHead>Pricing</TableHead>
+          <TableHead>Free Workshop Hours</TableHead>
+          <TableHead>Subscribers</TableHead>
+          <TableHead>Status</TableHead>
+          <TableHead>Actions</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {plans.map((plan) => (
+          <SubscriptionPlanRow key={plan.id} plan={plan} />
+        ))}
+      </TableBody>
+    </Table>
+  );
+};
+
+const SubscriptionPlanRow: React.FC<{ plan: SubscriptionPlan }> = ({
+  plan,
+}) => {
+  const [modalOpen, setModalOpen] = React.useState<boolean>(false);
+
+  const {
+    id,
+    name,
+    description,
+    price: { currency, monthly, yearly },
+    features,
+    freeWorkshopHours,
+    active,
+  } = plan;
+
+  const monthlyPrice = new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency,
+  }).format(monthly);
+  const yearlyPrice = new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency,
+  }).format(yearly);
+
+  const featuresBadges = features
+    .slice(0, 2)
+    .map((feature) => <Badge variant="outline">{feature}</Badge>);
+
+  return (
+    <TableRow>
+      <TableCell className="flex flex-col gap-1">
+        <div className="font-semibold text-md">{name}</div>
+        <div className="text-muted-foreground">{description}</div>
+        <div className="flex gap-1">
+          {...featuresBadges}
+          {features.length > 2 && (
+            <Badge variant="outline">+{features.length - 2} more</Badge>
+          )}
+        </div>
+      </TableCell>
+      <TableCell>
+        <div>{monthlyPrice}/mo</div>
+        <div className="text-muted-foreground">{yearlyPrice}/yr</div>
+      </TableCell>
+      <TableCell className="flex gap-1 items-center">
+        <Clock size="15px" className="text-muted-foreground" />
+        <span>{freeWorkshopHours}</span>
+      </TableCell>
+      <TableCell>200</TableCell>
+      <TableCell>
+        {active ? (
+          <Badge className="font-semibold">active</Badge>
+        ) : (
+          <Badge className="font-semibold" variant="outline">
+            inactive
+          </Badge>
+        )}
+      </TableCell>
+      <TableCell>
+        <div className="flex gap-1">
+          <Dialog open={modalOpen} onOpenChange={setModalOpen}>
+            <DialogTrigger asChild>
+              <Button size="icon" variant="ghost" className="p-0 m-0">
+                <Edit />
+              </Button>
+            </DialogTrigger>
+            <PlanFormDialog
+              plan={plan}
+              closeModal={() => {
+                setModalOpen(false);
+              }}
+            />
+          </Dialog>
+          <Button size="icon" variant="ghost">
+            <Trash />
+          </Button>
+        </div>
+      </TableCell>
+    </TableRow>
+  );
+};
+
+// const PlanDialog: React.FC<{ plan?: SubscriptionPlan }> = ({ plan }) => {
+//   // const { id } = plan;
+//
+//   return (
+//     <Dialog>
+//       <DialogTrigger asChild>
+//         <Button>Create Plan</Button>
+//       </DialogTrigger>
+//       <PlanFormDialog plan={plan} />
+//     </Dialog>
+//   );
+// };
+//
+
+const PlanFormDialog: React.FC<{
+  plan?: SubscriptionPlan;
+  closeModal: () => void;
+}> = ({ plan, closeModal }) => {
+  const queryClient = useQueryClient();
+  const editing = !!plan;
+
+  const formSchema = editing
+    ? editSubscriptionPlanSchema
+    : createSubscriptionPlanSchema;
+
+  // type FormSchemaType = z.infer<typeof formSchema>;
+  //
+  // const mutationFn = editing ? editPlan : createPlan;
+
+  const form = useForm<z.infer<typeof createSubscriptionPlanSchema>>({
+    resolver: zodResolver(createSubscriptionPlanSchema),
+    defaultValues: {
+      name: plan?.name ?? "",
+      description: plan?.description ?? "",
+      active: plan?.active ?? true,
+      freeWorkshopHours: plan?.freeWorkshopHours ?? 0,
+      monthlyPrice: plan?.price.monthly ?? 0,
+      yearlyPrice: plan?.price.yearly ?? 0,
+      currency: plan?.price.currency ?? "INR",
+      features: plan?.features ?? [],
+    },
+  });
+
+  const createMutation = useMutation<
+    Awaited<ReturnType<typeof createPlan>>,
+    ApiErrorResponseType,
+    z.infer<typeof createSubscriptionPlanSchema>
+  >({
+    mutationFn: createPlan,
+    onError(error, variables, _context) {
+      if (error.response?.data) {
+        if (error.response.data.errors) {
+          for (const { error: message, field } of error.response.data.errors) {
+            if (field)
+              form.setError(field as keyof typeof variables, { message });
+          }
+        }
+        if (error.response.data.message) {
+          form.setError("root", { message: error.response.data.message });
+        }
+      }
+    },
+    onSuccess(data) {
+      // Mutating state on success
+      const previousPlans: ApiResponseWithData<SubscriptionPlan[]> =
+        queryClient.getQueryData(["subscription-plans"])!;
+      queryClient.setQueryData(
+        ["subscription-plans"],
+        produce(previousPlans, (draft) => {
+          draft.data.data.push(data.data.data);
+        }),
+      );
+    },
+  });
+
+  const editMutation = useMutation<
+    Awaited<ReturnType<typeof editPlan>>,
+    ApiErrorResponseType,
+    { data: z.infer<typeof editSubscriptionPlanSchema>; id: string },
+    { previousPlans: ApiResponseWithData<SubscriptionPlan[]> }
+  >({
+    mutationFn: ({ data, id }) => editPlan(id, data),
+    // Optimistic update
+    onMutate(variables) {
+      const previousPlans: ApiResponseWithData<SubscriptionPlan[]> =
+        queryClient.getQueryData(["subscription-plans"])!;
+      queryClient.setQueryData(
+        ["subscription-plans"],
+        produce(previousPlans, (draft) => {
+          draft.data.data.forEach((plan) => {
+            if (plan.id === variables.id) {
+              Object.assign(plan, variables.data);
+            }
+          });
+        }),
+      );
+      return { previousPlans };
+    },
+    onError(error, variables, context) {
+      // Undoing optimistic update on error
+      queryClient.setQueryData(["subscription-plans"], context?.previousPlans);
+
+      // Setting RHF field errors
+      if (error.response?.data) {
+        if (error.response.data.errors) {
+          for (const { error: message, field } of error.response.data.errors) {
+            if (field)
+              form.setError(field as keyof typeof variables.data, { message });
+          }
+        }
+        if (error.response.data.message) {
+          form.setError("root", { message: error.response.data.message });
+        }
+      }
+    },
+  });
+
+  async function onSubmit(
+    values: z.infer<typeof createSubscriptionPlanSchema>,
+  ) {
+    if (editing) {
+      editMutation.mutate(
+        { id: plan.id, data: values },
+        {
+          onSuccess(response) {
+            if (response.data.message) {
+              toast.success(response.data.message);
+            }
+            closeModal();
+          },
+        },
+      );
+    } else {
+      createMutation.mutate(values, {
+        onSuccess(response) {
+          if (response.data.message) {
+            toast.success(response.data.message);
+          }
+          closeModal();
+        },
+      });
+    }
+  }
+
+  return (
+    <>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{editing ? "Edit plan" : "Create New Plan"}</DialogTitle>
+          <DialogDescription>
+            {editing
+              ? "Edit details of subscription plan"
+              : "Fill in the details of the new subscription plan"}
+          </DialogDescription>
+        </DialogHeader>
+
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <FormField
+              name="name"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Plan name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="ex: Professional" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              name="description"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormDescription>
+                    A short description about the plan
+                  </FormDescription>
+                  <FormControl>
+                    <Input
+                      placeholder="ex: best for professionals"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className="flex gap-4 items-center">
+              <FormField
+                name="monthlyPrice"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Per month</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type="number"
+                        onChange={(e) =>
+                          field.onChange(parseFloat(e.target.value))
+                        }
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                name="yearlyPrice"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Per year</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type="number"
+                        onChange={(e) =>
+                          field.onChange(parseFloat(e.target.value))
+                        }
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="flex gap-8 items-center">
+              <FormField
+                name="freeWorkshopHours"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Free workshop hours</FormLabel>
+                    <FormDescription>
+                      Number of free workshop hours subscribers can attend
+                    </FormDescription>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type="number"
+                        onChange={(e) =>
+                          field.onChange(parseFloat(e.target.value))
+                        }
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                name="active"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Status</FormLabel>
+                    <FormControl>
+                      <div>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          className="bg-black"
+                        />
+                        {field.value === true ? (
+                          <div className="text-xs">Active</div>
+                        ) : (
+                          <div className="text-xs text-muted-foreground">
+                            Inactive
+                          </div>
+                        )}
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            {form.formState.errors.root && (
+              <div className="text-red-500 text-sm">
+                {form.formState.errors.root.message}
+              </div>
+            )}
+            <Button type="submit">{plan ? "Upate plan" : "Create plan"}</Button>
+          </form>
+        </Form>
+      </DialogContent>
+    </>
+  );
+};
