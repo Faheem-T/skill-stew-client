@@ -1,7 +1,12 @@
-import type { ApiErrorResponseType, ApiResponseWithData } from "@/api/baseApi";
+import type {
+  ApiErrorResponseType,
+  ApiResponseWithData,
+  ApiResponseWithMessage,
+} from "@/api/baseApi";
 import {
   createPlan,
   createSubscriptionPlanSchema,
+  deletePlan,
   editPlan,
   editSubscriptionPlanSchema,
   getSubscriptionPlans,
@@ -16,6 +21,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTrigger,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import {
   Table,
@@ -26,7 +32,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { DialogTitle } from "@radix-ui/react-dialog";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Clock, Edit, Trash } from "lucide-react";
 import React from "react";
@@ -45,6 +50,19 @@ import { Input } from "@/components/ui/input";
 import toast from "react-hot-toast";
 import { Switch } from "@/components/ui/switch";
 import { produce } from "immer";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {
+  AlertDialogCancel,
+  AlertDialogFooter,
+  AlertDialogHeader,
+} from "@/components/ui/alert-dialog";
 
 export const SubscriptionManagement: React.FC<{}> = () => {
   const [modalOpen, setModalOpen] = React.useState<boolean>(false);
@@ -119,7 +137,6 @@ const SubscriptionPlanRow: React.FC<{ plan: SubscriptionPlan }> = ({
   const [modalOpen, setModalOpen] = React.useState<boolean>(false);
 
   const {
-    id,
     name,
     description,
     price: { currency, monthly, yearly },
@@ -186,28 +203,81 @@ const SubscriptionPlanRow: React.FC<{ plan: SubscriptionPlan }> = ({
               }}
             />
           </Dialog>
-          <Button size="icon" variant="ghost">
-            <Trash />
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button size="icon" variant="ghost">
+                <Trash />
+              </Button>
+            </AlertDialogTrigger>
+            <PlanDeletionAlertDialog id={plan.id} subscribers={200} />
+          </AlertDialog>
         </div>
       </TableCell>
     </TableRow>
   );
 };
 
-// const PlanDialog: React.FC<{ plan?: SubscriptionPlan }> = ({ plan }) => {
-//   // const { id } = plan;
-//
-//   return (
-//     <Dialog>
-//       <DialogTrigger asChild>
-//         <Button>Create Plan</Button>
-//       </DialogTrigger>
-//       <PlanFormDialog plan={plan} />
-//     </Dialog>
-//   );
-// };
-//
+const PlanDeletionAlertDialog: React.FC<{
+  subscribers: number;
+  id: string;
+}> = ({ id, subscribers }) => {
+  const queryClient = useQueryClient();
+
+  const { mutate } = useMutation<
+    ApiResponseWithMessage,
+    ApiErrorResponseType,
+    string,
+    { previousPlans: ApiResponseWithData<SubscriptionPlan[]> }
+  >({
+    mutationFn: (id: string) => deletePlan(id),
+    onMutate(id) {
+      const previousPlans: ApiResponseWithData<SubscriptionPlan[]> =
+        queryClient.getQueryData(["subscription-plans"])!;
+      queryClient.setQueryData(
+        ["subscription-plans"],
+        produce(previousPlans, (draft) => {
+          draft.data.data.splice(
+            draft.data.data.findIndex((plan) => plan.id === id),
+            1,
+          );
+        }),
+      );
+      return { previousPlans };
+    },
+    onError(error, _variables, context) {
+      // Undoing optimistic update on error
+      queryClient.setQueryData(["subscription-plans"], context?.previousPlans);
+
+      if (error.response) {
+        toast.error(error.response.data.message);
+      }
+    },
+    onSuccess(data) {
+      toast.success(data.data.message);
+    },
+  });
+
+  const handleClick = () => {
+    mutate(id);
+  };
+
+  return (
+    <AlertDialogContent>
+      <AlertDialogHeader>
+        <AlertDialogTitle>
+          Are you sure you want to delete this plan?
+        </AlertDialogTitle>
+        <AlertDialogDescription>
+          This action will affect {subscribers} users
+        </AlertDialogDescription>
+      </AlertDialogHeader>
+      <AlertDialogFooter>
+        <AlertDialogCancel>Cancel</AlertDialogCancel>
+        <AlertDialogAction onClick={handleClick}>Delete</AlertDialogAction>
+      </AlertDialogFooter>
+    </AlertDialogContent>
+  );
+};
 
 const PlanFormDialog: React.FC<{
   plan?: SubscriptionPlan;
@@ -215,14 +285,6 @@ const PlanFormDialog: React.FC<{
 }> = ({ plan, closeModal }) => {
   const queryClient = useQueryClient();
   const editing = !!plan;
-
-  const formSchema = editing
-    ? editSubscriptionPlanSchema
-    : createSubscriptionPlanSchema;
-
-  // type FormSchemaType = z.infer<typeof formSchema>;
-  //
-  // const mutationFn = editing ? editPlan : createPlan;
 
   const form = useForm<z.infer<typeof createSubscriptionPlanSchema>>({
     resolver: zodResolver(createSubscriptionPlanSchema),
