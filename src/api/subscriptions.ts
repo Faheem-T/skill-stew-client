@@ -1,5 +1,9 @@
 import z from "zod";
-import { api, type ApiResponseWithData } from "./baseApi";
+import {
+  api,
+  type ApiResponseWithData,
+  type ApiResponseWithMessage,
+} from "./baseApi";
 
 export interface SubscriptionPlan {
   id: string;
@@ -45,4 +49,10 @@ export const editPlan = async (
   data: z.infer<typeof editSubscriptionPlanSchema>,
 ): Promise<ApiResponseWithData<SubscriptionPlan>> => {
   return api.patch(`/payments/subscriptions/${id}`, data);
+};
+
+export const deletePlan = async (
+  id: string,
+): Promise<ApiResponseWithMessage> => {
+  return api.delete(`/payments/subscriptions/${id}`);
 };
