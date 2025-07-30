@@ -8,6 +8,7 @@ import { AdminDashboard } from "./pages/admin/AdminDashboard";
 import { ProtectedRoute } from "./pages/ProtectedRoute";
 import { AdminSidebarProvider } from "./components/custom/AdminSidebarProvider";
 import { UserManagement } from "./pages/admin/UserManagement";
+import { SubscriptionManagement } from "./pages/admin/SubscriptionManagement";
 
 export const router = createBrowserRouter([
   {
@@ -44,6 +45,10 @@ export const router = createBrowserRouter([
           {
             path: "/admin/users",
             element: <UserManagement />,
+          },
+          {
+            path: "/admin/subscriptions",
+            element: <SubscriptionManagement />,
           },
         ],
       },
