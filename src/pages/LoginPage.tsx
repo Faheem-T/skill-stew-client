@@ -16,6 +16,7 @@ import { loginRequest } from "../api/auth/LoginRequest";
 import type { ApiErrorResponseType } from "../api/baseApi";
 import { useNavigate } from "react-router";
 import { useAppStore } from "@/store";
+import { GoogleLoginButton } from "@/components/custom/GoogleAuthButton";
 
 export const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address."),
@@ -71,53 +72,61 @@ export const LoginPage = () => {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center p-8 h-screen">
-      <div className="fixed right-8 top-8">
-        Don't have an account?{" "}
-        <span
-          className="font-bold underline hover:cursor-pointer"
-          onClick={() => navigate("/register")}
-        >
-          Sign up
-        </span>
+    <>
+      <div className="flex flex-col items-center justify-center p-8 h-screen">
+        <div className="fixed right-8 top-8">
+          Don't have an account?{" "}
+          <span
+            className="font-bold underline hover:cursor-pointer"
+            onClick={() => navigate("/register")}
+          >
+            Sign up
+          </span>
+        </div>
+        <h1 className="text-3xl font-bold my-4">Welcome back!</h1>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="flex flex-col items-center gap-4 max-w-xl flex-wrap"
+          >
+            <FormField
+              name="email"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input placeholder="email" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              name="password"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input placeholder="password" {...field} type="password" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button type="submit" className="w-full">
+              Login
+            </Button>
+            <GoogleLoginButton />
+            {form.formState.errors.root && (
+              <div className="text-red-500 text-sm">
+                {form.formState.errors.root.message}
+              </div>
+            )}
+          </form>
+        </Form>
       </div>
-      <h1 className="text-3xl font-bold">Welcome back!</h1>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <FormField
-            name="email"
-            control={form.control}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input placeholder="email" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            name="password"
-            control={form.control}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input placeholder="password" {...field} type="password" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button type="submit">Login</Button>
-          {form.formState.errors.root && (
-            <div className="text-red-500 text-sm">
-              {form.formState.errors.root.message}
-            </div>
-          )}
-        </form>
-      </Form>
-    </div>
+    </>
   );
 };
