@@ -30,17 +30,6 @@ export const GoogleLoginButton = () => {
 
     // Define the callback function
     window.googleAuthCallback = async (payload: any) => {
-      // // Setting cookie for double submit cookie (csrf protection)
-      // const array = new Uint32Array(1);
-      // crypto.getRandomValues(array);
-      // const g_csrf_token = "" + array[0];
-      // const expires = new Date();
-      // expires.setDate(expires.getDate() + 2);
-      // document.cookie =
-      //   `g_csrf_token=${g_csrf_token};expires=${expires};path=/` +
-      //   (import.meta.env.MODE === "production"
-      //     ? `;domain=${ROOT_DOMAIN};secure`
-      //     : "");
       try {
         const { data } = await googleAuthFn(payload.credential);
         const { accessToken } = data.data;

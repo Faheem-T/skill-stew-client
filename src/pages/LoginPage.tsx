@@ -83,14 +83,17 @@ export const LoginPage = () => {
             Sign up
           </span>
         </div>
-        <h1 className="text-3xl font-bold">Welcome back!</h1>
+        <h1 className="text-3xl font-bold my-4">Welcome back!</h1>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="flex flex-col items-center gap-4 max-w-xl flex-wrap"
+          >
             <FormField
               name="email"
               control={form.control}
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="w-full">
                   <FormLabel>Email</FormLabel>
                   <FormControl>
                     <Input placeholder="email" {...field} />
@@ -103,7 +106,7 @@ export const LoginPage = () => {
               name="password"
               control={form.control}
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="w-full">
                   <FormLabel>Password</FormLabel>
                   <FormControl>
                     <Input placeholder="password" {...field} type="password" />
@@ -112,7 +115,10 @@ export const LoginPage = () => {
                 </FormItem>
               )}
             />
-            <Button type="submit">Login</Button>
+            <Button type="submit" className="w-full">
+              Login
+            </Button>
+            <GoogleLoginButton />
             {form.formState.errors.root && (
               <div className="text-red-500 text-sm">
                 {form.formState.errors.root.message}
@@ -121,7 +127,6 @@ export const LoginPage = () => {
           </form>
         </Form>
       </div>
-      <GoogleLoginButton />
     </>
   );
 };
