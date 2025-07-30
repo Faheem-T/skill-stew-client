@@ -75,7 +75,7 @@ export const SubscriptionManagement: React.FC<{}> = () => {
     <div>
       <AdminTopBar
         mainText="Subscription Management"
-        subText="Manage"
+        subText="Manage the details of subscription plans in your platform"
         sideItems={
           <Dialog open={modalOpen} onOpenChange={setModalOpen}>
             <DialogTrigger asChild>
