@@ -34,6 +34,7 @@ export const createSubscriptionPlanSchema = z.object({
   freeWorkshopHours: z.number(),
   currency: z.string().optional(),
   features: z.string().array(),
+  // features: z.array(z.object({ value: z.string() })),
 });
 
 export const createPlan = async (

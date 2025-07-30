@@ -33,10 +33,10 @@ import {
 } from "@/components/ui/table";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Clock, Edit, Trash } from "lucide-react";
+import { Clock, Edit, Trash, X } from "lucide-react";
 import React from "react";
-import { useForm } from "react-hook-form";
-import type z from "zod";
+import { useFieldArray, useForm } from "react-hook-form";
+import z from "zod";
 import {
   Form,
   FormControl,
@@ -63,6 +63,11 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
 } from "@/components/ui/alert-dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export const SubscriptionManagement: React.FC<{}> = () => {
   const [modalOpen, setModalOpen] = React.useState<boolean>(false);
@@ -279,6 +284,11 @@ const PlanDeletionAlertDialog: React.FC<{
   );
 };
 
+const planFormSchema = createSubscriptionPlanSchema.extend({
+  features: z.array(z.object({ value: z.string() })),
+});
+type PlanFormType = z.infer<typeof planFormSchema>;
+
 const PlanFormDialog: React.FC<{
   plan?: SubscriptionPlan;
   closeModal: () => void;
@@ -286,8 +296,8 @@ const PlanFormDialog: React.FC<{
   const queryClient = useQueryClient();
   const editing = !!plan;
 
-  const form = useForm<z.infer<typeof createSubscriptionPlanSchema>>({
-    resolver: zodResolver(createSubscriptionPlanSchema),
+  const form = useForm<PlanFormType>({
+    resolver: zodResolver(planFormSchema),
     defaultValues: {
       name: plan?.name ?? "",
       description: plan?.description ?? "",
@@ -296,8 +306,15 @@ const PlanFormDialog: React.FC<{
       monthlyPrice: plan?.price.monthly ?? 0,
       yearlyPrice: plan?.price.yearly ?? 0,
       currency: plan?.price.currency ?? "INR",
-      features: plan?.features ?? [],
+      features: plan?.features
+        ? plan.features.map((feature) => ({ value: feature }))
+        : [{ value: "" }],
     },
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "features",
   });
 
   const createMutation = useMutation<
@@ -329,6 +346,10 @@ const PlanFormDialog: React.FC<{
           draft.data.data.push(data.data.data);
         }),
       );
+      // if (data.data.message) {
+      //   toast.success(data.data.message);
+      // }
+      // closeModal();
     },
   });
 
@@ -372,14 +393,20 @@ const PlanFormDialog: React.FC<{
         }
       }
     },
+    // onSuccess(data) {
+    //   if (data.data.message) {
+    //     toast.success(data.data.message);
+    //   }
+    //   closeModal();
+    // },
   });
 
-  async function onSubmit(
-    values: z.infer<typeof createSubscriptionPlanSchema>,
-  ) {
+  async function onSubmit(values: PlanFormType) {
+    // transforming features to request friendly structure
+    const features = values.features.map((feature) => feature.value);
     if (editing) {
       editMutation.mutate(
-        { id: plan.id, data: values },
+        { id: plan.id, data: { ...values, features } },
         {
           onSuccess(response) {
             if (response.data.message) {
@@ -390,164 +417,208 @@ const PlanFormDialog: React.FC<{
         },
       );
     } else {
-      createMutation.mutate(values, {
-        onSuccess(response) {
-          if (response.data.message) {
-            toast.success(response.data.message);
-          }
-          closeModal();
+      createMutation.mutate(
+        { ...values, features },
+        {
+          onSuccess(response) {
+            if (response.data.message) {
+              toast.success(response.data.message);
+            }
+            closeModal();
+          },
         },
-      });
+      );
     }
   }
 
   return (
-    <>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{editing ? "Edit plan" : "Create New Plan"}</DialogTitle>
-          <DialogDescription>
-            {editing
-              ? "Edit details of subscription plan"
-              : "Fill in the details of the new subscription plan"}
-          </DialogDescription>
-        </DialogHeader>
+    <DialogContent className="overflow-scroll max-h-[80%] w-full">
+      <DialogHeader>
+        <DialogTitle>{editing ? "Edit plan" : "Create New Plan"}</DialogTitle>
+        <DialogDescription>
+          {editing
+            ? "Edit details of subscription plan"
+            : "Fill in the details of the new subscription plan"}
+        </DialogDescription>
+      </DialogHeader>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <FormField
+            name="name"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Plan name</FormLabel>
+                <FormControl>
+                  <Input placeholder="ex: Professional" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            name="description"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Description</FormLabel>
+                <FormDescription>
+                  A short description about the plan
+                </FormDescription>
+                <FormControl>
+                  <Input placeholder="ex: best for professionals" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <div className="flex gap-4 items-center">
             <FormField
-              name="name"
+              name="monthlyPrice"
               control={form.control}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Plan name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="ex: Professional" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              name="description"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormDescription>
-                    A short description about the plan
-                  </FormDescription>
+                  <FormLabel>Per month</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="ex: best for professionals"
                       {...field}
+                      type="number"
+                      onChange={(e) =>
+                        field.onChange(parseFloat(e.target.value))
+                      }
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <div className="flex gap-4 items-center">
-              <FormField
-                name="monthlyPrice"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Per month</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        type="number"
-                        onChange={(e) =>
-                          field.onChange(parseFloat(e.target.value))
-                        }
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                name="yearlyPrice"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Per year</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        type="number"
-                        onChange={(e) =>
-                          field.onChange(parseFloat(e.target.value))
-                        }
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+            <FormField
+              name="yearlyPrice"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Per year</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type="number"
+                      onChange={(e) =>
+                        field.onChange(parseFloat(e.target.value))
+                      }
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
 
-            <div className="flex gap-8 items-center">
-              <FormField
-                name="freeWorkshopHours"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Free workshop hours</FormLabel>
-                    <FormDescription>
-                      Number of free workshop hours subscribers can attend
-                    </FormDescription>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        type="number"
-                        onChange={(e) =>
-                          field.onChange(parseFloat(e.target.value))
-                        }
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+          <div className="flex gap-8 items-center">
+            <FormField
+              name="freeWorkshopHours"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Free workshop hours</FormLabel>
+                  <FormDescription>
+                    Number of free workshop hours subscribers can attend
+                  </FormDescription>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type="number"
+                      onChange={(e) =>
+                        field.onChange(parseFloat(e.target.value))
+                      }
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-              <FormField
-                name="active"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Status</FormLabel>
-                    <FormControl>
-                      <div>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                          className="bg-black"
-                        />
-                        {field.value === true ? (
-                          <div className="text-xs">Active</div>
-                        ) : (
-                          <div className="text-xs text-muted-foreground">
-                            Inactive
-                          </div>
-                        )}
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            {form.formState.errors.root && (
-              <div className="text-red-500 text-sm">
-                {form.formState.errors.root.message}
-              </div>
+            <FormField
+              name="active"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Status</FormLabel>
+                  <FormControl>
+                    <div>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                      {field.value === true ? (
+                        <div className="text-xs">Active</div>
+                      ) : (
+                        <div className="text-xs text-muted-foreground">
+                          Inactive
+                        </div>
+                      )}
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <FormLabel>Features</FormLabel>
+            {fields.length === 0 ? (
+              <FormDescription>No features...</FormDescription>
+            ) : (
+              fields.map((item, index) => (
+                <div className="flex w-full items-center gap-2">
+                  <FormField
+                    key={item.id}
+                    control={form.control}
+                    name={`features.${index}.value`}
+                    render={({ field }) => (
+                      <FormItem className="grow-1">
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        onClick={() => {
+                          remove(index);
+                        }}
+                      >
+                        <X />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Remove feature</TooltipContent>
+                  </Tooltip>
+                </div>
+              ))
             )}
-            <Button type="submit">{plan ? "Upate plan" : "Create plan"}</Button>
-          </form>
-        </Form>
-      </DialogContent>
-    </>
+            <Button
+              variant="outline"
+              type="button"
+              onClick={() => append({ value: "" })}
+            >
+              Add feature
+            </Button>
+          </div>
+          {/*Non field specific error display*/}
+          {form.formState.errors.root && (
+            <div className="text-red-500 text-sm">
+              {form.formState.errors.root.message}
+            </div>
+          )}
+          <Button type="submit">{plan ? "Upate plan" : "Create plan"}</Button>
+        </form>
+      </Form>
+    </DialogContent>
   );
 };
