@@ -9,49 +9,127 @@ import { unblockUser } from "@/api/users/UnblockUser";
 import { AdminTopBar } from "@/components/custom/AdminTopbar";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
   TableCaption,
   TableCell,
+  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { AvatarImage } from "@radix-ui/react-avatar";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { produce } from "immer";
+import { useState } from "react";
 import toast from "react-hot-toast";
+import { useSearchParams } from "react-router";
 
 export const UserManagement = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const [isVerified, setIsVerified] = useState(
+    searchParams.get("isVerified") == "true" ||
+      searchParams.get("isVerified") == "false"
+      ? Boolean(searchParams.get("isVerified"))
+      : undefined,
+  );
+
+  const [queryString, setQueryString] = useState(
+    searchParams.get("query") ?? "",
+  );
+  function handleSubmit() {
+    setSearchParams({ query: queryString });
+  }
+
   return (
     <div className="">
       <AdminTopBar mainText="User Management" />
-      <div className="p-4">
-        <UserTable />
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSubmit();
+        }}
+        className="p-4"
+      >
+        <Input
+          value={queryString}
+          onChange={(e) => setQueryString(e.target.value)}
+          placeholder="Search for users"
+        />
+      </form>
+      <div className="p-4 w-full">
+        <UserTable queryString={queryString} isVerified={isVerified} />
       </div>
     </div>
   );
 };
 
-const UserTable = () => {
-  const { data, isFetching, isError } = useQuery({
-    queryFn: getUsers,
-    queryKey: ["users"],
+type UserFilters = {
+  query?: string;
+  isVerified?: boolean;
+};
+
+export function useUsers(filters: UserFilters, limit = 20) {
+  return useInfiniteQuery({
+    queryKey: ["users", filters],
+    queryFn: async ({ pageParam }: { pageParam: undefined | string }) => {
+      return getUsers({
+        cursor: pageParam,
+        limit,
+        filters,
+      });
+    },
+    getNextPageParam: (lastPage) =>
+      lastPage.hasNextPage ? lastPage.nextCursor : undefined,
+    initialPageParam: undefined, // cursor starts as undefined
+  });
+}
+
+const UserTable: React.FC<{
+  queryString?: string;
+  isVerified?: boolean;
+}> = ({ queryString, isVerified }) => {
+  // const { data, isFetching, isError } = useQuery({
+  //   queryFn: () => getUsers,
+  //   queryKey: ["users"],
+  // });
+  //
+
+  const {
+    isFetching,
+    isPending,
+    isError,
+    data,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = useUsers({
+    query: queryString,
+    isVerified,
   });
 
-  if (isFetching) {
+  if (isPending) {
     return <div>Loading...</div>;
   }
   if (isError || !data) {
     return <div>Error!</div>;
   }
 
-  const UserRows = data.data.data.map((user) => <UserRow user={user} />);
+  const users = data.pages.flatMap((page) => page.data);
+
+  const UserRows = users.map((user) => <UserRow user={user} />);
 
   return (
-    <Table>
+    <Table className="w-full">
       <TableCaption>A list of users using your platform</TableCaption>
       <TableHeader>
         <TableRow>
@@ -59,9 +137,29 @@ const UserTable = () => {
           <TableHead>Name</TableHead>
           <TableHead>Username</TableHead>
           <TableHead>Email</TableHead>
+          <TableHead>Verified</TableHead>
+          <TableHead>Actions</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>{...UserRows}</TableBody>
+      <TableFooter>
+        <TableRow>
+          <TableCell>
+            <div className="flex justify-center items-center w-full">
+              {hasNextPage && (
+                <Button
+                  variant="outline"
+                  className="self-center"
+                  onClick={() => fetchNextPage()}
+                  disabled={isFetchingNextPage}
+                >
+                  {isFetchingNextPage ? "Loading..." : "Load more"}
+                </Button>
+              )}
+            </div>
+          </TableCell>
+        </TableRow>
+      </TableFooter>
     </Table>
   );
 };
@@ -98,6 +196,8 @@ const UserRow = ({ user }: { user: User }) => {
         {username ?? "Not set"}
       </TableCell>
       <TableCell>{email}</TableCell>
+      <TableCell>{is_verified ? "true" : "false"}</TableCell>
+
       <TableCell>
         <BlockUserButton currentlyBlocked={is_blocked} userId={id} />
       </TableCell>

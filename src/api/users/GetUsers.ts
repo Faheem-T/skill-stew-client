@@ -1,4 +1,4 @@
-import { api, type ApiResponseWithData } from "../baseApi"
+import { api, type ApiResponseWithData, type PaginatedApiResponse } from "../baseApi"
 
 export interface User {
     id: string;
@@ -17,6 +17,26 @@ export interface User {
     is_blocked: boolean
 }
 
-export const getUsers = async (): Promise<ApiResponseWithData<User[]>> => {
-    return api.get("/users")
+type UserFilters = {
+  query?: string;
+  isVerified?: boolean;
+};
+export const getUsers = async ({
+  cursor,
+  limit,
+  filters,
+}: {
+  cursor?: string;
+  limit: number;
+  filters?: UserFilters;
+}):Promise<PaginatedApiResponse<User[]>> => {
+  const params = new URLSearchParams();
+  if (cursor) params.append("cursor", cursor);
+  params.append("limit", limit.toString());
+  if (filters?.query) params.append("query", filters.query);
+  if (filters?.isVerified !== undefined) {
+    params.append("isVerified", filters.isVerified.toString());
+  }
+    const result = await api.get(`/users?${params.toString()}`)
+    return result.data
 }
