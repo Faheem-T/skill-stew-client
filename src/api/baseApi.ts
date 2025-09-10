@@ -58,6 +58,14 @@ export type ApiResponseWithData<T> = AxiosResponse<{
   message?: string;
 }>;
 
+export type PaginatedApiResponse<T> = {
+  success: true;
+  data: T;
+  nextCursor: string;
+  hasNextPage: boolean;
+  message?: string
+}
+
 export type ApiErrorResponseType = AxiosError<{
   success: false;
   message: string;
