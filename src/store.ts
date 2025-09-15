@@ -1,9 +1,15 @@
 import { create, type StateCreator } from "zustand";
-import {devtools} from "zustand/middleware"
+import { devtools } from "zustand/middleware";
 
 type User =
-  | { role: "USER" | "EXPERT"; email: string; username?: string }
-  | { role: "ADMIN"; username: string };
+  | {
+      id: string;
+      role: "USER" | "EXPERT";
+      email: string;
+      username?: string;
+      name?: string;
+    }
+  | { id: string; role: "ADMIN"; username: string | undefined };
 
 interface AuthSlice {
   user: User | null;
@@ -21,10 +27,11 @@ const createAuthSlice: StateCreator<AuthSlice, [], [], AuthSlice> = (set) => ({
     })),
   user: null,
   setUser: (user: User) => set((_state) => ({ user })),
-  logout: () => set(_state => ({user: null, accessToken: null}))
+  logout: () => set((_state) => ({ user: null, accessToken: null })),
 });
 
 export const useAppStore = create<AuthSlice>()(
   devtools((...a) => ({
-  ...createAuthSlice(...a),
-})));
+    ...createAuthSlice(...a),
+  })),
+);

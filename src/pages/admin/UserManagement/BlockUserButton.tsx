@@ -50,7 +50,7 @@ export const BlockUserButton: React.FC<{
   const handleClick = () => {
     mutate(userId, {
       onSuccess(data) {
-        toast.success(data.data.message);
+        toast.success(data.message);
       },
       onError(err) {
         toast.error(err.message);
