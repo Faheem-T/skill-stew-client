@@ -1,5 +1,6 @@
-import { api, type ApiResponseWithMessage } from "../baseApi"
+import { api, type ApiResponseWithMessage } from "../baseApi";
 
-export const blockUser = async (id: string): Promise<ApiResponseWithMessage> => {
-    return api.patch(`/users/${id}/block`)
-}
+export const blockUser = (id: string): Promise<ApiResponseWithMessage> => {
+  return api.patch(`/users/${id}/block`);
+};
+

@@ -15,12 +15,19 @@ import {
   api,
   type ApiErrorResponseType,
   type ApiResponseType,
+  type ApiResponseWithMessage,
 } from "../api/baseApi";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { CheckCircle2 } from "lucide-react";
 import { Carousel } from "../components/ui/Carousel";
 import { useNavigate } from "react-router";
+import {
+  registerRequest,
+  type RegisterErrorResponseType,
+  type RegisterResponseType,
+} from "@/api/auth/RegisterRequest";
+import type { AxiosError } from "axios";
 
 export const registerSchema = z.object({
   email: z.string().email("Please enter a valid email address."),
@@ -28,6 +35,7 @@ export const registerSchema = z.object({
 
 export const RegisterPage = () => {
   const [registered, setRegistered] = useState(false);
+  const [email, setEmail] = useState("");
   const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof registerSchema>>({
@@ -38,34 +46,39 @@ export const RegisterPage = () => {
   });
 
   const { isPending, mutate } = useMutation<
-    ApiResponseType,
-    ApiErrorResponseType,
+    RegisterResponseType,
+    AxiosError<RegisterErrorResponseType>,
     z.infer<typeof registerSchema>
   >({
     mutationFn: async (body: z.infer<typeof registerSchema>) => {
-      return api.post("/auth/register", body);
-    },
-    onError(error, variables) {
-      if (error.response?.data) {
-        if (error.response.data.errors) {
-          for (const { error: message, field } of error.response.data.errors) {
-            if (field)
-              form.setError(field as keyof typeof variables, { message });
-          }
-        }
-        if (error.response.data.message) {
-          toast.error(error.response.data.message);
-        }
-      }
-    },
-    onSuccess(data) {
-      if (data.data.message) toast.success(data.data.message);
-      setRegistered(true);
+      return registerRequest(body);
     },
   });
 
   async function onSubmit(values: z.infer<typeof registerSchema>) {
-    mutate(values);
+    mutate(values, {
+      onSuccess(data, { email }) {
+        toast.success(data.message);
+        setRegistered(true);
+        setEmail(email);
+      },
+      onError(error, { email }) {
+        if (error.response) {
+          const { userAlreadyExists, userVerified } = error.response.data;
+          if (userAlreadyExists) {
+            if (userVerified) {
+              form.setError("email", {
+                message: "This email is already in use",
+              });
+            } else {
+              toast("This email has previously been used to register");
+              setRegistered(true);
+              setEmail(email);
+            }
+          }
+        }
+      },
+    });
   }
 
   return (
@@ -134,9 +147,71 @@ export const RegisterPage = () => {
             <h1 className="text-3xl font-semibold p-4 text-center">
               Check your email to confirm your account.
             </h1>
+            <ResendButton email={email} />
           </div>
         )}
       </div>
     </div>
+  );
+};
+
+const ResendButton: React.FC<{ email: string }> = ({ email }) => {
+  const { isPending, mutate } = useMutation<
+    ApiResponseType,
+    ApiErrorResponseType
+  >({
+    mutationFn: async (): Promise<ApiResponseWithMessage> => {
+      return api.post("/auth/resend-verification-link", { email });
+    },
+
+    onError(error) {
+      if (error.response?.data) {
+        if (error.response.data.message) {
+          toast.error(error.response.data.message);
+        }
+      }
+    },
+    onSuccess(data) {
+      if (data.message) toast.success(data.message);
+    },
+  });
+
+  const [totalTime, setTotalTime] = useState(30);
+
+  const [timeLeft, setTimeLeft] = useState(totalTime);
+  useEffect(() => {
+    const intervalId = setInterval(
+      () =>
+        setTimeLeft((prev) => {
+          if (prev === 0) {
+            clearInterval(intervalId);
+            return prev;
+          }
+          return prev - 1;
+        }),
+      1000,
+    );
+
+    return () => clearInterval(intervalId);
+  });
+
+  async function onSubmit() {
+    mutate();
+    setTotalTime(30);
+    setTimeLeft(30);
+  }
+
+  return (
+    <Button
+      disabled={isPending || timeLeft > 0}
+      onClick={onSubmit}
+      className="relative"
+    >
+      Resend Email {timeLeft > 0 && `(${timeLeft})`}
+      <span
+        className="absolute bottom-0 left-0 h-1 bg-red-500 transition-all duration-1000"
+        style={{ width: `${(timeLeft / totalTime) * 100}%` }}
+      />
+    </Button>
   );
 };

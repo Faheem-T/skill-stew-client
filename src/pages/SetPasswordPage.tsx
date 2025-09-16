@@ -7,6 +7,7 @@ import {
   api,
   type ApiErrorResponseType,
   type ApiResponseType,
+  type ApiResponseWithMessage,
 } from "../api/baseApi";
 import toast from "react-hot-toast";
 import {
@@ -64,7 +65,7 @@ export const SetPasswordPage = () => {
     ApiErrorResponseType,
     SetPasswordBody
   >({
-    mutationFn: async (body) => {
+    mutationFn: async (body): Promise<ApiResponseWithMessage> => {
       return api.post("/auth/set-password", body);
     },
 
@@ -81,10 +82,6 @@ export const SetPasswordPage = () => {
         }
       }
     },
-    onSuccess(data) {
-      if (data.data.message) toast.success(data.data.message);
-      navigate("/login");
-    },
   });
 
   async function onSubmit(values: z.infer<typeof setPasswordSchema>) {
@@ -92,7 +89,15 @@ export const SetPasswordPage = () => {
       toast.error("Verification token not found. Please try again.");
       return;
     }
-    mutate({ password: values.password, token: token });
+    mutate(
+      { password: values.password, token: token },
+      {
+        onSuccess(data) {
+          if (data.message) toast.success(data.message);
+          navigate("/login");
+        },
+      },
+    );
   }
 
   return (
