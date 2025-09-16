@@ -1,6 +1,6 @@
 import { useAppStore } from "@/store";
 import axios from "axios";
-import { AxiosError, type AxiosResponse } from "axios";
+import { AxiosError } from "axios";
 import { refreshRequest } from "./auth/RefreshRequest";
 
 export const api = axios.create({
@@ -16,7 +16,7 @@ api.interceptors.request.use((request) => {
 });
 
 api.interceptors.response.use(
-  (response) => response,
+  (response) => response.data,
   async (error) => {
     if (error instanceof AxiosError) {
       if (!error.response || !error.config) {
@@ -30,7 +30,7 @@ api.interceptors.response.use(
         }
         try {
           const { data } = await refreshRequest();
-          useAppStore.getState().setAccessToken(data.data.accessToken);
+          useAppStore.getState().setAccessToken(data.accessToken);
           return api.request(error.config);
         } catch (_err) {
           return Promise.reject(error);
@@ -41,30 +41,30 @@ api.interceptors.response.use(
   },
 );
 
-export type ApiResponseType = AxiosResponse<{
+export type ApiResponseType = {
   success: true;
   message?: string;
   data?: any;
-}>;
+};
 
-export type ApiResponseWithMessage = AxiosResponse<{
+export type ApiResponseWithMessage = {
   success: true;
   message: string;
-}>;
+};
 
-export type ApiResponseWithData<T> = AxiosResponse<{
+export type ApiResponseWithData<T> = {
   success: true;
   data: T;
   message?: string;
-}>;
+};
 
 export type PaginatedApiResponse<T> = {
   success: true;
   data: T;
   nextCursor: string;
   hasNextPage: boolean;
-  message?: string
-}
+  message?: string;
+};
 
 export type ApiErrorResponseType = AxiosError<{
   success: false;

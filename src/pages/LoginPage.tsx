@@ -65,7 +65,7 @@ export const LoginPage = () => {
   async function onSubmit(values: z.infer<typeof loginSchema>) {
     mutate(values, {
       onSuccess(data) {
-        setAccessToken(data.data.data.accessToken);
+        setAccessToken(data.data.accessToken);
         navigate("/");
       },
     });

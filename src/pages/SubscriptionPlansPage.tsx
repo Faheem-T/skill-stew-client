@@ -34,7 +34,9 @@ export const SubscriptionPlansSection: React.FC = () => {
     return <div>Couldn't fetch data!</div>;
   }
 
-  const plans = data.data.data;
+  console.log(data);
+
+  const plans = data.data;
   return (
     <div className="flex flex-col items-center border gap-4">
       <Card className="p-0 w-full flex justify-center items-center max-w-sm">

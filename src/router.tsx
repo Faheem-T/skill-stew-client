@@ -9,46 +9,60 @@ import { ProtectedRoute } from "./pages/ProtectedRoute";
 import { AdminSidebarProvider } from "./components/custom/AdminSidebarProvider";
 import { UserManagement } from "./pages/admin/UserManagement";
 import { SubscriptionManagement } from "./pages/admin/SubscriptionManagement";
+import { initialLoader } from "./lib/initialLoader";
+import { GuestRoute } from "./pages/GuestRoute";
+import { InitialLoadScreen } from "./pages/InitialLoadScreen";
 
 export const router = createBrowserRouter([
   {
-    path: "test",
-    element: <></>,
-  },
-  {
-    path: "/",
-    element: <HomePage />,
-  },
-  {
-    path: "/login",
-    element: <LoginPage />,
-  },
-  {
-    path: "/register",
-    element: <RegisterPage />,
-  },
-  {
-    path: "/set-password",
-    element: <SetPasswordPage />,
-  },
-  {
-    path: "/admin/login",
-    element: <AdminLoginPage />,
-  },
-  {
-    element: <ProtectedRoute roles={["ADMIN"]} />,
+    hydrateFallbackElement: <InitialLoadScreen />,
+    loader: initialLoader,
     children: [
       {
-        element: <AdminSidebarProvider />,
+        path: "test",
+        element: <InitialLoadScreen />,
+      },
+      {
+        path: "/",
+        element: <HomePage />,
+      },
+      {
+        element: <GuestRoute />,
         children: [
-          { path: "/admin/dashboard", element: <AdminDashboard /> },
           {
-            path: "/admin/users",
-            element: <UserManagement />,
+            path: "/login",
+            element: <LoginPage />,
           },
           {
-            path: "/admin/subscriptions",
-            element: <SubscriptionManagement />,
+            path: "/register",
+            element: <RegisterPage />,
+          },
+          {
+            path: "/set-password",
+            element: <SetPasswordPage />,
+          },
+          {
+            path: "/admin/login",
+            element: <AdminLoginPage />,
+          },
+        ],
+      },
+      {
+        element: <ProtectedRoute roles={["ADMIN"]} />,
+        children: [
+          {
+            element: <AdminSidebarProvider />,
+            children: [
+              { path: "/admin/dashboard", element: <AdminDashboard /> },
+              {
+                path: "/admin/users",
+                element: <UserManagement />,
+              },
+              {
+                path: "/admin/subscriptions",
+                element: <SubscriptionManagement />,
+              },
+            ],
           },
         ],
       },

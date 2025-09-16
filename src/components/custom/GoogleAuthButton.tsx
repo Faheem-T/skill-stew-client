@@ -32,7 +32,7 @@ export const GoogleLoginButton = () => {
     window.googleAuthCallback = async (payload: any) => {
       try {
         const { data } = await googleAuthFn(payload.credential);
-        const { accessToken } = data.data;
+        const { accessToken } = data;
         setAccessToken(accessToken);
 
         toast.success("Logged in successfully");

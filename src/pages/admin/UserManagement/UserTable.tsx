@@ -23,7 +23,6 @@ export const UserTable: React.FC<{
 }> = ({ queryString, isVerified }) => {
   const filters = { query: queryString, isVerified };
   const {
-    isFetching,
     isPending,
     isError,
     data,
@@ -59,11 +58,11 @@ export const UserTable: React.FC<{
         </TableRow>
       </TableHeader>
       <TableBody>{...UserRows}</TableBody>
-      <TableFooter>
-        <TableRow>
-          <TableCell>
-            <div className="flex justify-center items-center w-full">
-              {hasNextPage && (
+      {hasNextPage && (
+        <TableFooter>
+          <TableRow>
+            <TableCell>
+              <div className="flex justify-center items-center w-full">
                 <Button
                   variant="outline"
                   className="self-center"
@@ -72,11 +71,11 @@ export const UserTable: React.FC<{
                 >
                   {isFetchingNextPage ? "Loading..." : "Load more"}
                 </Button>
-              )}
-            </div>
-          </TableCell>
-        </TableRow>
-      </TableFooter>
+              </div>
+            </TableCell>
+          </TableRow>
+        </TableFooter>
+      )}
     </Table>
   );
 };

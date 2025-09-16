@@ -114,7 +114,7 @@ const SubscriptionPlansTable: React.FC = () => {
     return <div>Couldn't fetch data!</div>;
   }
 
-  const plans = data.data.data;
+  const plans = data.data;
   return (
     <Table className="">
       <TableHeader>
@@ -241,8 +241,8 @@ const PlanDeletionAlertDialog: React.FC<{
       queryClient.setQueryData(
         ["subscription-plans"],
         produce(previousPlans, (draft) => {
-          draft.data.data.splice(
-            draft.data.data.findIndex((plan) => plan.id === id),
+          draft.data.splice(
+            draft.data.findIndex((plan) => plan.id === id),
             1,
           );
         }),
@@ -258,7 +258,7 @@ const PlanDeletionAlertDialog: React.FC<{
       }
     },
     onSuccess(data) {
-      toast.success(data.data.message);
+      toast.success(data.message);
     },
   });
 
@@ -343,7 +343,7 @@ const PlanFormDialog: React.FC<{
       queryClient.setQueryData(
         ["subscription-plans"],
         produce(previousPlans, (draft) => {
-          draft.data.data.push(data.data.data);
+          draft.data.push(data.data);
         }),
       );
       // if (data.data.message) {
@@ -367,7 +367,7 @@ const PlanFormDialog: React.FC<{
       queryClient.setQueryData(
         ["subscription-plans"],
         produce(previousPlans, (draft) => {
-          draft.data.data.forEach((plan) => {
+          draft.data.forEach((plan) => {
             if (plan.id === variables.id) {
               Object.assign(plan, variables.data);
             }
@@ -409,8 +409,8 @@ const PlanFormDialog: React.FC<{
         { id: plan.id, data: { ...values, features } },
         {
           onSuccess(response) {
-            if (response.data.message) {
-              toast.success(response.data.message);
+            if (response.message) {
+              toast.success(response.message);
             }
             closeModal();
           },
@@ -421,8 +421,8 @@ const PlanFormDialog: React.FC<{
         { ...values, features },
         {
           onSuccess(response) {
-            if (response.data.message) {
-              toast.success(response.data.message);
+            if (response.message) {
+              toast.success(response.message);
             }
             closeModal();
           },
