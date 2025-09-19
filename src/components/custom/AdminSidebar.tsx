@@ -12,6 +12,8 @@ import {
   SidebarMenuItem,
 } from "../ui/sidebar";
 import { Link } from "react-router";
+import { Button } from "../ui/button";
+import { useLogout } from "@/hooks/useLogout";
 
 // Menu items
 const items = [
@@ -33,6 +35,7 @@ const items = [
 ];
 
 export const AdminSidebar = () => {
+  const { mutate, isPending } = useLogout();
   return (
     <Sidebar collapsible="icon" variant="floating">
       <SidebarHeader></SidebarHeader>
@@ -55,7 +58,16 @@ export const AdminSidebar = () => {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter></SidebarFooter>
+      <SidebarFooter>
+        <Button
+          disabled={isPending}
+          onClick={() => {
+            mutate();
+          }}
+        >
+          Log out
+        </Button>
+      </SidebarFooter>
     </Sidebar>
   );
 };
