@@ -17,7 +17,7 @@ import type { ApiErrorResponseType } from "../api/baseApi";
 import { useNavigate } from "react-router";
 import { useAppStore } from "@/store";
 import { GoogleLoginButton } from "@/components/custom/GoogleAuthButton";
-import { getProfile } from "@/api/auth/GetProfile";
+import { fetchProfile } from "@/lib/fetchProfile";
 
 export const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address."),
@@ -64,19 +64,7 @@ export const LoginPage = () => {
     async onSuccess(data) {
       setAccessToken(data.data.accessToken);
 
-      const { data: profileData } = await getProfile();
-      if (!profileData) {
-        useAppStore.getState().logout();
-        return;
-      }
-
-      if (profileData.role === "ADMIN") {
-        const { id, role, username } = profileData;
-        useAppStore.getState().setUser({ role, id, username });
-      } else {
-        const { id, role, username, name, email } = profileData;
-        useAppStore.getState().setUser({ role, id, username, email, name });
-      }
+      await fetchProfile();
 
       navigate("/");
     },

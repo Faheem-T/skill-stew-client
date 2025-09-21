@@ -2,7 +2,7 @@ import { createBrowserRouter } from "react-router";
 import { LoginPage } from "./pages/LoginPage";
 import { RegisterPage } from "./pages/RegisterPage";
 import { SetPasswordPage } from "./pages/SetPasswordPage";
-import { HomePage } from "./pages/HomePage";
+import { HomePage } from "./pages/Homepage";
 import { AdminLoginPage } from "./pages/admin/AdminLogin";
 import { AdminDashboard } from "./pages/admin/AdminDashboard";
 import { ProtectedRoute } from "./pages/ProtectedRoute";
