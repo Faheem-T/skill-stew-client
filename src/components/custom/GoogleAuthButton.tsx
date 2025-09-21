@@ -4,6 +4,7 @@ import { googleAuth } from "@/api/googleAuth";
 import { useAppStore } from "@/store";
 import { isAxiosError } from "axios";
 import { useNavigate } from "react-router";
+import { fetchProfile } from "@/lib/fetchProfile";
 
 const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 if (!CLIENT_ID) {
@@ -34,6 +35,8 @@ export const GoogleLoginButton = () => {
         const { data } = await googleAuthFn(payload.credential);
         const { accessToken } = data;
         setAccessToken(accessToken);
+
+        await fetchProfile();
 
         toast.success("Logged in successfully");
         navigate("/");
