@@ -8,5 +8,5 @@ export const GuestRoute = () => {
       return <Navigate to="/admin/dashboard" />;
     }
   }
-  return user ? <Navigate to="/" /> : <Outlet />;
+  return user ? <Navigate to="/dashboard" /> : <Outlet />;
 };

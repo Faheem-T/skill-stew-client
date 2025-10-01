@@ -1,7 +1,9 @@
 import { Button } from "@/components/ui/button";
 import type React from "react";
+import { useNavigate } from "react-router";
 
 export const CTASection: React.FC = () => {
+  const navigate = useNavigate();
   return (
     <>
       <div className="bg-primary text-background min-h-[24rem] flex items-center justify-center flex-col gap-8">
@@ -12,7 +14,14 @@ export const CTASection: React.FC = () => {
           Join our community of learners and teachers. Your next skill is just a
           click away
         </div>
-        <Button variant="secondary" size="lg" className="font-semibold text-xl">
+        <Button
+          variant="secondary"
+          size="lg"
+          className="font-semibold text-xl"
+          onClick={() => {
+            navigate("/login");
+          }}
+        >
           Join Now
         </Button>
       </div>

@@ -1,8 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { motion } from "motion/react";
 import type React from "react";
+import { useNavigate } from "react-router";
 
-export const HeroSection: React.FC = () => {
+export const HeroSection: React.FC<{
+  onLearnMoreButtonClick: () => void;
+}> = ({ onLearnMoreButtonClick }) => {
+  const navigate = useNavigate();
   return (
     <div className="flex flex-col justify-center items-center h-full gap-4 p-12 md:p-24">
       <motion.div
@@ -36,14 +40,22 @@ export const HeroSection: React.FC = () => {
           animate={{ y: "0px", filter: "none", visibility: "visible" }}
           transition={{ delay: 0.9 }}
         >
-          <Button>Join now</Button>
+          <Button
+            onClick={() => {
+              navigate("/login");
+            }}
+          >
+            Join now
+          </Button>
         </motion.span>
         <motion.span
           initial={{ y: "10px", visibility: "hidden" }}
           animate={{ y: "0px", filter: "none", visibility: "visible" }}
           transition={{ delay: 0.9 }}
         >
-          <Button variant="outline">Learn more</Button>
+          <Button variant="outline" onClick={onLearnMoreButtonClick}>
+            Learn more
+          </Button>
         </motion.span>
       </div>
     </div>
