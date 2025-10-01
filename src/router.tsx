@@ -12,6 +12,8 @@ import { SubscriptionManagement } from "./pages/admin/SubscriptionManagement";
 import { initialLoader } from "./lib/initialLoader";
 import { GuestRoute } from "./pages/GuestRoute";
 import { InitialLoadScreen } from "./pages/InitialLoadScreen";
+import { DashboardRoutingPage } from "./pages/DashboardRoutingPage";
+import { UserDashboard } from "./pages/UserDashboard";
 
 export const router = createBrowserRouter([
   {
@@ -27,6 +29,7 @@ export const router = createBrowserRouter([
         element: <HomePage />,
       },
       {
+        // Guest only routes
         element: <GuestRoute />,
         children: [
           {
@@ -48,12 +51,22 @@ export const router = createBrowserRouter([
         ],
       },
       {
+        element: <ProtectedRoute roles={["ADMIN", "EXPERT", "USER"]} />,
+        children: [{ path: "/dashboard", element: <DashboardRoutingPage /> }],
+      },
+      {
+        // USER only routes
+        element: <ProtectedRoute roles={["USER"]} />,
+        children: [{ path: "dashboard/user", element: <UserDashboard /> }],
+      },
+      {
+        // ADMIN only routes
         element: <ProtectedRoute roles={["ADMIN"]} />,
         children: [
           {
             element: <AdminSidebarProvider />,
             children: [
-              { path: "/admin/dashboard", element: <AdminDashboard /> },
+              { path: "/dashboard/admin", element: <AdminDashboard /> },
               {
                 path: "/admin/users",
                 element: <UserManagement />,

@@ -1,10 +1,10 @@
 import { APP_NAME } from "@/lib/constants";
-import type React from "react";
 import { HoverInfoCard } from "./HoverInfoCard";
+import { forwardRef } from "react";
 
-export const InfoSection: React.FC = () => {
+export const InfoSection = forwardRef<HTMLDivElement>(({}, ref) => {
   return (
-    <div className="bg-primary text-background min-h-[70vh] py-8">
+    <div className="bg-primary text-background min-h-[70vh] py-8" ref={ref}>
       <div className="container mx-auto px-4">
         <div className="font-semibold text-4xl md:text-5xl p-2">
           What is {APP_NAME}?
@@ -36,4 +36,4 @@ export const InfoSection: React.FC = () => {
       </div>
     </div>
   );
-};
+});
