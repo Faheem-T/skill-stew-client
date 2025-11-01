@@ -7,5 +7,9 @@ interface ProtectedRouteProps {
 
 export const ProtectedRoute = ({ roles }: ProtectedRouteProps) => {
   const user = useAppStore((state) => state.user);
-  return !user || !roles.includes(user.role) ? <Navigate to="/" /> : <Outlet />;
+  return !user || !roles.includes(user.role) ? (
+    <Navigate to="/" replace />
+  ) : (
+    <Outlet />
+  );
 };

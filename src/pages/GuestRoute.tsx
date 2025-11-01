@@ -5,8 +5,8 @@ export const GuestRoute = () => {
   const user = useAppStore((state) => state.user);
   if (user) {
     if (user.role === "ADMIN") {
-      return <Navigate to="/admin/dashboard" />;
+      return <Navigate to="/admin/dashboard" replace />;
     }
   }
-  return user ? <Navigate to="/dashboard" /> : <Outlet />;
+  return user ? <Navigate to="/dashboard" replace /> : <Outlet />;
 };
