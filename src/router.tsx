@@ -66,7 +66,7 @@ export const router = createBrowserRouter([
           {
             element: <AdminSidebarProvider />,
             children: [
-              { path: "/dashboard/admin", element: <AdminDashboard /> },
+              { path: "/admin/dashboard", element: <AdminDashboard /> },
               {
                 path: "/admin/users",
                 element: <UserManagement />,

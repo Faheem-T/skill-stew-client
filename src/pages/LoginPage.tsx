@@ -18,6 +18,7 @@ import { useNavigate } from "react-router";
 import { useAppStore } from "@/store";
 import { GoogleLoginButton } from "@/components/custom/GoogleAuthButton";
 import { fetchProfile } from "@/lib/fetchProfile";
+import { PasswordInput } from "@/components/ui/password-input";
 
 export const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address."),
@@ -112,7 +113,7 @@ export const LoginPage = () => {
                 <FormItem className="w-full">
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input placeholder="password" {...field} type="password" />
+                    <PasswordInput placeholder="password" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

@@ -16,6 +16,7 @@ import type { ApiErrorResponseType } from "../../api/baseApi";
 import { useNavigate } from "react-router";
 import { adminLoginRequest } from "@/api/auth/AdminLoginRequest";
 import { useAppStore } from "@/store";
+import { PasswordInput } from "@/components/ui/password-input";
 
 export const adminLoginSchema = z.object({
   username: z.string(),
@@ -92,7 +93,11 @@ export const AdminLoginPage = () => {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input placeholder="password" {...field} type="password" />
+                  <PasswordInput
+                    {...field}
+                    placeholder="password"
+                    autoComplete="off"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

@@ -51,7 +51,7 @@ export const RegisterForm = () => {
   const [step, setStep] = useState<number>(0);
   const totalSteps = 2;
 
-  const { isPending, mutate } = useMutation<
+  const { mutate } = useMutation<
     RegisterResponseType,
     AxiosError<RegisterErrorResponseType>,
     z.infer<typeof registerSchema>
@@ -203,7 +203,6 @@ export const RegisterForm = () => {
                         <PasswordInput
                           {...field}
                           placeholder="Create a strong password"
-                          autoComplete="off"
                         />
                       </FormControl>
                       <FormDescription />
