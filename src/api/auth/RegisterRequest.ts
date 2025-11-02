@@ -1,5 +1,9 @@
 import { api } from "../baseApi";
-export type RegisterResponseType = { success: true; message: string };
+export type RegisterResponseType = {
+  success: true;
+  message: string;
+  data: { accessToken: string };
+};
 
 export type RegisterErrorResponseType = {
   success: false;

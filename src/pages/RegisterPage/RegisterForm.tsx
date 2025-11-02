@@ -24,6 +24,7 @@ import {
 } from "@/api/auth/RegisterRequest";
 import type { AxiosError } from "axios";
 import { useMutation } from "@tanstack/react-query";
+import { useAppStore } from "@/store";
 
 const registerSchema = z
   .object({
@@ -48,6 +49,7 @@ const registerSchema = z
 type registerSchemaType = z.infer<typeof registerSchema>;
 
 export const RegisterForm = () => {
+  const setAccessToken = useAppStore((state) => state.setAccessToken);
   const [step, setStep] = useState<number>(0);
   const totalSteps = 2;
 
@@ -79,8 +81,8 @@ export const RegisterForm = () => {
 
     mutate(formData, {
       onSuccess(data) {
-        toast.success("Form successfully submitted");
         toast.success(data.message);
+        setAccessToken(data.data.accessToken);
         setStep(0);
         reset();
       },
