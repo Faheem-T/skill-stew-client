@@ -14,6 +14,7 @@ import { GuestRoute } from "./routes/GuestRoute";
 import { InitialLoadScreen } from "./pages/InitialLoadScreen";
 import { DashboardRoutingPage } from "./pages/DashboardRoutingPage";
 import { UserDashboard } from "@/features/user/pages/UserDashboard";
+import { ProfileStep } from "@/features/auth/pages/onboarding/ProfileStep";
 
 export const router = createBrowserRouter([
   {
@@ -58,6 +59,11 @@ export const router = createBrowserRouter([
         // USER only routes
         element: <ProtectedRoute roles={["USER"]} />,
         children: [{ path: "dashboard/user", element: <UserDashboard /> }],
+      },
+      {
+        // Onboarding routes for authenticated users
+        element: <ProtectedRoute roles={["USER"]} />,
+        children: [{ path: "/onboarding/profile", element: <ProfileStep /> }],
       },
       {
         // ADMIN only routes

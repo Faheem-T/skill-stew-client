@@ -25,6 +25,7 @@ import {
 import type { AxiosError } from "axios";
 import { useMutation } from "@tanstack/react-query";
 import { useAppStore } from "@/app/store";
+import { useNavigate } from "react-router";
 
 const registerSchema = z
   .object({
@@ -52,6 +53,7 @@ export const RegisterForm = () => {
   const setAccessToken = useAppStore((state) => state.setAccessToken);
   const [step, setStep] = useState<number>(0);
   const totalSteps = 2;
+  const navigate = useNavigate();
 
   const { mutate } = useMutation<
     RegisterResponseType,
@@ -85,6 +87,8 @@ export const RegisterForm = () => {
         setAccessToken(data.data.accessToken);
         setStep(0);
         reset();
+        // navigate to onboarding profile step
+        navigate("/onboarding/profile");
       },
       onError(error) {
         if (error.response) {
