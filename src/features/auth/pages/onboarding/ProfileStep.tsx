@@ -16,9 +16,11 @@ import {
 } from "@/shared/components/ui/form";
 import { MultiSelect } from "@/shared/components/ui/multi-select";
 import type { MultiSelectOption } from "@/shared/components/ui/multi-select";
-import type { UpdateProfileBody } from "@/features/auth/api/UpdateProfile";
+import type { OnboardingUpdateProfileBody } from "@/features/auth/api/OnboardingUpdateProfile";
+import { onboardingUpdateProfileRequest } from "@/features/auth/api/OnboardingUpdateProfile";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useUpdateProfile } from "@/features/auth/hooks/useUpdateProfile";
+import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
 import ISO6391 from "iso-639-1";
@@ -26,14 +28,9 @@ import ISO6391 from "iso-639-1";
 type FormValues = {
   name?: string;
   username?: string;
-  phoneNumber?: string;
-  timezone?: string;
-  about?: string;
-  socialLinks?: string;
   languages?: string[];
+  location?: { latitude: number; longitude: number };
 };
-
-type UpdatePayload = UpdateProfileBody;
 
 export const ProfileStep = () => {
   const profileSchema = z.object({
@@ -43,10 +40,6 @@ export const ProfileStep = () => {
       .min(3, "Username must be at least 3 characters")
       .regex(/^[a-zA-Z0-9_-]+$/, "Username can only contain letters, numbers, - and _")
       .optional(),
-    phoneNumber: z.string().min(7, "Enter a valid phone number").optional(),
-    timezone: z.string().optional(),
-    about: z.string().max(500, "About must be under 500 characters").optional(),
-    socialLinks: z.string().optional(),
     languages: z.array(z.string()).optional(),
   });
 
@@ -54,15 +47,46 @@ export const ProfileStep = () => {
     resolver: zodResolver(profileSchema),
     defaultValues: {},
   });
-  const { handleSubmit, control } = form;
+  const { handleSubmit, control, setValue } = form;
+  const [detectingLocation, setDetectingLocation] = useState(false);
   const navigate = useNavigate();
-  const mutation = useUpdateProfile();
+  const mutation = useMutation<void, unknown, OnboardingUpdateProfileBody>({
+    mutationFn: async (body: OnboardingUpdateProfileBody) => {
+      await onboardingUpdateProfileRequest(body);
+    },
+  });
   // we skip image uploading for this iteration
 
+  const detectLocation = () => {
+    if (typeof navigator === "undefined" || !navigator.geolocation) {
+      toast.error("Geolocation is not available in this browser.");
+      return;
+    }
+
+    setDetectingLocation(true);
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const loc = { latitude: pos.coords.latitude, longitude: pos.coords.longitude };
+        setValue("location", loc, { shouldValidate: true, shouldDirty: true });
+        toast.success("Location detected.");
+        setDetectingLocation(false);
+      },
+      (_err) => {
+        console.log(_err)
+        toast.error("Unable to retrieve location. Please allow location access and try again.");
+        setDetectingLocation(false);
+      },
+      { enableHighAccuracy: true, timeout: 10000 },
+    );
+  };
+
   const onSubmit = async (values: FormValues) => {
-    const payload: UpdatePayload = {
-      ...values,
-      socialLinks: values.socialLinks ? values.socialLinks.split("\n").map((s) => s.trim()).filter(Boolean) : undefined,
+    const payload: OnboardingUpdateProfileBody = {
+      name: values.name,
+      username: values.username,
+      languages: values.languages,
+      location: values.location,
     };
 
     mutation.mutate(payload, {
@@ -128,108 +152,66 @@ export const ProfileStep = () => {
                     />
                   </div>
 
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <FormField
-                      control={control}
-                      name="phoneNumber"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Phone</FormLabel>
-                          <FormControl>
-                            <Input {...field} placeholder="+1 555 555 5555" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={control}
-                      name="timezone"
-                      render={({ field }) => {
-                        const tzs: string[] = Intl.supportedValuesOf("timeZone")
-
-                        return (
-                          <FormItem>
-                            <FormLabel>Timezone</FormLabel>
-                            <FormControl>
-                              <select {...field} className="w-full rounded-md border px-3 py-2">
-                                <option value="">Select timezone</option>
-                                {tzs.map((t) => (
-                                  <option key={t} value={t}>{t}</option>
-                                ))}
-                              </select>
-                            </FormControl>
-                            <FormDescription>Optional — used to show local times.</FormDescription>
-                            <FormMessage />
-                          </FormItem>
-                        );
-                      }}
-                    />
-                  </div>
-
                   <FormField
                     control={control}
-                    name="about"
+                    name="location"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>About</FormLabel>
+                        <FormLabel>Location</FormLabel>
                         <FormControl>
-                          <textarea {...field} placeholder="A short bio" className="w-full rounded-md border px-3 py-2 min-h-[96px]" />
+                          <div className="flex items-center gap-2">
+                            <Button type="button" onClick={detectLocation} disabled={detectingLocation}>
+                              {detectingLocation ? "Detecting..." : "Detect location"}
+                            </Button>
+                            <button
+                              type="button"
+                              onClick={() => setValue("location", undefined)}
+                              className="text-sm text-muted-foreground"
+                            >
+                              Clear
+                            </button>
+                            {field.value ? (
+                              <div className="text-sm text-muted-foreground">
+                                Lat: {field.value.latitude.toFixed(4)}, Lng: {field.value.longitude.toFixed(4)}
+                              </div>
+                            ) : null}
+                          </div>
                         </FormControl>
-                        <FormDescription>Tell people a bit about yourself.</FormDescription>
-                        <FormMessage />
+                        <FormDescription>Optional — share your coordinates for local times and discovery.</FormDescription>
                       </FormItem>
                     )}
                   />
 
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <FormField
-                      control={control}
-                      name="socialLinks"
-                      render={({ field }) => (
+                  <FormField
+                    control={control}
+                    name="languages"
+                    render={({ field }) => {
+                      const languages: MultiSelectOption[] = ISO6391.getAllCodes()
+                      .map((code) => ({
+                        value: code,
+                        label: ISO6391.getName(code), 
+                      }));
+
+                      return (
                         <FormItem>
-                          <FormLabel>Social links</FormLabel>
+                          <FormLabel>Languages</FormLabel>
                           <FormControl>
-                            <textarea {...field} placeholder="One link per line" className="w-full rounded-md border px-3 py-2 min-h-[72px]" />
+                            <MultiSelect
+                              options={languages}
+                              defaultValue={(field.value as string[] | undefined) ?? []}
+                              onValueChange={(vals) => field.onChange(vals)}
+                              placeholder="Select languages..."
+                              maxCount={5}
+                              searchable
+                              hideSelectAll
+                            />
                           </FormControl>
-                          <FormDescription>Optional — add your website or social profiles.</FormDescription>
+                          <FormDescription>Select one or more languages you speak.</FormDescription>
                           <FormMessage />
                         </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={control}
-                      name="languages"
-                      render={({ field }) => {
-                        const languages: MultiSelectOption[] = ISO6391.getAllCodes()
-                        .map((code) => ({
-                          value: code,
-                          label: ISO6391.getName(code), 
-                        }));
-
-                        return (
-                          <FormItem>
-                            <FormLabel>Languages</FormLabel>
-                            <FormControl>
-                              <MultiSelect
-                                options={languages}
-                                defaultValue={(field.value as string[] | undefined) ?? []}
-                                onValueChange={(vals) => field.onChange(vals)}
-                                placeholder="Select languages..."
-                                maxCount={5}
-                                searchable
-                                hideSelectAll
-                              />
-                            </FormControl>
-                            <FormDescription>Select one or more languages you speak.</FormDescription>
-                            <FormMessage />
-                          </FormItem>
-                        );
-                      }}
-                    />
-                  </div>
+                      );
+                    }}
+                  />
 
                   <div className="flex justify-end">
                     <Button type="submit">Save & Continue</Button>

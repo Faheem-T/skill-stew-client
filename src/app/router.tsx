@@ -23,7 +23,7 @@ export const router = createBrowserRouter([
     children: [
       {
         path: "test",
-        element: <InitialLoadScreen />,
+        element: <ProfileStep />,
       },
       {
         path: "/",
