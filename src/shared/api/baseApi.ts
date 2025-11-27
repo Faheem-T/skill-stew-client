@@ -4,7 +4,7 @@ import { AxiosError } from "axios";
 import { refreshRequest } from "@/features/auth/api/RefreshRequest";
 
 export const api = axios.create({
-  baseURL: "https://stew.com/api/v1",
+  baseURL: "/api/v1",
   withCredentials: true,
 });
 
