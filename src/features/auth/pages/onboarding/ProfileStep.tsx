@@ -1,4 +1,3 @@
-// no React hooks needed from top-level other than useForm control
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Card, CardContent, CardHeader } from "@/shared/components/ui/card";
@@ -18,18 +17,18 @@ import { MultiSelect } from "@/shared/components/ui/multi-select";
 import type { MultiSelectOption } from "@/shared/components/ui/multi-select";
 import type { OnboardingUpdateProfileBody } from "@/features/auth/api/OnboardingUpdateProfile";
 import { onboardingUpdateProfileRequest } from "@/features/auth/api/OnboardingUpdateProfile";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
 import ISO6391 from "iso-639-1";
+import { GoogleMapsAutocomplete } from "@/shared/components/ui/google-autocomplete";
 
 type FormValues = {
   name?: string;
   username?: string;
   languages?: string[];
-  location?: { latitude: number; longitude: number };
+  location?: { placeId: string };
 };
 
 export const ProfileStep = () => {
@@ -38,8 +37,12 @@ export const ProfileStep = () => {
     username: z
       .string()
       .min(3, "Username must be at least 3 characters")
-      .regex(/^[a-zA-Z0-9_-]+$/, "Username can only contain letters, numbers, - and _")
+      .regex(
+        /^[a-zA-Z0-9_-]+$/,
+        "Username can only contain letters, numbers, - and _",
+      )
       .optional(),
+    location: z.object({ placeId: z.string() }).optional(),
     languages: z.array(z.string()).optional(),
   });
 
@@ -48,7 +51,6 @@ export const ProfileStep = () => {
     defaultValues: {},
   });
   const { handleSubmit, control, setValue } = form;
-  const [detectingLocation, setDetectingLocation] = useState(false);
   const navigate = useNavigate();
   const mutation = useMutation<void, unknown, OnboardingUpdateProfileBody>({
     mutationFn: async (body: OnboardingUpdateProfileBody) => {
@@ -56,30 +58,6 @@ export const ProfileStep = () => {
     },
   });
   // we skip image uploading for this iteration
-
-  const detectLocation = () => {
-    if (typeof navigator === "undefined" || !navigator.geolocation) {
-      toast.error("Geolocation is not available in this browser.");
-      return;
-    }
-
-    setDetectingLocation(true);
-
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const loc = { latitude: pos.coords.latitude, longitude: pos.coords.longitude };
-        setValue("location", loc, { shouldValidate: true, shouldDirty: true });
-        toast.success("Location detected.");
-        setDetectingLocation(false);
-      },
-      (_err) => {
-        console.log(_err)
-        toast.error("Unable to retrieve location. Please allow location access and try again.");
-        setDetectingLocation(false);
-      },
-      { enableHighAccuracy: true, timeout: 10000 },
-    );
-  };
 
   const onSubmit = async (values: FormValues) => {
     const payload: OnboardingUpdateProfileBody = {
@@ -105,7 +83,9 @@ export const ProfileStep = () => {
       <Card className="shadow">
         <CardHeader>
           <h2 className="text-2xl font-bold">Tell us about yourself</h2>
-          <p className="text-sm text-muted-foreground">This helps others get to know you on the platform.</p>
+          <p className="text-sm text-muted-foreground">
+            This helps others get to know you on the platform.
+          </p>
         </CardHeader>
         <CardContent>
           <div className="grid md:grid-cols-3 gap-6 items-start">
@@ -119,7 +99,10 @@ export const ProfileStep = () => {
 
             <div className="md:col-span-2">
               <Form {...form}>
-                <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 gap-4">
+                <form
+                  onSubmit={handleSubmit(onSubmit)}
+                  className="grid grid-cols-1 gap-4"
+                >
                   <div className="grid md:grid-cols-2 gap-4">
                     <FormField
                       control={control}
@@ -145,7 +128,9 @@ export const ProfileStep = () => {
                           <FormControl>
                             <Input {...field} placeholder="username123" />
                           </FormControl>
-                          <FormDescription>Choose a unique handle.</FormDescription>
+                          <FormDescription>
+                            Choose a unique handle.
+                          </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -155,29 +140,20 @@ export const ProfileStep = () => {
                   <FormField
                     control={control}
                     name="location"
-                    render={({ field }) => (
+                    render={({}) => (
                       <FormItem>
                         <FormLabel>Location</FormLabel>
                         <FormControl>
-                          <div className="flex items-center gap-2">
-                            <Button type="button" onClick={detectLocation} disabled={detectingLocation}>
-                              {detectingLocation ? "Detecting..." : "Detect location"}
-                            </Button>
-                            <button
-                              type="button"
-                              onClick={() => setValue("location", undefined)}
-                              className="text-sm text-muted-foreground"
-                            >
-                              Clear
-                            </button>
-                            {field.value ? (
-                              <div className="text-sm text-muted-foreground">
-                                Lat: {field.value.latitude.toFixed(4)}, Lng: {field.value.longitude.toFixed(4)}
-                              </div>
-                            ) : null}
-                          </div>
+                          <GoogleMapsAutocomplete
+                            onPlaceSelected={(place) => {
+                              setValue("location", { placeId: place.id });
+                            }}
+                          />
                         </FormControl>
-                        <FormDescription>Optional — share your coordinates for local times and discovery.</FormDescription>
+                        <FormDescription>
+                          Optional — share your coordinates for local times and
+                          discovery.
+                        </FormDescription>
                       </FormItem>
                     )}
                   />
@@ -186,11 +162,11 @@ export const ProfileStep = () => {
                     control={control}
                     name="languages"
                     render={({ field }) => {
-                      const languages: MultiSelectOption[] = ISO6391.getAllCodes()
-                      .map((code) => ({
-                        value: code,
-                        label: ISO6391.getName(code), 
-                      }));
+                      const languages: MultiSelectOption[] =
+                        ISO6391.getAllCodes().map((code) => ({
+                          value: code,
+                          label: ISO6391.getName(code),
+                        }));
 
                       return (
                         <FormItem>
@@ -198,7 +174,9 @@ export const ProfileStep = () => {
                           <FormControl>
                             <MultiSelect
                               options={languages}
-                              defaultValue={(field.value as string[] | undefined) ?? []}
+                              defaultValue={
+                                (field.value as string[] | undefined) ?? []
+                              }
                               onValueChange={(vals) => field.onChange(vals)}
                               placeholder="Select languages..."
                               maxCount={5}
@@ -206,7 +184,9 @@ export const ProfileStep = () => {
                               hideSelectAll
                             />
                           </FormControl>
-                          <FormDescription>Select one or more languages you speak.</FormDescription>
+                          <FormDescription>
+                            Select one or more languages you speak.
+                          </FormDescription>
                           <FormMessage />
                         </FormItem>
                       );

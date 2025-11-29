@@ -5,12 +5,12 @@ export type OnboardingUpdateProfileBody = {
   name?: string;
   username?: string;
   avatarKey?: string;
-  location?: { latitude: number; longitude: number };
+  location?: { placeId: string };
   languages?: string[];
 };
 
 export const onboardingUpdateProfileRequest = async (
   body: OnboardingUpdateProfileBody,
 ): Promise<ApiResponseType> => {
-  return api.patch("/users/profile", body);
+  return api.patch("/users/onboarding/profile", body);
 };
