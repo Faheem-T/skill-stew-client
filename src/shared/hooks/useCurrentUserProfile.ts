@@ -3,6 +3,9 @@ import type { ApiErrorResponseType } from "@/shared/api/baseApi";
 import type { CurrentUserProfile } from "@/shared/api/currentUserProfile";
 import { getCurrentUserProfile } from "@/shared/api/currentUserProfile";
 
+// DO NOT USE THIS HOOK DIRECTLY
+// USE ROLE SPECIFIC WRAPPERS INSTEAD (e.g. useUserProfile)
+
 export const CURRENT_USER_PROFILE_QUERY_KEY = ["currentUserProfile"] as const;
 
 export function useCurrentUserProfile(

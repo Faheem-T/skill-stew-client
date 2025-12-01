@@ -6,7 +6,7 @@ export const initialLoader = async () => {
   try {
     const { data } = await refreshRequest();
     useAppStore.getState().setAccessToken(data.accessToken);
-    // await fetchProfile();
+    await fetchProfile();
   } catch {
     useAppStore.getState().logout();
   }

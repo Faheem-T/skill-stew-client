@@ -9,7 +9,7 @@ import {
   AvatarFallback,
 } from "@/shared/components/ui/avatar";
 import { useEffect } from "react";
-import useCurrentUserProfile from "@/shared/hooks/useCurrentUserProfile";
+import { CURRENT_USER_PROFILE_QUERY_KEY } from "@/shared/hooks/useCurrentUserProfile";
 import {
   Form,
   FormField,
@@ -29,6 +29,7 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
 import ISO6391 from "iso-639-1";
 import { GoogleMapsAutocomplete } from "@/shared/components/ui/google-autocomplete";
+import { useUserProfile } from "@/shared/hooks/useUserProfile";
 
 type FormValues = {
   name?: string;
@@ -54,12 +55,17 @@ export const ProfileStep = () => {
 
   const form = useForm<FormValues>({
     resolver: zodResolver(profileSchema),
-    defaultValues: {},
+    defaultValues: {
+      name: "",
+      username: "",
+      location: undefined,
+      languages: [],
+    },
   });
   const { handleSubmit, control, setValue } = form;
 
   // prefilling form with existing profile data
-  const { data: profile } = useCurrentUserProfile();
+  const { data: profile } = useUserProfile();
 
   useEffect(() => {
     if (!profile) return;
@@ -78,6 +84,7 @@ export const ProfileStep = () => {
     mutationFn: async (body: OnboardingUpdateProfileBody) => {
       await onboardingUpdateProfileRequest(body);
     },
+    mutationKey: CURRENT_USER_PROFILE_QUERY_KEY,
   });
   // we skip image uploading for this iteration
 

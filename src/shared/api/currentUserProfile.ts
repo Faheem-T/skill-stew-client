@@ -8,18 +8,29 @@ export type CurrentUserLocation = {
   formattedAddress: string;
 };
 
-export type CurrentUserProfile = {
-  name?: string;
-  username?: string;
-  phoneNumber?: string;
-  avatarUrl?: string;
-  bannerUrl?: string;
-  timezone?: string;
-  location?: CurrentUserLocation;
-  about?: string;
-  socialLinks: string[];
-  languages: string[];
-};
+export type CurrentUserProfile =
+  | {
+      email: string;
+      role: "USER";
+      name?: string;
+      username?: string;
+      phoneNumber?: string;
+      avatarUrl?: string;
+      bannerUrl?: string;
+      timezone?: string;
+      location?: CurrentUserLocation;
+      about?: string;
+      socialLinks: string[];
+      languages: string[];
+    }
+  | {
+      role: "EXPERT";
+      email: string;
+    }
+  | {
+      role: "ADMIN";
+      username: string;
+    };
 
 export async function getCurrentUserProfile(): Promise<
   ApiResponseWithData<CurrentUserProfile>

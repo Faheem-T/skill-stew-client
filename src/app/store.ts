@@ -3,13 +3,10 @@ import { devtools } from "zustand/middleware";
 
 type User =
   | {
-      id: string;
       role: "USER" | "EXPERT";
       email: string;
-      username?: string;
-      name?: string;
     }
-  | { id: string; role: "ADMIN"; username: string | undefined };
+  | { role: "ADMIN"; username: string | undefined };
 
 interface AuthSlice {
   user: User | null;
