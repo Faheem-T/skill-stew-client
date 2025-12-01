@@ -3,7 +3,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Card, CardContent, CardHeader } from "@/shared/components/ui/card";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
-import { Avatar, AvatarFallback } from "@/shared/components/ui/avatar";
+import {
+  Avatar,
+  AvatarImage,
+  AvatarFallback,
+} from "@/shared/components/ui/avatar";
+import { useEffect } from "react";
+import useCurrentUserProfile from "@/shared/hooks/useCurrentUserProfile";
 import {
   Form,
   FormField,
@@ -51,6 +57,22 @@ export const ProfileStep = () => {
     defaultValues: {},
   });
   const { handleSubmit, control, setValue } = form;
+
+  // prefilling form with existing profile data
+  const { data: profile } = useCurrentUserProfile();
+
+  useEffect(() => {
+    if (!profile) return;
+    if (profile.name) setValue("name", profile.name);
+    if (profile.username) setValue("username", profile.username);
+    if (profile.languages && profile.languages.length) {
+      setValue("languages", profile.languages);
+    }
+    if (profile.location && profile.location.placeId) {
+      setValue("location", { placeId: profile.location.placeId });
+    }
+  }, [profile, setValue]);
+
   const navigate = useNavigate();
   const mutation = useMutation<void, unknown, OnboardingUpdateProfileBody>({
     mutationFn: async (body: OnboardingUpdateProfileBody) => {
@@ -92,7 +114,14 @@ export const ProfileStep = () => {
             <div className="flex flex-col items-center md:items-start">
               <div className="mb-4">
                 <Avatar className="w-24 h-24">
-                  <AvatarFallback>U</AvatarFallback>
+                  {profile?.avatarUrl ? (
+                    <AvatarImage
+                      src={profile.avatarUrl}
+                      alt={profile.name ?? profile.username ?? "User"}
+                    />
+                  ) : (
+                    <AvatarFallback>U</AvatarFallback>
+                  )}
                 </Avatar>
               </div>
             </div>
