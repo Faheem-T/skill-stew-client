@@ -9,7 +9,7 @@ import {
   AvatarFallback,
 } from "@/shared/components/ui/avatar";
 import { useEffect, useRef, useState } from "react";
-import { PencilIcon } from "lucide-react";
+import { PencilIcon, XIcon } from "lucide-react";
 import { CURRENT_USER_PROFILE_QUERY_KEY } from "@/shared/hooks/useCurrentUserProfile";
 import {
   Form,
@@ -328,12 +328,26 @@ export const ProfileStep = () => {
                               </button>
                             </div>
                           ) : (
-                            <GoogleMapsAutocomplete
-                              onPlaceSelected={(place) => {
-                                setValue("location", { placeId: place.id });
-                                setEditingLocation(false);
-                              }}
-                            />
+                            <div className="flex items-center gap-2">
+                              <GoogleMapsAutocomplete
+                                onPlaceSelected={(place) => {
+                                  setValue("location", { placeId: place.id });
+                                  setEditingLocation(false);
+                                }}
+                              />
+                              {profile?.location?.formattedAddress && (
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="icon"
+                                  onClick={() => setEditingLocation(false)}
+                                  aria-label="Cancel"
+                                  title="Cancel"
+                                >
+                                  <XIcon className="w-4 h-4" />
+                                </Button>
+                              )}
+                            </div>
                           )}
                         </FormControl>
                         <FormDescription>
