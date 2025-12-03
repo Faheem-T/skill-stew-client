@@ -9,6 +9,7 @@ import {
   AvatarFallback,
 } from "@/shared/components/ui/avatar";
 import { useEffect, useRef, useState } from "react";
+import { PencilIcon } from "lucide-react";
 import { CURRENT_USER_PROFILE_QUERY_KEY } from "@/shared/hooks/useCurrentUserProfile";
 import {
   Form,
@@ -47,6 +48,7 @@ export const ProfileStep = () => {
     null,
   );
   const [avatarPreviewUrl, setAvatarPreviewUrl] = useState<string | null>(null);
+  const [editingLocation, setEditingLocation] = useState(false);
 
   const profileSchema = z.object({
     name: z.string().min(2, "Name must be at least 2 characters").optional(),
@@ -309,11 +311,30 @@ export const ProfileStep = () => {
                       <FormItem>
                         <FormLabel>Location</FormLabel>
                         <FormControl>
-                          <GoogleMapsAutocomplete
-                            onPlaceSelected={(place) => {
-                              setValue("location", { placeId: place.id });
-                            }}
-                          />
+                          {profile?.location?.formattedAddress &&
+                          !editingLocation ? (
+                            <div className="flex items-center gap-2 py-2 px-3 bg-muted rounded text-sm">
+                              <span className="flex-1">
+                                {profile.location.formattedAddress}
+                              </span>
+                              <button
+                                type="button"
+                                className="p-1 hover:bg-accent rounded transition-colors"
+                                aria-label="Edit location"
+                                title="Edit location"
+                                onClick={() => setEditingLocation(true)}
+                              >
+                                <PencilIcon className="w-4 h-4" />
+                              </button>
+                            </div>
+                          ) : (
+                            <GoogleMapsAutocomplete
+                              onPlaceSelected={(place) => {
+                                setValue("location", { placeId: place.id });
+                                setEditingLocation(false);
+                              }}
+                            />
+                          )}
                         </FormControl>
                         <FormDescription>
                           Optional — share your coordinates for local times and
