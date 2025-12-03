@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import {
   updateProfileRequest,
   type UpdateProfileBody,
-} from "@/features/auth/api/UpdateProfile";
+} from "@/features/profile/api/UpdateProfile";
 import { CURRENT_USER_PROFILE_QUERY_KEY } from "@/shared/hooks/useCurrentUserProfile";
 
 export const useUpdateProfile = () => {

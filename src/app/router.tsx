@@ -14,7 +14,7 @@ import { GuestRoute } from "./routes/GuestRoute";
 import { InitialLoadScreen } from "./pages/InitialLoadScreen";
 import { DashboardRoutingPage } from "./pages/DashboardRoutingPage";
 import { UserDashboard } from "@/features/user/pages/UserDashboard";
-import { ProfileStep } from "@/features/auth/pages/onboarding/ProfileStep";
+import { ProfileStep } from "@/features/profile/pages/onboarding/ProfileStep";
 
 export const router = createBrowserRouter([
   {

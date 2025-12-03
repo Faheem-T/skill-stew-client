@@ -8,7 +8,7 @@ import {
   AvatarImage,
   AvatarFallback,
 } from "@/shared/components/ui/avatar";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CURRENT_USER_PROFILE_QUERY_KEY } from "@/shared/hooks/useCurrentUserProfile";
 import {
   Form,
@@ -21,8 +21,8 @@ import {
 } from "@/shared/components/ui/form";
 import { MultiSelect } from "@/shared/components/ui/multi-select";
 import type { MultiSelectOption } from "@/shared/components/ui/multi-select";
-import type { OnboardingUpdateProfileBody } from "@/features/auth/api/OnboardingUpdateProfile";
-import { onboardingUpdateProfileRequest } from "@/features/auth/api/OnboardingUpdateProfile";
+import type { OnboardingUpdateProfileBody } from "@/features/profile/api/OnboardingUpdateProfile";
+import { onboardingUpdateProfileRequest } from "@/features/profile/api/OnboardingUpdateProfile";
 import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
@@ -30,6 +30,8 @@ import { useNavigate } from "react-router";
 import ISO6391 from "iso-639-1";
 import { GoogleMapsAutocomplete } from "@/shared/components/ui/google-autocomplete";
 import { useUserProfile } from "@/shared/hooks/useUserProfile";
+import { generatePresignedUploadUrlRequest } from "../../api/GeneratePresignedUploadUrl";
+import type { GeneratePresignedUploadUrlResponse } from "../../api/GeneratePresignedUploadUrl";
 
 type FormValues = {
   name?: string;
@@ -39,6 +41,13 @@ type FormValues = {
 };
 
 export const ProfileStep = () => {
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [selectedAvatarFile, setSelectedAvatarFile] = useState<File | null>(
+    null,
+  );
+  const [avatarPreviewUrl, setAvatarPreviewUrl] = useState<string | null>(null);
+
   const profileSchema = z.object({
     name: z.string().min(2, "Name must be at least 2 characters").optional(),
     username: z
@@ -87,17 +96,97 @@ export const ProfileStep = () => {
     mutationKey: CURRENT_USER_PROFILE_QUERY_KEY,
   });
   // we skip image uploading for this iteration
+  // avatar upload handling
+  const onPickAvatar = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleAvatarSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const mimetype = file.type as "image/png" | "image/jpeg" | "image/webp";
+
+    if (!["image/png", "image/jpeg", "image/webp"].includes(mimetype)) {
+      toast.error("Please select a PNG, JPEG, or WEBP image.");
+      return;
+    }
+
+    // Stage the file and create preview
+    setSelectedAvatarFile(file);
+    const previewUrl = URL.createObjectURL(file);
+    setAvatarPreviewUrl(previewUrl);
+  };
+
+  const handleUndoAvatarSelection = () => {
+    // Clean up preview URL
+    if (avatarPreviewUrl) {
+      URL.revokeObjectURL(avatarPreviewUrl);
+    }
+    setSelectedAvatarFile(null);
+    setAvatarPreviewUrl(null);
+    // Reset file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
 
   const onSubmit = async (values: FormValues) => {
+    let avatarKey: string | undefined;
+
+    // Upload avatar if one was selected
+    if (selectedAvatarFile) {
+      try {
+        setIsUploading(true);
+        const mimetype = selectedAvatarFile.type as
+          | "image/png"
+          | "image/jpeg"
+          | "image/webp";
+
+        const response = await generatePresignedUploadUrlRequest({
+          type: "avatar",
+          mimetype,
+        });
+        const { data } = response;
+        const presigned: GeneratePresignedUploadUrlResponse = data;
+
+        const putRes = await fetch(presigned.uploadUrl, {
+          method: "PUT",
+          headers: {
+            "Content-Type": mimetype,
+          },
+          body: selectedAvatarFile,
+        });
+
+        if (!putRes.ok) {
+          throw new Error("Upload failed");
+        }
+
+        avatarKey = presigned.key;
+      } catch (err) {
+        console.error(err);
+        toast.error("Failed to upload avatar. Please try again.");
+        setIsUploading(false);
+        return;
+      } finally {
+        setIsUploading(false);
+      }
+    }
+
     const payload: OnboardingUpdateProfileBody = {
       name: values.name,
       username: values.username,
       languages: values.languages,
       location: values.location,
+      ...(avatarKey && { avatarKey }),
     };
 
     mutation.mutate(payload, {
       onSuccess() {
+        // Clean up preview URL
+        if (avatarPreviewUrl) {
+          URL.revokeObjectURL(avatarPreviewUrl);
+        }
         toast.success("Profile updated. Onboarding complete.");
         navigate("/dashboard");
       },
@@ -120,16 +209,56 @@ export const ProfileStep = () => {
           <div className="grid md:grid-cols-3 gap-6 items-start">
             <div className="flex flex-col items-center md:items-start">
               <div className="mb-4">
-                <Avatar className="w-24 h-24">
-                  {profile?.avatarUrl ? (
-                    <AvatarImage
-                      src={profile.avatarUrl}
-                      alt={profile.name ?? profile.username ?? "User"}
-                    />
-                  ) : (
-                    <AvatarFallback>U</AvatarFallback>
-                  )}
-                </Avatar>
+                <div
+                  className="relative inline-block"
+                  onClick={selectedAvatarFile ? undefined : onPickAvatar}
+                  role="button"
+                  aria-label="Change avatar"
+                  title="Change avatar"
+                >
+                  <Avatar className="w-24 h-24 cursor-pointer hover:opacity-90 transition-opacity flex items-center justify-center overflow-hidden">
+                    {avatarPreviewUrl ? (
+                      <AvatarImage
+                        src={avatarPreviewUrl}
+                        alt="Avatar preview"
+                        className="w-full h-full object-cover rounded-full"
+                      />
+                    ) : profile?.avatarUrl ? (
+                      <AvatarImage
+                        src={profile.avatarUrl}
+                        alt={profile.name ?? profile.username ?? "User"}
+                        className="w-full h-full object-cover rounded-full"
+                      />
+                    ) : (
+                      <AvatarFallback>U</AvatarFallback>
+                    )}
+                  </Avatar>
+                </div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp"
+                  className="hidden"
+                  onChange={handleAvatarSelected}
+                />
+                {selectedAvatarFile && (
+                  <div className="mt-2 flex flex-col gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleUndoAvatarSelection}
+                      className="w-full"
+                    >
+                      Undo Selection
+                    </Button>
+                  </div>
+                )}
+                {isUploading && (
+                  <p className="text-xs text-muted-foreground mt-2 text-center">
+                    Uploading...
+                  </p>
+                )}
               </div>
             </div>
 

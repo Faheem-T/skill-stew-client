@@ -17,9 +17,9 @@ import {
 } from "@/shared/components/ui/form";
 import { MultiSelect } from "@/shared/components/ui/multi-select";
 import type { MultiSelectOption } from "@/shared/components/ui/multi-select";
-import type { UpdateProfileBody } from "@/features/auth/api/UpdateProfile";
+import type { UpdateProfileBody } from "@/features/profile/api/UpdateProfile";
 import { useForm } from "react-hook-form";
-import { useUpdateProfile } from "@/features/auth/hooks/useUpdateProfile";
+import { useUpdateProfile } from "@/features/profile/hooks/useUpdateProfile";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
 import ISO6391 from "iso-639-1";
@@ -42,7 +42,10 @@ export const ProfileCompletion = () => {
     username: z
       .string()
       .min(3, "Username must be at least 3 characters")
-      .regex(/^[a-zA-Z0-9_-]+$/, "Username can only contain letters, numbers, - and _")
+      .regex(
+        /^[a-zA-Z0-9_-]+$/,
+        "Username can only contain letters, numbers, - and _",
+      )
       .optional(),
     phoneNumber: z.string().min(7, "Enter a valid phone number").optional(),
     timezone: z.string().optional(),
@@ -63,7 +66,12 @@ export const ProfileCompletion = () => {
   const onSubmit = async (values: FormValues) => {
     const payload: UpdatePayload = {
       ...values,
-      socialLinks: values.socialLinks ? values.socialLinks.split("\n").map((s) => s.trim()).filter(Boolean) : undefined,
+      socialLinks: values.socialLinks
+        ? values.socialLinks
+            .split("\n")
+            .map((s) => s.trim())
+            .filter(Boolean)
+        : undefined,
     };
 
     mutation.mutate(payload, {
@@ -82,7 +90,9 @@ export const ProfileCompletion = () => {
       <Card className="shadow">
         <CardHeader>
           <h2 className="text-2xl font-bold">Tell us about yourself</h2>
-          <p className="text-sm text-muted-foreground">This helps others get to know you on the platform.</p>
+          <p className="text-sm text-muted-foreground">
+            This helps others get to know you on the platform.
+          </p>
         </CardHeader>
         <CardContent>
           <div className="grid md:grid-cols-3 gap-6 items-start">
@@ -96,7 +106,10 @@ export const ProfileCompletion = () => {
 
             <div className="md:col-span-2">
               <Form {...form}>
-                <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 gap-4">
+                <form
+                  onSubmit={handleSubmit(onSubmit)}
+                  className="grid grid-cols-1 gap-4"
+                >
                   <div className="grid md:grid-cols-2 gap-4">
                     <FormField
                       control={control}
@@ -122,7 +135,9 @@ export const ProfileCompletion = () => {
                           <FormControl>
                             <Input {...field} placeholder="username123" />
                           </FormControl>
-                          <FormDescription>Choose a unique handle.</FormDescription>
+                          <FormDescription>
+                            Choose a unique handle.
+                          </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -148,20 +163,28 @@ export const ProfileCompletion = () => {
                       control={control}
                       name="timezone"
                       render={({ field }) => {
-                        const tzs: string[] = Intl.supportedValuesOf("timeZone")
+                        const tzs: string[] =
+                          Intl.supportedValuesOf("timeZone");
 
                         return (
                           <FormItem>
                             <FormLabel>Timezone</FormLabel>
                             <FormControl>
-                              <select {...field} className="w-full rounded-md border px-3 py-2">
+                              <select
+                                {...field}
+                                className="w-full rounded-md border px-3 py-2"
+                              >
                                 <option value="">Select timezone</option>
                                 {tzs.map((t) => (
-                                  <option key={t} value={t}>{t}</option>
+                                  <option key={t} value={t}>
+                                    {t}
+                                  </option>
                                 ))}
                               </select>
                             </FormControl>
-                            <FormDescription>Optional — used to show local times.</FormDescription>
+                            <FormDescription>
+                              Optional — used to show local times.
+                            </FormDescription>
                             <FormMessage />
                           </FormItem>
                         );
@@ -176,9 +199,15 @@ export const ProfileCompletion = () => {
                       <FormItem>
                         <FormLabel>About</FormLabel>
                         <FormControl>
-                          <textarea {...field} placeholder="A short bio" className="w-full rounded-md border px-3 py-2 min-h-[96px]" />
+                          <textarea
+                            {...field}
+                            placeholder="A short bio"
+                            className="w-full rounded-md border px-3 py-2 min-h-[96px]"
+                          />
                         </FormControl>
-                        <FormDescription>Tell people a bit about yourself.</FormDescription>
+                        <FormDescription>
+                          Tell people a bit about yourself.
+                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -192,9 +221,15 @@ export const ProfileCompletion = () => {
                         <FormItem>
                           <FormLabel>Social links</FormLabel>
                           <FormControl>
-                            <textarea {...field} placeholder="One link per line" className="w-full rounded-md border px-3 py-2 min-h-[72px]" />
+                            <textarea
+                              {...field}
+                              placeholder="One link per line"
+                              className="w-full rounded-md border px-3 py-2 min-h-[72px]"
+                            />
                           </FormControl>
-                          <FormDescription>Optional — add your website or social profiles.</FormDescription>
+                          <FormDescription>
+                            Optional — add your website or social profiles.
+                          </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -204,11 +239,11 @@ export const ProfileCompletion = () => {
                       control={control}
                       name="languages"
                       render={({ field }) => {
-                        const languages: MultiSelectOption[] = ISO6391.getAllCodes()
-                        .map((code) => ({
-                          value: code,
-                          label: ISO6391.getName(code), 
-                        }));
+                        const languages: MultiSelectOption[] =
+                          ISO6391.getAllCodes().map((code) => ({
+                            value: code,
+                            label: ISO6391.getName(code),
+                          }));
 
                         return (
                           <FormItem>
@@ -216,7 +251,9 @@ export const ProfileCompletion = () => {
                             <FormControl>
                               <MultiSelect
                                 options={languages}
-                                defaultValue={(field.value as string[] | undefined) ?? []}
+                                defaultValue={
+                                  (field.value as string[] | undefined) ?? []
+                                }
                                 onValueChange={(vals) => field.onChange(vals)}
                                 placeholder="Select languages..."
                                 maxCount={5}
@@ -224,7 +261,9 @@ export const ProfileCompletion = () => {
                                 hideSelectAll
                               />
                             </FormControl>
-                            <FormDescription>Select one or more languages you speak.</FormDescription>
+                            <FormDescription>
+                              Select one or more languages you speak.
+                            </FormDescription>
                             <FormMessage />
                           </FormItem>
                         );
