@@ -17,9 +17,10 @@ import { useNavigate } from "react-router";
 import { adminLoginRequest } from "@/features/admin/api/auth/AdminLoginRequest";
 import { useAppStore } from "@/app/store";
 import { PasswordInput } from "@/shared/components/ui/password-input";
+import { loginRequest } from "@/features/auth/api/LoginRequest";
 
 export const adminLoginSchema = z.object({
-  username: z.string(),
+  email: z.string(),
   password: z.string(),
 });
 
@@ -32,7 +33,7 @@ export const AdminLoginPage = () => {
   const form = useForm<z.infer<typeof adminLoginSchema>>({
     resolver: zodResolver(adminLoginSchema),
     defaultValues: {
-      username: "",
+      email: "",
       password: "",
     },
   });
@@ -42,7 +43,7 @@ export const AdminLoginPage = () => {
     ApiErrorResponseType,
     z.infer<typeof adminLoginSchema>
   >({
-    mutationFn: adminLoginRequest,
+    mutationFn: loginRequest,
     onError(error, variables, _context) {
       if (error.response?.data) {
         if (error.response.data.errors) {
@@ -74,11 +75,11 @@ export const AdminLoginPage = () => {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <FormField
-            name="username"
+            name="email"
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Username</FormLabel>
+                <FormLabel>Email</FormLabel>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>

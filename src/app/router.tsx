@@ -52,18 +52,17 @@ export const router = createBrowserRouter([
         ],
       },
       {
+        // Authenticated users only routes
         element: <ProtectedRoute roles={["ADMIN", "EXPERT", "USER"]} />,
         children: [{ path: "/dashboard", element: <DashboardRoutingPage /> }],
       },
       {
         // USER only routes
         element: <ProtectedRoute roles={["USER"]} />,
-        children: [{ path: "dashboard/user", element: <UserDashboard /> }],
-      },
-      {
-        // Onboarding routes for authenticated users
-        element: <ProtectedRoute roles={["USER"]} />,
-        children: [{ path: "/onboarding/profile", element: <ProfileStep /> }],
+        children: [
+          { path: "dashboard/user", element: <UserDashboard /> },
+          { path: "/onboarding/profile", element: <ProfileStep /> },
+        ],
       },
       {
         // ADMIN only routes

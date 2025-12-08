@@ -3,9 +3,8 @@ import type {
   ApiResponseWithMessage,
   PaginatedApiResponse,
 } from "@/shared/api/baseApi";
-import { blockUser } from "@/features/admin/api/users/BlockUser";
+import { updateUserBlockStatus } from "@/features/admin/api/users/UpdateUserBlockStatus";
 import type { User } from "@/features/admin/api/users/GetUsers";
-import { unblockUser } from "@/features/admin/api/users/UnblockUser";
 import { Button } from "@/shared/components/ui/button";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { produce } from "immer";
@@ -21,10 +20,11 @@ export const BlockUserButton: React.FC<{
   const { mutate, isPending } = useMutation<
     ApiResponseWithMessage,
     ApiErrorResponseType,
-    string,
+    { id: string; newBlockStatus: boolean },
     any
   >({
-    mutationFn: currentlyBlocked ? unblockUser : blockUser,
+    mutationFn: ({ id, newBlockStatus }) =>
+      updateUserBlockStatus(id, newBlockStatus),
     onMutate() {
       const previousUserData: { pages: PaginatedApiResponse<User[]>[] } =
         queryClient.getQueryData(["users", filters])!;
@@ -48,14 +48,17 @@ export const BlockUserButton: React.FC<{
   });
 
   const handleClick = () => {
-    mutate(userId, {
-      onSuccess(data) {
-        toast.success(data.message);
+    mutate(
+      { id: userId, newBlockStatus: !currentlyBlocked },
+      {
+        onSuccess(data) {
+          toast.success(data.message);
+        },
+        onError(err) {
+          toast.error(err.message);
+        },
       },
-      onError(err) {
-        toast.error(err.message);
-      },
-    });
+    );
   };
 
   return (
