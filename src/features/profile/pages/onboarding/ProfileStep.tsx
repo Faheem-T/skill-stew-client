@@ -9,7 +9,7 @@ import {
   AvatarFallback,
 } from "@/shared/components/ui/avatar";
 import { useEffect, useRef, useState } from "react";
-import { PencilIcon, XIcon } from "lucide-react";
+import { CheckIcon, PencilIcon, XIcon } from "lucide-react";
 import { CURRENT_USER_PROFILE_QUERY_KEY } from "@/shared/hooks/useCurrentUserProfile";
 import {
   Form,
@@ -33,6 +33,8 @@ import { GoogleMapsAutocomplete } from "@/shared/components/ui/google-autocomple
 import { useUserProfile } from "@/shared/hooks/useUserProfile";
 import { generatePresignedUploadUrlRequest } from "../../api/GeneratePresignedUploadUrl";
 import type { GeneratePresignedUploadUrlResponse } from "../../api/GeneratePresignedUploadUrl";
+import { checkUsernameAvailabilityRequest } from "@/features/profile/api/CheckUsernameAvailability";
+import { updateUsernameRequest } from "@/features/profile/api/UpdateUsername";
 
 type FormValues = {
   name?: string;
@@ -40,6 +42,20 @@ type FormValues = {
   languages?: string[];
   location?: { placeId: string };
 };
+// Debounce hook
+function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => clearTimeout(handler);
+  }, [value, delay]);
+
+  return debouncedValue;
+}
 
 export const ProfileStep = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -49,6 +65,8 @@ export const ProfileStep = () => {
   );
   const [avatarPreviewUrl, setAvatarPreviewUrl] = useState<string | null>(null);
   const [editingLocation, setEditingLocation] = useState(false);
+  const [isCheckingUsername, setIsCheckingUsername] = useState(false);
+  const [isUsernameAvailable, setIsUsernameAvailable] = useState(false);
 
   const profileSchema = z.object({
     name: z.string().min(2, "Name must be at least 2 characters").optional(),
@@ -73,7 +91,8 @@ export const ProfileStep = () => {
       languages: [],
     },
   });
-  const { handleSubmit, control, setValue } = form;
+  const { handleSubmit, control, setValue, watch, setError, clearErrors } =
+    form;
 
   // prefilling form with existing profile data
   const { data: profile } = useUserProfile();
@@ -90,14 +109,59 @@ export const ProfileStep = () => {
     }
   }, [profile, setValue]);
 
+  const watchedUsername = watch("username");
+  const debouncedUsername = useDebounce(watchedUsername, 500);
+  // Check availability when debounced username changes
+  useEffect(() => {
+    if (!debouncedUsername || form.formState.errors.username) {
+      clearErrors("username");
+      return;
+    }
+
+    const checkAvailability = async () => {
+      if (debouncedUsername === profile?.username) {
+        setIsUsernameAvailable(true);
+        return;
+      }
+
+      setIsCheckingUsername(true);
+      setIsUsernameAvailable(false); // Reset while checking
+      try {
+        const { data } =
+          await checkUsernameAvailabilityRequest(debouncedUsername);
+
+        if (!data.available) {
+          setError("username", {
+            type: "manual",
+            message: "Username is already taken",
+          });
+          setIsUsernameAvailable(false);
+        } else {
+          clearErrors("username");
+          // Only show available if it's different from current username
+          if (debouncedUsername !== profile?.username) {
+            setIsUsernameAvailable(true);
+          }
+        }
+      } catch (error) {
+        console.error(error);
+        toast.error("Error checking username availability");
+      } finally {
+        setIsCheckingUsername(false);
+      }
+    };
+
+    checkAvailability();
+  }, [debouncedUsername]);
+
   const navigate = useNavigate();
+
   const mutation = useMutation<void, unknown, OnboardingUpdateProfileBody>({
     mutationFn: async (body: OnboardingUpdateProfileBody) => {
       await onboardingUpdateProfileRequest(body);
     },
     mutationKey: CURRENT_USER_PROFILE_QUERY_KEY,
   });
-  // we skip image uploading for this iteration
   // avatar upload handling
   const onPickAvatar = () => {
     fileInputRef.current?.click();
@@ -134,6 +198,16 @@ export const ProfileStep = () => {
   };
 
   const onSubmit = async (values: FormValues) => {
+    try {
+      if (values.username && values.username !== profile?.username) {
+        await updateUsernameRequest(values.username);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to update username. It might be taken.");
+      return;
+    }
+
     let avatarKey: string | undefined;
 
     // Upload avatar if one was selected
@@ -177,7 +251,6 @@ export const ProfileStep = () => {
 
     const payload: OnboardingUpdateProfileBody = {
       name: values.name,
-      username: values.username,
       languages: values.languages,
       location: values.location,
       ...(avatarKey && { avatarKey }),
@@ -293,11 +366,24 @@ export const ProfileStep = () => {
                         <FormItem>
                           <FormLabel>Username</FormLabel>
                           <FormControl>
-                            <Input {...field} placeholder="username123" />
+                            <div className="relative">
+                              <Input {...field} placeholder="username123" />
+                            </div>
                           </FormControl>
-                          <FormDescription>
-                            Choose a unique handle.
-                          </FormDescription>
+                          {isCheckingUsername ? (
+                            <div className="flex items-center gap-1 mt-2 text-sm text-muted-foreground font-medium">
+                              Checking...
+                            </div>
+                          ) : (
+                            isUsernameAvailable &&
+                            !form.formState.errors.username &&
+                            debouncedUsername !== profile?.username && (
+                              <div className="flex items-center gap-1 mt-2 text-sm text-green-600 font-medium">
+                                <CheckIcon className="w-4 h-4" />
+                                <span>Username is available</span>
+                              </div>
+                            )
+                          )}
                           <FormMessage />
                         </FormItem>
                       )}

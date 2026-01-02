@@ -3,7 +3,6 @@ import type { ApiResponseType } from "@/shared/api/baseApi";
 
 export type OnboardingUpdateProfileBody = {
   name?: string;
-  username?: string;
   avatarKey?: string;
   location?: { placeId: string };
   languages?: string[];
