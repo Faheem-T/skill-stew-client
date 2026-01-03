@@ -1,61 +1,27 @@
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Card, CardContent, CardHeader } from "@/shared/components/ui/card";
 import { Button } from "@/shared/components/ui/button";
-import { Input } from "@/shared/components/ui/input";
-import {
-  Avatar,
-  AvatarImage,
-  AvatarFallback,
-} from "@/shared/components/ui/avatar";
 import { useEffect, useRef, useState } from "react";
-import { CheckIcon, PencilIcon, XIcon } from "lucide-react";
 import { CURRENT_USER_PROFILE_QUERY_KEY } from "@/shared/hooks/useCurrentUserProfile";
-import {
-  Form,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormDescription,
-  FormMessage,
-} from "@/shared/components/ui/form";
-import { MultiSelect } from "@/shared/components/ui/multi-select";
-import type { MultiSelectOption } from "@/shared/components/ui/multi-select";
+import { Form } from "@/shared/components/ui/form";
 import type { OnboardingUpdateProfileBody } from "@/features/profile/api/OnboardingUpdateProfile";
 import { onboardingUpdateProfileRequest } from "@/features/profile/api/OnboardingUpdateProfile";
 import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
-import ISO6391 from "iso-639-1";
-import { GoogleMapsAutocomplete } from "@/shared/components/ui/google-autocomplete";
 import { useUserProfile } from "@/shared/hooks/useUserProfile";
 import { generatePresignedUploadUrlRequest } from "../../api/GeneratePresignedUploadUrl";
 import type { GeneratePresignedUploadUrlResponse } from "../../api/GeneratePresignedUploadUrl";
 import { checkUsernameAvailabilityRequest } from "@/features/profile/api/CheckUsernameAvailability";
 import { updateUsernameRequest } from "@/features/profile/api/UpdateUsername";
-
-type FormValues = {
-  name?: string;
-  username?: string;
-  languages?: string[];
-  location?: { placeId: string };
-};
-// Debounce hook
-function useDebounce<T>(value: T, delay: number): T {
-  const [debouncedValue, setDebouncedValue] = useState<T>(value);
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedValue(value);
-    }, delay);
-
-    return () => clearTimeout(handler);
-  }, [value, delay]);
-
-  return debouncedValue;
-}
+import type { ApiErrorResponseType } from "@/shared/api/baseApi";
+import { DevTool } from "@hookform/devtools";
+import { useDebounce } from "@/shared/hooks/useDebounce";
+import { profileSchema } from "@/features/profile/schemas";
+import type { FormValues } from "@/features/profile/schemas";
+import { ProfileAvatar } from "@/features/profile/components/ProfileAvatar";
+import { ProfileFormFields } from "@/features/profile/components/ProfileFormFields";
 
 export const ProfileStep = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -68,20 +34,6 @@ export const ProfileStep = () => {
   const [isCheckingUsername, setIsCheckingUsername] = useState(false);
   const [isUsernameAvailable, setIsUsernameAvailable] = useState(false);
 
-  const profileSchema = z.object({
-    name: z.string().min(2, "Name must be at least 2 characters").optional(),
-    username: z
-      .string()
-      .min(3, "Username must be at least 3 characters")
-      .regex(
-        /^[a-zA-Z0-9_-]+$/,
-        "Username can only contain letters, numbers, - and _",
-      )
-      .optional(),
-    location: z.object({ placeId: z.string() }).optional(),
-    languages: z.array(z.string()).optional(),
-  });
-
   const form = useForm<FormValues>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
@@ -91,12 +43,18 @@ export const ProfileStep = () => {
       languages: [],
     },
   });
-  const { handleSubmit, control, setValue, watch, setError, clearErrors } =
-    form;
+  const {
+    handleSubmit,
+    setValue,
+    watch,
+    setError,
+    clearErrors,
+    formState,
+    control,
+  } = form;
 
   // prefilling form with existing profile data
   const { data: profile } = useUserProfile();
-
   useEffect(() => {
     if (!profile) return;
     if (profile.name) setValue("name", profile.name);
@@ -113,7 +71,7 @@ export const ProfileStep = () => {
   const debouncedUsername = useDebounce(watchedUsername, 500);
   // Check availability when debounced username changes
   useEffect(() => {
-    if (!debouncedUsername || form.formState.errors.username) {
+    if (!debouncedUsername) {
       clearErrors("username");
       return;
     }
@@ -125,7 +83,6 @@ export const ProfileStep = () => {
       }
 
       setIsCheckingUsername(true);
-      setIsUsernameAvailable(false); // Reset while checking
       try {
         const { data } =
           await checkUsernameAvailabilityRequest(debouncedUsername);
@@ -144,8 +101,23 @@ export const ProfileStep = () => {
           }
         }
       } catch (error) {
-        console.error(error);
-        toast.error("Error checking username availability");
+        const err = error as ApiErrorResponseType;
+        if (err.response) {
+          err.response.data.errors?.forEach(({ message, field }) => {
+            console.log(`Field: ${field}, Message: ${message}`);
+            if (
+              !field ||
+              !["username", "name", "languages", "location"].includes(field)
+            ) {
+              toast.error(message);
+              return;
+            }
+
+            setError(field as any, { type: "manual", message });
+          });
+        } else {
+          toast.error("Error checking username availability");
+        }
       } finally {
         setIsCheckingUsername(false);
       }
@@ -282,60 +254,16 @@ export const ProfileStep = () => {
         </CardHeader>
         <CardContent>
           <div className="grid md:grid-cols-3 gap-6 items-start">
-            <div className="flex flex-col items-center md:items-start">
-              <div className="mb-4">
-                <div
-                  className="relative inline-block"
-                  onClick={selectedAvatarFile ? undefined : onPickAvatar}
-                  role="button"
-                  aria-label="Change avatar"
-                  title="Change avatar"
-                >
-                  <Avatar className="w-24 h-24 cursor-pointer hover:opacity-90 transition-opacity flex items-center justify-center overflow-hidden">
-                    {avatarPreviewUrl ? (
-                      <AvatarImage
-                        src={avatarPreviewUrl}
-                        alt="Avatar preview"
-                        className="w-full h-full object-cover rounded-full"
-                      />
-                    ) : profile?.avatarUrl ? (
-                      <AvatarImage
-                        src={profile.avatarUrl}
-                        alt={profile.name ?? profile.username ?? "User"}
-                        className="w-full h-full object-cover rounded-full"
-                      />
-                    ) : (
-                      <AvatarFallback>U</AvatarFallback>
-                    )}
-                  </Avatar>
-                </div>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/png,image/jpeg,image/webp"
-                  className="hidden"
-                  onChange={handleAvatarSelected}
-                />
-                {selectedAvatarFile && (
-                  <div className="mt-2 flex flex-col gap-2">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={handleUndoAvatarSelection}
-                      className="w-full"
-                    >
-                      Undo Selection
-                    </Button>
-                  </div>
-                )}
-                {isUploading && (
-                  <p className="text-xs text-muted-foreground mt-2 text-center">
-                    Uploading...
-                  </p>
-                )}
-              </div>
-            </div>
+            <ProfileAvatar
+              profile={profile}
+              avatarPreviewUrl={avatarPreviewUrl}
+              selectedAvatarFile={selectedAvatarFile}
+              onPickAvatar={onPickAvatar}
+              handleAvatarSelected={handleAvatarSelected}
+              handleUndoAvatarSelection={handleUndoAvatarSelection}
+              isUploading={isUploading}
+              fileInputRef={fileInputRef}
+            />
 
             <div className="md:col-span-2">
               <Form {...form}>
@@ -343,147 +271,23 @@ export const ProfileStep = () => {
                   onSubmit={handleSubmit(onSubmit)}
                   className="grid grid-cols-1 gap-4"
                 >
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <FormField
-                      control={control}
-                      name="name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Full name</FormLabel>
-                          <FormControl>
-                            <Input {...field} placeholder="Ex: Jane Doe" />
-                          </FormControl>
-                          <FormDescription />
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={control}
-                      name="username"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Username</FormLabel>
-                          <FormControl>
-                            <div className="relative">
-                              <Input {...field} placeholder="username123" />
-                            </div>
-                          </FormControl>
-                          {isCheckingUsername ? (
-                            <div className="flex items-center gap-1 mt-2 text-sm text-muted-foreground font-medium">
-                              Checking...
-                            </div>
-                          ) : (
-                            isUsernameAvailable &&
-                            !form.formState.errors.username &&
-                            debouncedUsername !== profile?.username && (
-                              <div className="flex items-center gap-1 mt-2 text-sm text-green-600 font-medium">
-                                <CheckIcon className="w-4 h-4" />
-                                <span>Username is available</span>
-                              </div>
-                            )
-                          )}
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <FormField
-                    control={control}
-                    name="location"
-                    render={({}) => (
-                      <FormItem>
-                        <FormLabel>Location</FormLabel>
-                        <FormControl>
-                          {profile?.location?.formattedAddress &&
-                          !editingLocation ? (
-                            <div className="flex items-center gap-2 py-2 px-3 bg-muted rounded text-sm">
-                              <span className="flex-1">
-                                {profile.location.formattedAddress}
-                              </span>
-                              <button
-                                type="button"
-                                className="p-1 hover:bg-accent rounded transition-colors"
-                                aria-label="Edit location"
-                                title="Edit location"
-                                onClick={() => setEditingLocation(true)}
-                              >
-                                <PencilIcon className="w-4 h-4" />
-                              </button>
-                            </div>
-                          ) : (
-                            <div className="flex items-center gap-2">
-                              <GoogleMapsAutocomplete
-                                onPlaceSelected={(place) => {
-                                  setValue("location", { placeId: place.id });
-                                  setEditingLocation(false);
-                                }}
-                              />
-                              {profile?.location?.formattedAddress && (
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  size="icon"
-                                  onClick={() => setEditingLocation(false)}
-                                  aria-label="Cancel"
-                                  title="Cancel"
-                                >
-                                  <XIcon className="w-4 h-4" />
-                                </Button>
-                              )}
-                            </div>
-                          )}
-                        </FormControl>
-                        <FormDescription>
-                          Optional — share your coordinates for local times and
-                          discovery.
-                        </FormDescription>
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={control}
-                    name="languages"
-                    render={({ field }) => {
-                      const languages: MultiSelectOption[] =
-                        ISO6391.getAllCodes().map((code) => ({
-                          value: code,
-                          label: ISO6391.getName(code),
-                        }));
-
-                      return (
-                        <FormItem>
-                          <FormLabel>Languages</FormLabel>
-                          <FormControl>
-                            <MultiSelect
-                              options={languages}
-                              defaultValue={
-                                (field.value as string[] | undefined) ?? []
-                              }
-                              onValueChange={(vals) => field.onChange(vals)}
-                              placeholder="Select languages..."
-                              maxCount={5}
-                              searchable
-                              hideSelectAll
-                            />
-                          </FormControl>
-                          <FormDescription>
-                            Select one or more languages you speak.
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      );
-                    }}
+                  <ProfileFormFields
+                    isCheckingUsername={isCheckingUsername}
+                    isUsernameAvailable={isUsernameAvailable}
+                    debouncedUsername={debouncedUsername}
+                    profile={profile}
+                    editingLocation={editingLocation}
+                    setEditingLocation={setEditingLocation}
                   />
 
                   <div className="flex justify-end">
-                    <Button type="submit">Save & Continue</Button>
+                    <Button type="submit" disabled={!formState.isValid}>
+                      Save & Continue
+                    </Button>
                   </div>
                 </form>
               </Form>
+              <DevTool control={control} />
             </div>
           </div>
         </CardContent>

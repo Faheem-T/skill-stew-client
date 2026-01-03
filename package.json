@@ -53,6 +53,7 @@
     "@commitlint/cli": "^20.1.0",
     "@commitlint/config-conventional": "^20.0.0",
     "@eslint/js": "^9.37.0",
+    "@hookform/devtools": "^4.4.0",
     "@types/google.maps": "^3.58.1",
     "@types/node": "^24.0.10",
     "@types/react": "^19.1.8",

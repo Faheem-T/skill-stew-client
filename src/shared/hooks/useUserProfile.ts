@@ -1,4 +1,7 @@
 import useCurrentUserProfile from "./useCurrentUserProfile";
+import type { CurrentUserProfile } from "@/shared/api/currentUserProfile";
+
+export type UserProfile = Extract<CurrentUserProfile, { role: "USER" }>;
 
 export const useUserProfile = () => {
   const { data, ...rest } = useCurrentUserProfile();
