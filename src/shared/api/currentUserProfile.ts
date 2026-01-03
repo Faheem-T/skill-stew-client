@@ -29,7 +29,9 @@ export type CurrentUserProfile =
     }
   | {
       role: "ADMIN";
-      username: string;
+      email: string;
+      username?: string;
+      avatarUrl?: string;
     };
 
 export async function getCurrentUserProfile(): Promise<

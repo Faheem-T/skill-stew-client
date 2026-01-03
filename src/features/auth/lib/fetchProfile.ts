@@ -7,11 +7,6 @@ export async function fetchProfile() {
     useAppStore.getState().logout();
     return;
   }
-  if (data.role === "ADMIN") {
-    const { role, username } = data;
-    useAppStore.getState().setUser({ role, username });
-  } else {
-    const { role, email } = data;
-    useAppStore.getState().setUser({ role, email });
-  }
+  const { role, email } = data;
+  useAppStore.getState().setUser({ role, email });
 }

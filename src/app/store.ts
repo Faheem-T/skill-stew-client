@@ -1,12 +1,10 @@
 import { create, type StateCreator } from "zustand";
 import { devtools } from "zustand/middleware";
 
-type User =
-  | {
-      role: "USER" | "EXPERT";
-      email: string;
-    }
-  | { role: "ADMIN"; username: string | undefined };
+type User = {
+  role: "USER" | "EXPERT" | "ADMIN";
+  email: string;
+};
 
 interface AuthSlice {
   user: User | null;
