@@ -12,11 +12,12 @@ import type React from "react";
 import { Button } from "@/shared/components/ui/button";
 import { useLogout } from "@/features/auth/hooks/useLogout";
 import { Link } from "react-router";
+import { useUserProfile } from "@/shared/hooks/useUserProfile";
 
 export const TopBar: React.FC = () => {
   const user = useAppStore((state) => state.user);
   return (
-    <div className="h-12 flex items-center justify-between border-b rounded-2xl">
+    <div className="h-16 flex items-center justify-between border-b rounded-2xl px-12 ">
       {/*Logo*/}
       <div className="h-full px-1 flex items-center">
         <img src="/logo.png" className="h-full" />
@@ -43,15 +44,21 @@ const UserAvatar: React.FC = () => {
   }
 
   const { mutate, isPending } = useLogout();
+  const { data, isPending: isProfilePending } = useUserProfile();
+  if (isProfilePending) {
+    return (
+      <Avatar>
+        <AvatarFallback>U</AvatarFallback>
+      </Avatar>
+    );
+  }
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
         <Avatar>
-          <AvatarImage src="/person.jpg" />
-          <AvatarFallback>
-            {user.username?.slice(0, 2) ?? user.email.slice(0, 2)}
-          </AvatarFallback>
+          <AvatarImage src={data.avatarUrl} />
+          <AvatarFallback>{user.email.slice(0, 2)}</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
