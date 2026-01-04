@@ -15,11 +15,13 @@ import { InitialLoadScreen } from "./pages/InitialLoadScreen";
 import { DashboardRoutingPage } from "./pages/DashboardRoutingPage";
 import { UserDashboard } from "@/features/user/pages/UserDashboard";
 import { ProfileStep } from "@/features/profile/pages/onboarding/ProfileStep";
+import { AppRoot } from "./AppRoot";
 
 export const router = createBrowserRouter([
   {
     hydrateFallbackElement: <InitialLoadScreen />,
     loader: initialLoader,
+    element: <AppRoot />,
     children: [
       {
         path: "test",
