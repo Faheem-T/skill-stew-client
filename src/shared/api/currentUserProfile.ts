@@ -22,6 +22,7 @@ export type CurrentUserProfile =
       about?: string;
       socialLinks: string[];
       languages: string[];
+      isOnboardingComplete: boolean;
     }
   | {
       role: "EXPERT";
