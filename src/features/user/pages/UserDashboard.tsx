@@ -20,14 +20,17 @@ import { Badge } from "@/shared/components/ui/badge";
 import { TopBar } from "@/features/marketing/home/components/TopBar";
 import { useUserProfile } from "@/shared/hooks/useUserProfile";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Link } from "react-router";
 import { StatsCard } from "../components/StatsCard";
 import { SkillExchangeCard } from "../components/SkillExchangeCard";
 import { PersonCard } from "../components/PersonCard";
 import { ActivityFeed } from "../components/ActivityFeed";
+import { useAppStore } from "@/app/store";
 
 export const UserDashboard = () => {
   const { data } = useUserProfile();
+  const setIsOnboardingModalOpen = useAppStore(
+    (state) => state.setIsOnboardingModalOpen,
+  );
 
   return (
     <div className="min-h-screen bg-background">
@@ -71,9 +74,12 @@ export const UserDashboard = () => {
                 You have not completed the onboarding process
               </AlertTitle>
               <AlertDescription>
-                <Link to="/onboarding/profile" className="underline">
+                <div
+                  onClick={() => setIsOnboardingModalOpen(true)}
+                  className="underline cursor-pointer"
+                >
                   Click here to complete onboarding.
-                </Link>
+                </div>
               </AlertDescription>
             </Alert>
           )}

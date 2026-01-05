@@ -23,7 +23,11 @@ import type { FormValues } from "@/features/profile/schemas";
 import { ProfileAvatar } from "@/features/profile/components/ProfileAvatar";
 import { ProfileFormFields } from "@/features/profile/components/ProfileFormFields";
 
-export const ProfileStep = () => {
+interface ProfileStepProps {
+  onComplete?: () => void;
+}
+
+export const ProfileStep: React.FC<ProfileStepProps> = ({ onComplete }) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [selectedAvatarFile, setSelectedAvatarFile] = useState<File | null>(
@@ -235,7 +239,11 @@ export const ProfileStep = () => {
           URL.revokeObjectURL(avatarPreviewUrl);
         }
         toast.success("Profile updated. Onboarding complete.");
-        navigate("/dashboard");
+        if (onComplete) {
+          onComplete();
+        } else {
+          navigate("/dashboard");
+        }
       },
       onError() {
         toast.error("Failed to update profile. Please try again.");

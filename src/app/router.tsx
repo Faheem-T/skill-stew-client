@@ -61,10 +61,7 @@ export const router = createBrowserRouter([
       {
         // USER only routes
         element: <ProtectedRoute roles={["USER"]} />,
-        children: [
-          { path: "dashboard/user", element: <UserDashboard /> },
-          { path: "/onboarding/profile", element: <ProfileStep /> },
-        ],
+        children: [{ path: "dashboard/user", element: <UserDashboard /> }],
       },
       {
         // ADMIN only routes

@@ -25,8 +25,25 @@ const createAuthSlice: StateCreator<AuthSlice, [], [], AuthSlice> = (set) => ({
   logout: () => set((_state) => ({ user: null, accessToken: null })),
 });
 
-export const useAppStore = create<AuthSlice>()(
+interface OnboardingSlice {
+  isOnboardingModalOpen: boolean;
+  setIsOnboardingModalOpen: (open: boolean) => void;
+}
+
+const createOnboardingSlice: StateCreator<
+  OnboardingSlice,
+  [],
+  [],
+  OnboardingSlice
+> = (set) => ({
+  isOnboardingModalOpen: false,
+  setIsOnboardingModalOpen: (open: boolean) =>
+    set((_state) => ({ isOnboardingModalOpen: open })),
+});
+
+export const useAppStore = create<AuthSlice & OnboardingSlice>()(
   devtools((...a) => ({
     ...createAuthSlice(...a),
+    ...createOnboardingSlice(...a),
   })),
 );
