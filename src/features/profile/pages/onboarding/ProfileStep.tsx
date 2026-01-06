@@ -25,9 +25,13 @@ import { ProfileFormFields } from "@/features/profile/components/ProfileFormFiel
 
 interface ProfileStepProps {
   onComplete?: () => void;
+  onBack?: () => void;
 }
 
-export const ProfileStep: React.FC<ProfileStepProps> = ({ onComplete }) => {
+export const ProfileStep: React.FC<ProfileStepProps> = ({
+  onComplete,
+  onBack,
+}) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [selectedAvatarFile, setSelectedAvatarFile] = useState<File | null>(
@@ -73,14 +77,21 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({ onComplete }) => {
 
   const watchedUsername = watch("username");
   const debouncedUsername = useDebounce(watchedUsername, 500);
+
   // Check availability when debounced username changes
   useEffect(() => {
-    if (!debouncedUsername) {
-      clearErrors("username");
-      return;
-    }
-
     const checkAvailability = async () => {
+      // make sure validation runs first
+      await form.trigger("username");
+
+      if (!debouncedUsername) {
+        return;
+      }
+
+      if (formState.errors.username) {
+        return;
+      }
+
       if (debouncedUsername === profile?.username) {
         setIsUsernameAvailable(true);
         return;
@@ -288,14 +299,26 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({ onComplete }) => {
                     setEditingLocation={setEditingLocation}
                   />
 
-                  <div className="flex justify-end">
-                    <Button type="submit" disabled={!formState.isValid}>
-                      Save & Continue
+                  <div className="flex justify-between">
+                    {onBack ? (
+                      <Button type="button" variant="outline" onClick={onBack}>
+                        Back
+                      </Button>
+                    ) : (
+                      <Button type="button" variant="outline" disabled>
+                        Back
+                      </Button>
+                    )}
+                    <Button
+                      type="submit"
+                      disabled={!formState.isValid || !formState.isDirty}
+                    >
+                      Next
                     </Button>
                   </div>
                 </form>
               </Form>
-              <DevTool control={control} />
+              {/* <DevTool control={control} /> */}
             </div>
           </div>
         </CardContent>

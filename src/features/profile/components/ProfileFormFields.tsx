@@ -46,7 +46,11 @@ export const ProfileFormFields = ({
             <FormItem>
               <FormLabel>Full name</FormLabel>
               <FormControl>
-                <Input {...field} placeholder="Ex: Jane Doe" value={field.value || ""} />
+                <Input
+                  {...field}
+                  placeholder="Ex: Jane Doe"
+                  value={field.value || ""}
+                />
               </FormControl>
               <FormDescription />
               <FormMessage />
@@ -62,7 +66,11 @@ export const ProfileFormFields = ({
               <FormLabel>Username</FormLabel>
               <FormControl>
                 <div className="relative">
-                  <Input {...field} placeholder="username123" value={field.value || ""} />
+                  <Input
+                    {...field}
+                    placeholder="username123"
+                    value={field.value || ""}
+                  />
                 </div>
               </FormControl>
               {isCheckingUsername ? (

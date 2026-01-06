@@ -5,8 +5,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/shared/components/ui/dialog";
-import { ProfileStep } from "../pages/onboarding/ProfileStep";
 import { useNavigate } from "react-router";
+import { Onboarding } from "../pages/onboarding/Onboarding";
 
 interface OnboardingModalProps {
   isOpen: boolean;
@@ -36,7 +36,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
         </DialogHeader>
 
         <div className="overflow-auto">
-          <ProfileStep onComplete={handleProfileComplete} />
+          <Onboarding onComplete={handleProfileComplete} />
         </div>
       </DialogContent>
     </Dialog>
