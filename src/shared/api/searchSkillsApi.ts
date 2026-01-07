@@ -5,17 +5,16 @@ interface SearchSkillsParams {
   query: string;
 }
 
-interface SearchSkillsResponse {
-  data: {
-    id: string;
-    name: string;
-    alternateNames: string[];
-  }[];
-}
+type SearchSkillsResponse = {
+  id: string;
+  name: string;
+  alternateNames: string[];
+}[];
 
-export const searchSkillsApi = (params: SearchSkillsParams) => {
-  return api.get<ApiResponseWithData<SearchSkillsResponse>>(
-    `/search/skills?query=${params.query}`,
-    { params },
-  );
+export const searchSkillsApi = (
+  params: SearchSkillsParams,
+): Promise<ApiResponseWithData<SearchSkillsResponse>> => {
+  return api.get(`/search/skills`, {
+    params,
+  });
 };

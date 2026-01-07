@@ -185,6 +185,10 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({
   };
 
   const onSubmit = async (values: FormValues) => {
+    if (!formState.isDirty && onComplete) {
+      onComplete();
+      return;
+    }
     try {
       if (values.username && values.username !== profile?.username) {
         await updateUsernameRequest(values.username);

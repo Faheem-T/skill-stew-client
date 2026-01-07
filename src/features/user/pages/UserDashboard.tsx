@@ -19,7 +19,11 @@ import {
 import { Badge } from "@/shared/components/ui/badge";
 import { TopBar } from "@/features/marketing/home/components/TopBar";
 import { useUserProfile } from "@/shared/hooks/useUserProfile";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from "@/shared/components/ui/alert";
 import { StatsCard } from "../components/StatsCard";
 import { SkillExchangeCard } from "../components/SkillExchangeCard";
 import { PersonCard } from "../components/PersonCard";

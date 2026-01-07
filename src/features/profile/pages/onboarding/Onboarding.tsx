@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ProfileStep } from "./ProfileStep";
+import { SkillSelectionStep } from "./SkillSelectionStep";
 import { AnimatePresence, motion, type Transition } from "motion/react";
 import { StepIndicator } from "@/features/profile/components/StepIndicator";
 
@@ -14,7 +15,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
   const totalSteps = 3;
   const stepTitles: Record<number, string> = {
     1: "Tell us about yourself",
-    2: "Additional information",
+    2: "Select your skills",
     3: "Complete your profile",
   };
 
@@ -53,7 +54,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
         return <ProfileStep onComplete={() => handleStepChange(2)} />;
       case 2:
         return (
-          <ProfileStep
+          <SkillSelectionStep
             onBack={() => handleStepChange(1)}
             onComplete={() => handleStepChange(3)}
           />
