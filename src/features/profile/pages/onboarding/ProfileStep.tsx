@@ -7,7 +7,7 @@ import { Form } from "@/shared/components/ui/form";
 import type { OnboardingUpdateProfileBody } from "@/features/profile/api/OnboardingUpdateProfile";
 import { onboardingUpdateProfileRequest } from "@/features/profile/api/OnboardingUpdateProfile";
 import { useForm } from "react-hook-form";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
 import { useUserProfile } from "@/shared/hooks/useUserProfile";
@@ -263,66 +263,63 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({
   };
 
   return (
-    <div className="max-w-3xl mx-auto">
-      <Card className="shadow">
-        <CardHeader>
-          <h2 className="text-2xl font-bold">Tell us about yourself</h2>
-          <p className="text-sm text-muted-foreground">
-            This helps others get to know you on the platform.
-          </p>
-        </CardHeader>
-        <CardContent>
-          <div className="grid md:grid-cols-3 gap-6 items-start">
-            <ProfileAvatar
-              profile={profile}
-              avatarPreviewUrl={avatarPreviewUrl}
-              selectedAvatarFile={selectedAvatarFile}
-              onPickAvatar={onPickAvatar}
-              handleAvatarSelected={handleAvatarSelected}
-              handleUndoAvatarSelection={handleUndoAvatarSelection}
-              isUploading={isUploading}
-              fileInputRef={fileInputRef}
-            />
+    // <div className="mx-auto">
+    //   <Card className="shadow">
+    //     <CardHeader>
+    //       <h2 className="text-2xl font-bold">Tell us about yourself</h2>
+    //       <p className="text-sm text-muted-foreground">
+    //         This helps others get to know you on the platform.
+    //       </p>
+    //     </CardHeader>
+    <CardContent>
+      <div className="grid md:grid-cols-3 gap-6 items-start">
+        <ProfileAvatar
+          profile={profile}
+          avatarPreviewUrl={avatarPreviewUrl}
+          selectedAvatarFile={selectedAvatarFile}
+          onPickAvatar={onPickAvatar}
+          handleAvatarSelected={handleAvatarSelected}
+          handleUndoAvatarSelection={handleUndoAvatarSelection}
+          isUploading={isUploading}
+          fileInputRef={fileInputRef}
+        />
 
-            <div className="md:col-span-2">
-              <Form {...form}>
-                <form
-                  onSubmit={handleSubmit(onSubmit)}
-                  className="grid grid-cols-1 gap-4"
-                >
-                  <ProfileFormFields
-                    isCheckingUsername={isCheckingUsername}
-                    isUsernameAvailable={isUsernameAvailable}
-                    debouncedUsername={debouncedUsername}
-                    profile={profile}
-                    editingLocation={editingLocation}
-                    setEditingLocation={setEditingLocation}
-                  />
+        <div className="md:col-span-2">
+          <Form {...form}>
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="grid grid-cols-1 gap-4"
+            >
+              <ProfileFormFields
+                isCheckingUsername={isCheckingUsername}
+                isUsernameAvailable={isUsernameAvailable}
+                debouncedUsername={debouncedUsername}
+                profile={profile}
+                editingLocation={editingLocation}
+                setEditingLocation={setEditingLocation}
+              />
 
-                  <div className="flex justify-between">
-                    {onBack ? (
-                      <Button type="button" variant="outline" onClick={onBack}>
-                        Back
-                      </Button>
-                    ) : (
-                      <Button type="button" variant="outline" disabled>
-                        Back
-                      </Button>
-                    )}
-                    <Button
-                      type="submit"
-                      disabled={!formState.isValid || !formState.isDirty}
-                    >
-                      Next
-                    </Button>
-                  </div>
-                </form>
-              </Form>
-              {/* <DevTool control={control} /> */}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+              <div className="flex justify-between">
+                {onBack ? (
+                  <Button type="button" variant="outline" onClick={onBack}>
+                    Back
+                  </Button>
+                ) : (
+                  <Button type="button" variant="outline" disabled>
+                    Back
+                  </Button>
+                )}
+                <Button type="submit" disabled={!formState.isValid}>
+                  Next
+                </Button>
+              </div>
+            </form>
+          </Form>
+          {/* <DevTool control={control} /> */}
+        </div>
+      </div>
+    </CardContent>
+    //   </Card>
+    // </div>
   );
 };

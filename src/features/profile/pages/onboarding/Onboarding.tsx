@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ProfileStep } from "./ProfileStep";
 import { AnimatePresence, motion, type Transition } from "motion/react";
+import { StepIndicator } from "@/features/profile/components/StepIndicator";
 
 interface OnboardingProps {
   onComplete: () => void;
@@ -9,6 +10,13 @@ interface OnboardingProps {
 export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
   const [step, setStep] = useState(1);
   const [direction, setDirection] = useState<"forward" | "backward">("forward");
+
+  const totalSteps = 3;
+  const stepTitles: Record<number, string> = {
+    1: "Tell us about yourself",
+    2: "Additional information",
+    3: "Complete your profile",
+  };
 
   const handleStepChange = (newStep: number) => {
     setDirection(newStep > step ? "forward" : "backward");
@@ -67,7 +75,12 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
   };
 
   return (
-    <div className="relative w-full overflow-hidden">
+    <div className="relative w-full overflow-hidden max-w-3xl mx-auto">
+      <StepIndicator
+        currentStep={step}
+        totalSteps={totalSteps}
+        title={stepTitles[step] || ""}
+      />
       <AnimatePresence mode="wait" initial={false} custom={direction}>
         <motion.div
           key={step}

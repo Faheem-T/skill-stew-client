@@ -27,14 +27,6 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:w-[90%] h-[90%] sm:max-w-full">
-        <DialogHeader className="pb-4">
-          <DialogTitle>Complete Your Profile</DialogTitle>
-          <DialogDescription>
-            Please fill in your profile information to get started with Skill
-            Stew.
-          </DialogDescription>
-        </DialogHeader>
-
         <div className="overflow-auto">
           <Onboarding onComplete={handleProfileComplete} />
         </div>
