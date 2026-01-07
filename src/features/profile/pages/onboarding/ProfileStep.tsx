@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Card, CardContent, CardHeader } from "@/shared/components/ui/card";
+import { CardContent } from "@/shared/components/ui/card";
 import { Button } from "@/shared/components/ui/button";
 import { useEffect, useRef, useState } from "react";
 import { CURRENT_USER_PROFILE_QUERY_KEY } from "@/shared/hooks/useCurrentUserProfile";
@@ -7,7 +7,7 @@ import { Form } from "@/shared/components/ui/form";
 import type { OnboardingUpdateProfileBody } from "@/features/profile/api/OnboardingUpdateProfile";
 import { onboardingUpdateProfileRequest } from "@/features/profile/api/OnboardingUpdateProfile";
 import { useForm } from "react-hook-form";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
 import { useUserProfile } from "@/shared/hooks/useUserProfile";
@@ -263,14 +263,6 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({
   };
 
   return (
-    // <div className="mx-auto">
-    //   <Card className="shadow">
-    //     <CardHeader>
-    //       <h2 className="text-2xl font-bold">Tell us about yourself</h2>
-    //       <p className="text-sm text-muted-foreground">
-    //         This helps others get to know you on the platform.
-    //       </p>
-    //     </CardHeader>
     <CardContent>
       <div className="grid md:grid-cols-3 gap-6 items-start">
         <ProfileAvatar
@@ -319,7 +311,5 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({
         </div>
       </div>
     </CardContent>
-    //   </Card>
-    // </div>
   );
 };
