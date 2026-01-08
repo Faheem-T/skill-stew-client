@@ -94,7 +94,13 @@ export const WantedSkillsStep: React.FC<WantedSkillsStepProps> = ({
         const response = await searchSkillsApi({
           query: debouncedWantedSkillSearch,
         });
-        setWantedSearchResults(response.data);
+        // Filter out already selected and offered skills
+        const filteredResults = response.data.filter(
+          (skill: Skill) =>
+            !wantedSkills.some((selected) => selected.id === skill.id) &&
+            !offeredSkills.some((offered) => offered.skill.id === skill.id),
+        );
+        setWantedSearchResults(filteredResults);
       } catch (error) {
         console.error("Error searching wanted skills:", error);
         setWantedSearchResults([]);
@@ -102,7 +108,7 @@ export const WantedSkillsStep: React.FC<WantedSkillsStepProps> = ({
     };
 
     searchWantedSkills();
-  }, [debouncedWantedSkillSearch]);
+  }, [debouncedWantedSkillSearch, wantedSkills, offeredSkills]);
 
   const handleAddWantedSkill = (skill: Skill) => {
     // Check if skill already exists in wanted skills

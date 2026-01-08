@@ -49,7 +49,12 @@ export const OfferedSkillsStep: React.FC<OfferedSkillsStepProps> = ({
     const searchSkills = async () => {
       try {
         const response = await searchSkillsApi({ query: debouncedSkillSearch });
-        setSearchResults(response.data);
+        // Filter out already selected skills
+        const filteredResults = response.data.filter(
+          (skill: Skill) =>
+            !offeredSkills.some((selected) => selected.skill.id === skill.id),
+        );
+        setSearchResults(filteredResults);
       } catch (error) {
         console.error("Error searching skills:", error);
         setSearchResults([]);
@@ -57,7 +62,7 @@ export const OfferedSkillsStep: React.FC<OfferedSkillsStepProps> = ({
     };
 
     searchSkills();
-  }, [debouncedSkillSearch]);
+  }, [debouncedSkillSearch, offeredSkills]);
 
   const handleSelectSkill = (skill: Skill) => {
     setSelectedSkill(skill);
