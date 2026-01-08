@@ -94,13 +94,7 @@ export const WantedSkillsStep: React.FC<WantedSkillsStepProps> = ({
         const response = await searchSkillsApi({
           query: debouncedWantedSkillSearch,
         });
-        // Filter out already selected and offered skills
-        const filteredResults = response.data.filter(
-          (skill: Skill) =>
-            !wantedSkills.some((selected) => selected.id === skill.id) &&
-            !offeredSkills.some((offered) => offered.skill.id === skill.id),
-        );
-        setWantedSearchResults(filteredResults);
+        setWantedSearchResults(response.data);
       } catch (error) {
         console.error("Error searching wanted skills:", error);
         setWantedSearchResults([]);
@@ -108,7 +102,7 @@ export const WantedSkillsStep: React.FC<WantedSkillsStepProps> = ({
     };
 
     searchWantedSkills();
-  }, [debouncedWantedSkillSearch, wantedSkills, offeredSkills]);
+  }, [debouncedWantedSkillSearch]);
 
   const handleAddWantedSkill = (skill: Skill) => {
     // Check if skill already exists in wanted skills
@@ -167,22 +161,46 @@ export const WantedSkillsStep: React.FC<WantedSkillsStepProps> = ({
             {/* Dropdown results using SelectContent styling */}
             {wantedSearchResults.length > 0 && (
               <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-popover text-popover-foreground border rounded-md shadow-md max-h-40 overflow-y-auto">
-                {wantedSearchResults.map((skill) => (
-                  <div
-                    key={skill.id}
-                    className="p-2 hover:bg-accent hover:text-accent-foreground cursor-pointer rounded-sm flex items-center gap-2"
-                    onClick={() => handleAddWantedSkill(skill)}
-                  >
-                    <div className="flex-1">
-                      <div className="font-medium">{skill.name}</div>
-                      {skill.alternateNames.length > 0 && (
-                        <div className="text-xs text-gray-500">
-                          Also known as: {skill.alternateNames.join(", ")}
-                        </div>
-                      )}
+                {wantedSearchResults.map((skill) => {
+                  const isAlreadyWanted = wantedSkills.some(
+                    (selected) => selected.id === skill.id,
+                  );
+                  const isAlreadyOffered = offeredSkills.some(
+                    (offered) => offered.skill.id === skill.id,
+                  );
+                  const isDisabled = isAlreadyWanted || isAlreadyOffered;
+
+                  return (
+                    <div
+                      key={skill.id}
+                      className={`p-2 hover:bg-accent hover:text-accent-foreground cursor-pointer rounded-sm flex items-center gap-2 ${
+                        isDisabled
+                          ? "opacity-50 cursor-not-allowed bg-gray-50"
+                          : "hover:bg-accent hover:text-accent-foreground cursor-pointer"
+                      }`}
+                      onClick={() => !isDisabled && handleAddWantedSkill(skill)}
+                    >
+                      <div className="flex-1">
+                        <div className="font-medium">{skill.name}</div>
+                        {skill.alternateNames.length > 0 && (
+                          <div className="text-xs text-gray-500">
+                            Also known as: {skill.alternateNames.join(", ")}
+                          </div>
+                        )}
+                        {isAlreadyWanted && (
+                          <div className="text-xs text-orange-600 font-medium">
+                            Already selected as a skill to learn
+                          </div>
+                        )}
+                        {isAlreadyOffered && (
+                          <div className="text-xs text-blue-600 font-medium">
+                            Already selected as a skill you can offer
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>

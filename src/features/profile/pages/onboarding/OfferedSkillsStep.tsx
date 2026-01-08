@@ -49,12 +49,7 @@ export const OfferedSkillsStep: React.FC<OfferedSkillsStepProps> = ({
     const searchSkills = async () => {
       try {
         const response = await searchSkillsApi({ query: debouncedSkillSearch });
-        // Filter out already selected skills
-        const filteredResults = response.data.filter(
-          (skill: Skill) =>
-            !offeredSkills.some((selected) => selected.skill.id === skill.id),
-        );
-        setSearchResults(filteredResults);
+        setSearchResults(response.data);
       } catch (error) {
         console.error("Error searching skills:", error);
         setSearchResults([]);
@@ -62,7 +57,7 @@ export const OfferedSkillsStep: React.FC<OfferedSkillsStepProps> = ({
     };
 
     searchSkills();
-  }, [debouncedSkillSearch, offeredSkills]);
+  }, [debouncedSkillSearch]);
 
   const handleSelectSkill = (skill: Skill) => {
     setSelectedSkill(skill);
@@ -125,22 +120,38 @@ export const OfferedSkillsStep: React.FC<OfferedSkillsStepProps> = ({
               {/* Dropdown results using SelectContent styling */}
               {searchResults.length > 0 && (
                 <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-popover text-popover-foreground border rounded-md shadow-md max-h-40 overflow-y-auto">
-                  {searchResults.map((skill) => (
-                    <div
-                      key={skill.id}
-                      className="p-2 hover:bg-accent hover:text-accent-foreground cursor-pointer rounded-sm flex items-center gap-2"
-                      onClick={() => handleSelectSkill(skill)}
-                    >
-                      <div className="flex-1">
-                        <div className="font-medium">{skill.name}</div>
-                        {skill.alternateNames.length > 0 && (
-                          <div className="text-xs text-gray-500">
-                            Also known as: {skill.alternateNames.join(", ")}
-                          </div>
-                        )}
+                  {searchResults.map((skill) => {
+                    const isAlreadySelected = offeredSkills.some(
+                      (selected) => selected.skill.id === skill.id,
+                    );
+                    return (
+                      <div
+                        key={skill.id}
+                        className={`p-2 rounded-sm flex items-center gap-2 ${
+                          isAlreadySelected
+                            ? "opacity-50 cursor-not-allowed bg-gray-50"
+                            : "hover:bg-accent hover:text-accent-foreground cursor-pointer"
+                        }`}
+                        onClick={() =>
+                          !isAlreadySelected && handleSelectSkill(skill)
+                        }
+                      >
+                        <div className="flex-1">
+                          <div className="font-medium">{skill.name}</div>
+                          {skill.alternateNames.length > 0 && (
+                            <div className="text-xs text-gray-500">
+                              Also known as: {skill.alternateNames.join(", ")}
+                            </div>
+                          )}
+                          {isAlreadySelected && (
+                            <div className="text-xs text-orange-600 font-medium">
+                              Already selected as an offered skill
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>
