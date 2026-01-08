@@ -1,8 +1,23 @@
 import { useState } from "react";
 import { ProfileStep } from "./ProfileStep";
-import { SkillSelectionStep } from "./SkillSelectionStep";
+import { OfferedSkillsStep } from "./OfferedSkillsStep";
+import { WantedSkillsStep } from "./WantedSkillsStep";
 import { AnimatePresence, motion, type Transition } from "motion/react";
 import { StepIndicator } from "@/features/profile/components/StepIndicator";
+
+interface SkillWithProficiency {
+  skill: {
+    id: string;
+    name: string;
+    alternateNames: string[];
+  };
+  proficiency:
+    | "Beginner"
+    | "Advanced Beginner"
+    | "Intermediate"
+    | "Proficient"
+    | "Expert";
+}
 
 interface OnboardingProps {
   onComplete: () => void;
@@ -11,12 +26,17 @@ interface OnboardingProps {
 export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
   const [step, setStep] = useState(1);
   const [direction, setDirection] = useState<"forward" | "backward">("forward");
+  const [offeredSkills, setOfferedSkills] = useState<SkillWithProficiency[]>(
+    [],
+  );
+  const [wantedSkills, setWantedSkills] = useState<any[]>([]);
 
-  const totalSteps = 3;
+  const totalSteps = 4;
   const stepTitles: Record<number, string> = {
     1: "Tell us about yourself",
-    2: "Select your skills",
-    3: "Complete your profile",
+    2: "Skills you can offer",
+    3: "Skills you want to learn",
+    4: "Complete your profile",
   };
 
   const handleStepChange = (newStep: number) => {
@@ -54,12 +74,24 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
         return <ProfileStep onComplete={() => handleStepChange(2)} />;
       case 2:
         return (
-          <SkillSelectionStep
+          <OfferedSkillsStep
             onBack={() => handleStepChange(1)}
-            onComplete={() => handleStepChange(3)}
+            onComplete={(skills) => {
+              setOfferedSkills(skills);
+              handleStepChange(3);
+            }}
           />
         );
       case 3:
+        return (
+          <WantedSkillsStep
+            onBack={() => handleStepChange(2)}
+            offeredSkills={offeredSkills}
+            initialWantedSkills={wantedSkills}
+            onComplete={() => handleStepChange(4)}
+          />
+        );
+      case 4:
         return (
           <div className="flex items-center justify-center min-h-screen">
             <button
@@ -76,11 +108,12 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
   };
 
   return (
-    <div className="relative w-full overflow-hidden max-w-3xl mx-auto">
+    <div className="relative w-full max-w-3xl mx-auto h-full flex flex-col overflow-hidden">
       <StepIndicator
         currentStep={step}
         totalSteps={totalSteps}
         title={stepTitles[step] || ""}
+        className="flex-none"
       />
       <AnimatePresence mode="wait" initial={false} custom={direction}>
         <motion.div
@@ -91,7 +124,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
           animate="center"
           exit="exit"
           transition={slideTransition}
-          className="w-full"
+          className="w-full flex-1"
         >
           {renderStep()}
         </motion.div>

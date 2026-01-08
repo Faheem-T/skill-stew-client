@@ -8,17 +8,19 @@ interface StepIndicatorProps {
   currentStep: number;
   totalSteps: number;
   title: string;
+  className?: string;
 }
 
 export const StepIndicator: React.FC<StepIndicatorProps> = ({
   currentStep,
   totalSteps,
   title,
+  className,
 }) => {
   const progressPercentage = (currentStep / totalSteps) * 100;
 
   return (
-    <DialogHeader className="mb-8">
+    <DialogHeader className={`mb-8 ${className || ""}`}>
       <div className="flex items-center gap-4 mb-4">
         <div className="relative w-12 h-12 flex items-center justify-center">
           <div className="absolute inset-0 bg-primary rounded-full opacity-20"></div>

@@ -267,52 +267,59 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({
   };
 
   return (
-    <CardContent>
-      <div className="grid md:grid-cols-3 gap-6 items-start">
-        <ProfileAvatar
-          profile={profile}
-          avatarPreviewUrl={avatarPreviewUrl}
-          selectedAvatarFile={selectedAvatarFile}
-          onPickAvatar={onPickAvatar}
-          handleAvatarSelected={handleAvatarSelected}
-          handleUndoAvatarSelection={handleUndoAvatarSelection}
-          isUploading={isUploading}
-          fileInputRef={fileInputRef}
-        />
+    <CardContent className="flex flex-col h-full">
+      <div className="flex-1 overflow-y-auto">
+        <div className="grid md:grid-cols-3 gap-6 items-start">
+          <ProfileAvatar
+            profile={profile}
+            avatarPreviewUrl={avatarPreviewUrl}
+            selectedAvatarFile={selectedAvatarFile}
+            onPickAvatar={onPickAvatar}
+            handleAvatarSelected={handleAvatarSelected}
+            handleUndoAvatarSelection={handleUndoAvatarSelection}
+            isUploading={isUploading}
+            fileInputRef={fileInputRef}
+          />
 
-        <div className="md:col-span-2">
-          <Form {...form}>
-            <form
-              onSubmit={handleSubmit(onSubmit)}
-              className="grid grid-cols-1 gap-4"
-            >
-              <ProfileFormFields
-                isCheckingUsername={isCheckingUsername}
-                isUsernameAvailable={isUsernameAvailable}
-                debouncedUsername={debouncedUsername}
-                profile={profile}
-                editingLocation={editingLocation}
-                setEditingLocation={setEditingLocation}
-              />
-
-              <div className="flex justify-between">
-                {onBack ? (
-                  <Button type="button" variant="outline" onClick={onBack}>
-                    Back
-                  </Button>
-                ) : (
-                  <Button type="button" variant="outline" disabled>
-                    Back
-                  </Button>
-                )}
-                <Button type="submit" disabled={!formState.isValid}>
-                  Next
-                </Button>
-              </div>
-            </form>
-          </Form>
-          {/* <DevTool control={control} /> */}
+          <div className="md:col-span-2">
+            <Form {...form}>
+              <form
+                onSubmit={handleSubmit(onSubmit)}
+                className="grid grid-cols-1 gap-4"
+              >
+                <ProfileFormFields
+                  isCheckingUsername={isCheckingUsername}
+                  isUsernameAvailable={isUsernameAvailable}
+                  debouncedUsername={debouncedUsername}
+                  profile={profile}
+                  editingLocation={editingLocation}
+                  setEditingLocation={setEditingLocation}
+                />
+              </form>
+            </Form>
+            {/* <DevTool control={control} /> */}
+          </div>
         </div>
+      </div>
+
+      {/* Navigation buttons at bottom */}
+      <div className="flex justify-between mt-auto">
+        {onBack ? (
+          <Button type="button" variant="outline" onClick={onBack}>
+            Back
+          </Button>
+        ) : (
+          <Button type="button" variant="outline" disabled>
+            Back
+          </Button>
+        )}
+        <Button
+          type="submit"
+          disabled={!formState.isValid}
+          onClick={form.handleSubmit(onSubmit)}
+        >
+          Next
+        </Button>
       </div>
     </CardContent>
   );
