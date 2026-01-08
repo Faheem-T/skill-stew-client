@@ -100,7 +100,7 @@ export const OfferedSkillsStep: React.FC<OfferedSkillsStepProps> = ({
 
   return (
     <CardContent className="flex flex-col h-full">
-      <div className="overflow-y-auto">
+      <div className="flex-1 overflow-y-auto">
         <h3 className="text-lg font-semibold">
           Select the skills you can offer
         </h3>
@@ -117,6 +117,27 @@ export const OfferedSkillsStep: React.FC<OfferedSkillsStepProps> = ({
                 onChange={(e) => setCurrentSkillSearch(e.target.value)}
                 className="pl-10"
               />
+              {/* Dropdown results using SelectContent styling */}
+              {searchResults.length > 0 && (
+                <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-popover text-popover-foreground border rounded-md shadow-md max-h-40 overflow-y-auto">
+                  {searchResults.map((skill) => (
+                    <div
+                      key={skill.id}
+                      className="p-2 hover:bg-accent hover:text-accent-foreground cursor-pointer rounded-sm flex items-center gap-2"
+                      onClick={() => handleSelectSkill(skill)}
+                    >
+                      <div className="flex-1">
+                        <div className="font-medium">{skill.name}</div>
+                        {skill.alternateNames.length > 0 && (
+                          <div className="text-xs text-gray-500">
+                            Also known as: {skill.alternateNames.join(", ")}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Selected skill and proficiency slider - animated slide down */}
@@ -204,26 +225,6 @@ export const OfferedSkillsStep: React.FC<OfferedSkillsStepProps> = ({
             )}
           </div>
         </div>
-
-        {/* Search Results */}
-        {searchResults.length > 0 && (
-          <div className="border rounded-md p-2 max-h-40 overflow-y-auto">
-            {searchResults.map((skill) => (
-              <div
-                key={skill.id}
-                className="p-2 hover:bg-gray-100 cursor-pointer rounded"
-                onClick={() => handleSelectSkill(skill)}
-              >
-                <div className="font-medium">{skill.name}</div>
-                {skill.alternateNames.length > 0 && (
-                  <div className="text-xs text-gray-500">
-                    Also known as: {skill.alternateNames.join(", ")}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
       </div>
 
       {/* Navigation buttons at bottom */}
