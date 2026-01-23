@@ -23,15 +23,17 @@ interface OfferedSkillsStepProps {
   onComplete?: (offeredSkills: SkillWithProficiency[]) => void;
   onBack?: () => void;
   initialData?: SkillWithProficiency[];
+  offeredSkills?: SkillWithProficiency[];
+  onUpdate?: (skills: SkillWithProficiency[]) => void;
 }
 
 export const OfferedSkillsStep: React.FC<OfferedSkillsStepProps> = ({
   onComplete,
   onBack,
   initialData = [],
+  offeredSkills = initialData,
+  onUpdate,
 }) => {
-  const [offeredSkills, setOfferedSkills] =
-    useState<SkillWithProficiency[]>(initialData);
   const [currentSkillSearch, setCurrentSkillSearch] = useState("");
   const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null);
   const [currentProficiency, setCurrentProficiency] = useState([2]); // Intermediate index as array
@@ -79,7 +81,12 @@ export const OfferedSkillsStep: React.FC<OfferedSkillsStepProps> = ({
       ...offeredSkills,
       { skill: selectedSkill, proficiency },
     ];
-    setOfferedSkills(newOfferedSkills);
+
+    // Update parent state if onUpdate is provided
+    if (onUpdate) {
+      onUpdate(newOfferedSkills);
+    }
+
     // Reset to initial state
     setSelectedSkill(null);
     setCurrentProficiency([2]);
@@ -89,7 +96,11 @@ export const OfferedSkillsStep: React.FC<OfferedSkillsStepProps> = ({
     const newOfferedSkills = offeredSkills.filter(
       (item) => item.skill.id !== skillId,
     );
-    setOfferedSkills(newOfferedSkills);
+
+    // Update parent state if onUpdate is provided
+    if (onUpdate) {
+      onUpdate(newOfferedSkills);
+    }
   };
 
   const handleNext = () => {

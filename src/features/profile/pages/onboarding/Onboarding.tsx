@@ -76,6 +76,8 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
         return (
           <OfferedSkillsStep
             onBack={() => handleStepChange(1)}
+            offeredSkills={offeredSkills}
+            onUpdate={(skills) => setOfferedSkills(skills)}
             onComplete={(skills) => {
               setOfferedSkills(skills);
               handleStepChange(3);
@@ -87,7 +89,8 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
           <WantedSkillsStep
             onBack={() => handleStepChange(2)}
             offeredSkills={offeredSkills}
-            initialWantedSkills={wantedSkills}
+            wantedSkills={wantedSkills}
+            onUpdate={(skills) => setWantedSkills(skills)}
             onComplete={() => handleStepChange(4)}
           />
         );

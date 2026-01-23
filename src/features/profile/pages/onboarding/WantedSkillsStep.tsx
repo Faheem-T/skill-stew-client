@@ -35,6 +35,8 @@ interface WantedSkillsStepProps {
   onBack?: () => void;
   offeredSkills: SkillWithProficiency[];
   initialWantedSkills?: Skill[];
+  wantedSkills?: Skill[];
+  onUpdate?: (skills: Skill[]) => void;
 }
 
 export const WantedSkillsStep: React.FC<WantedSkillsStepProps> = ({
@@ -42,9 +44,9 @@ export const WantedSkillsStep: React.FC<WantedSkillsStepProps> = ({
   onBack,
   offeredSkills,
   initialWantedSkills = [],
+  wantedSkills = initialWantedSkills,
+  onUpdate,
 }) => {
-  const [wantedSkills, setWantedSkills] =
-    useState<Skill[]>(initialWantedSkills);
   const [wantedSkillSearch, setWantedSkillSearch] = useState("");
   const [wantedSearchResults, setWantedSearchResults] = useState<Skill[]>([]);
 
@@ -53,10 +55,12 @@ export const WantedSkillsStep: React.FC<WantedSkillsStepProps> = ({
     defaultValues: {
       offered: offeredSkills.map((item) => ({
         skillId: item.skill.id,
+        skillName: item.skill.name,
         proficiency: item.proficiency,
       })),
       wanted: initialWantedSkills.map((item) => ({
         skillId: item.id,
+        skillName: item.name,
       })),
     },
   });
@@ -110,11 +114,18 @@ export const WantedSkillsStep: React.FC<WantedSkillsStepProps> = ({
       return;
     }
     const newWantedSkills = [...wantedSkills, skill];
-    setWantedSkills(newWantedSkills);
+
+    // Update parent state if onUpdate is provided
+    if (onUpdate) {
+      onUpdate(newWantedSkills);
+    }
+
     // Update form values with correct structure
     const formWantedSkills = newWantedSkills.map((item) => ({
       skillId: item.id,
+      skillName: item.name,
     }));
+
     form.setValue("wanted", formWantedSkills);
     setWantedSkillSearch("");
     setWantedSearchResults([]);
@@ -124,10 +135,16 @@ export const WantedSkillsStep: React.FC<WantedSkillsStepProps> = ({
     const newWantedSkills = wantedSkills.filter(
       (skill) => skill.id !== skillId,
     );
-    setWantedSkills(newWantedSkills);
+
+    // Update parent state if onUpdate is provided
+    if (onUpdate) {
+      onUpdate(newWantedSkills);
+    }
+
     // Update form values
     const formWantedSkills = newWantedSkills.map((item) => ({
       skillId: item.id,
+      skillName: item.name,
     }));
     form.setValue("wanted", formWantedSkills);
   };
