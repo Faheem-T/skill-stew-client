@@ -31,7 +31,11 @@ export const TopBar: React.FC = () => {
       </div>
       {/*Actions*/}
       <div className="p-4">
-        {user ? <UserAvatar /> : <Link to="/login">Log In</Link>}
+        {user?.role === "USER" ? (
+          <UserAvatar />
+        ) : (
+          <Link to="/login">Log In</Link>
+        )}
       </div>
     </div>
   );
