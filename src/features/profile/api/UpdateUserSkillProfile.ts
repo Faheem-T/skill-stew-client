@@ -17,7 +17,8 @@ export const skillProficiencies = [
 interface UpdateUserSkillProfileRequestData {
   offered: {
     skillId: string;
+    skillName: string;
     proficiency: (typeof skillProficiencies)[number];
   }[];
-  wanted: { skillId: string }[];
+  wanted: { skillId: string; skillName: string }[];
 }

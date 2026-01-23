@@ -19,6 +19,7 @@ export const skillsSchema = z.object({
     .array(
       z.object({
         skillId: z.string().min(1, "Skill ID is required"),
+        skillName: z.string().min(1, "Skill name is required"),
         proficiency: z.enum([
           "Beginner",
           "Advanced Beginner",
@@ -33,6 +34,7 @@ export const skillsSchema = z.object({
     .array(
       z.object({
         skillId: z.string().min(1, "Skill ID is required"),
+        skillName: z.string().min(1, "Skill name is required"),
       }),
     )
     .optional(),
