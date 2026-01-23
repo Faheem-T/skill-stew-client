@@ -63,7 +63,7 @@ export const AdminLoginPage = () => {
     mutate(values, {
       onSuccess: (response) => {
         setAccessToken(response.data.accessToken);
-        setUser({ role: "ADMIN", username: "something" });
+        setUser({ role: "ADMIN" });
         navigate("/admin/dashboard");
       },
     });

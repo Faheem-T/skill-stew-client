@@ -185,7 +185,9 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({
   };
 
   const onSubmit = async (values: FormValues) => {
+    console.log("Hello there");
     if (!formState.isDirty && onComplete) {
+      console.log("Form is not dirty");
       onComplete();
       return;
     }
@@ -253,7 +255,6 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({
         if (avatarPreviewUrl) {
           URL.revokeObjectURL(avatarPreviewUrl);
         }
-        toast.success("Profile updated. Onboarding complete.");
         if (onComplete) {
           onComplete();
         } else {
@@ -283,10 +284,7 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({
 
           <div className="md:col-span-2">
             <Form {...form}>
-              <form
-                onSubmit={handleSubmit(onSubmit)}
-                className="grid grid-cols-1 gap-4"
-              >
+              <form className="grid grid-cols-1 gap-4">
                 <ProfileFormFields
                   isCheckingUsername={isCheckingUsername}
                   isUsernameAvailable={isUsernameAvailable}
@@ -297,7 +295,7 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({
                 />
               </form>
             </Form>
-            {/* <DevTool control={control} /> */}
+            <DevTool control={control} />
           </div>
         </div>
       </div>
@@ -314,7 +312,7 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({
           </Button>
         )}
         <Button
-          type="submit"
+          type="button"
           disabled={!formState.isValid}
           onClick={form.handleSubmit(onSubmit)}
         >
