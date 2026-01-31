@@ -6,6 +6,8 @@ import {
 import { Button } from "@/shared/components/ui/button";
 import type { UserProfile } from "@/shared/hooks/useUserProfile";
 import type { ChangeEvent } from "react";
+import { Upload } from "lucide-react";
+import { DefaultAvatarIllustration } from "./DefaultAvatarIllustration";
 
 interface ProfileAvatarProps {
   profile: UserProfile | null | undefined;
@@ -29,16 +31,16 @@ export const ProfileAvatar = ({
   fileInputRef,
 }: ProfileAvatarProps) => {
   return (
-    <div className="flex flex-col items-center md:items-start">
+    <div className="flex flex-col items-center">
       <div className="mb-4">
         <div
-          className="relative inline-block"
+          className="relative inline-block group"
           onClick={selectedAvatarFile ? undefined : onPickAvatar}
           role="button"
           aria-label="Change avatar"
-          title="Change avatar"
+          title="Click to upload avatar"
         >
-          <Avatar className="w-24 h-24 cursor-pointer hover:opacity-90 transition-opacity flex items-center justify-center overflow-hidden">
+          <Avatar className="w-32 h-32 cursor-pointer hover:opacity-75 transition-opacity flex items-center justify-center overflow-hidden ring-2 ring-offset-2 ring-primary/30 group-hover:ring-primary/60">
             {avatarPreviewUrl ? (
               <AvatarImage
                 src={avatarPreviewUrl}
@@ -52,9 +54,19 @@ export const ProfileAvatar = ({
                 className="w-full h-full object-cover rounded-full"
               />
             ) : (
-              <AvatarFallback>U</AvatarFallback>
+              <AvatarFallback className="bg-transparent border-0 p-0">
+                <DefaultAvatarIllustration />
+              </AvatarFallback>
             )}
           </Avatar>
+          
+          {/* Upload icon overlay - appears on hover */}
+          <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+            <div className="flex flex-col items-center gap-1">
+              <Upload className="w-6 h-6 text-white" />
+              <span className="text-xs text-white font-medium">Upload</span>
+            </div>
+          </div>
         </div>
         <input
           ref={fileInputRef}
