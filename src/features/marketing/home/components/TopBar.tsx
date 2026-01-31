@@ -17,24 +17,30 @@ import { useUserProfile } from "@/shared/hooks/useUserProfile";
 export const TopBar: React.FC = () => {
   const user = useAppStore((state) => state.user);
   return (
-    <div className="h-16 flex items-center justify-between border-b rounded-2xl px-12 ">
+    <div className="h-16 flex items-center justify-between border-b border-slate-200 bg-white shadow-sm px-12">
       {/*Logo*/}
-      <div className="h-full px-1 flex items-center">
-        <img src="/logo.png" className="h-full" />
-        <div className="font-bold">{APP_NAME}</div>
+      <div className="h-full flex items-center gap-3">
+        <img src="/logo.png" className="h-12 w-12 object-contain" />
+        <div className="font-bold text-xl bg-primary bg-clip-text text-transparent">
+          {APP_NAME}
+        </div>
       </div>
       {/*Nav links*/}
-      <div className="flex items-center gap-4 p-4">
-        <div>Home</div>
-        <div>About</div>
-        <div>Contact</div>
+      <div className="flex items-center gap-8">
+        <Link to="/" className="text-slate-700 hover:text-primary font-medium transition-colors">Home</Link>
+        <a href="#about" className="text-slate-700 hover:text-primary font-medium transition-colors">About</a>
+        <a href="#contact" className="text-slate-700 hover:text-primary font-medium transition-colors">Contact</a>
       </div>
       {/*Actions*/}
       <div className="p-4">
         {user?.role === "USER" ? (
           <UserAvatar />
         ) : (
-          <Link to="/login">Log In</Link>
+          <Link to="/login">
+            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
+              Log In
+            </Button>
+          </Link>
         )}
       </div>
     </div>
@@ -51,25 +57,41 @@ const UserAvatar: React.FC = () => {
   const { data, isPending: isProfilePending } = useUserProfile();
   if (isProfilePending) {
     return (
-      <Avatar>
-        <AvatarFallback>U</AvatarFallback>
+      <Avatar className="cursor-pointer">
+        <AvatarFallback className="bg-primary/10">U</AvatarFallback>
       </Avatar>
     );
   }
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
-        <Avatar>
+      <DropdownMenuTrigger asChild>
+        <Avatar className="cursor-pointer ring-2 ring-offset-2 ring-primary/30 hover:ring-primary/60 transition-all">
           <AvatarImage src={data.avatarUrl} />
-          <AvatarFallback>{user.email.slice(0, 2)}</AvatarFallback>
+          <AvatarFallback className="bg-primary/10 text-primary font-semibold">
+            {user.email.slice(0, 2).toUpperCase()}
+          </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
-      <DropdownMenuContent>
-        <DropdownMenuItem>Wassup</DropdownMenuItem>
-        <DropdownMenuItem>
-          <Button disabled={isPending} onClick={() => mutate()}>
-            Log out
+      <DropdownMenuContent align="end" className="w-48">
+        <DropdownMenuItem className="flex flex-col items-start py-3">
+          <div className="text-sm font-semibold text-slate-900">{user.email}</div>
+          <div className="text-xs text-slate-500 mt-1">Member</div>
+        </DropdownMenuItem>
+        <DropdownMenuItem disabled className="h-px bg-slate-200" />
+        <DropdownMenuItem asChild>
+          <Link to="/dashboard" className="cursor-pointer text-slate-700 hover:text-primary">
+            Dashboard
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Button 
+            disabled={isPending} 
+            onClick={() => mutate()}
+            variant="ghost"
+            className="w-full justify-start text-slate-700 hover:text-primary h-auto p-2"
+          >
+            {isPending ? "Logging out..." : "Log Out"}
           </Button>
         </DropdownMenuItem>
       </DropdownMenuContent>
