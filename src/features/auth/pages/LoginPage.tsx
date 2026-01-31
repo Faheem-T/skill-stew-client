@@ -81,9 +81,8 @@ export const LoginPage = () => {
     <div className="min-h-screen flex">
       {/* Left side - Decorative */}
       <div className="hidden lg:flex lg:w-1/2 bg-primary relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary to-accent/50" />
-        <div className="absolute top-0 right-0 w-96 h-96 bg-accent/20 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-accent/30 rounded-full translate-y-1/2 -translate-x-1/2 blur-3xl" />
+        <div className="absolute top-0 right-0 w-96 h-96 bg-accent/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-accent/15 rounded-full translate-y-1/2 -translate-x-1/2 blur-3xl" />
 
         <div className="relative z-10 flex flex-col justify-center px-12 text-white">
           <div className="flex items-center gap-3 mb-8">
