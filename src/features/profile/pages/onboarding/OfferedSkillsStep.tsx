@@ -7,6 +7,7 @@ import { X, Search } from "lucide-react";
 import { searchSkillsApi } from "@/shared/api/searchSkillsApi";
 import { skillProficiencies } from "@/features/profile/api/UpdateUserSkillProfile";
 import { useDebounce } from "@/shared/hooks/useDebounce";
+import { useCurrentUserSkillProfile } from "@/shared/hooks/useCurrentUserSkillProfile";
 
 interface Skill {
   id: string;
@@ -40,6 +41,25 @@ export const OfferedSkillsStep: React.FC<OfferedSkillsStepProps> = ({
   const [searchResults, setSearchResults] = useState<Skill[]>([]);
 
   const debouncedSkillSearch = useDebounce(currentSkillSearch, 300);
+  const { data: skillProfileData } = useCurrentUserSkillProfile();
+
+  // Update offered skills from skill profile query
+  useEffect(() => {
+    if (skillProfileData?.offered && onUpdate) {
+      const currentOfferedSkills = skillProfileData.offered.map((item) => ({
+        skill: {
+          ...item.skill,
+          alternateNames: [],
+        },
+        proficiency: (
+          typeof item.proficiency === "string"
+            ? item.proficiency
+            : item.proficiency[0]
+        ) as (typeof skillProficiencies)[number],
+      }));
+      onUpdate(currentOfferedSkills);
+    }
+  }, [skillProfileData]);
 
   // Search for skills when debounced search changes
   useEffect(() => {

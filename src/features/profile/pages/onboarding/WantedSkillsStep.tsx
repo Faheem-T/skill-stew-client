@@ -8,16 +8,16 @@ import { searchSkillsApi } from "@/shared/api/searchSkillsApi";
 import { useDebounce } from "@/shared/hooks/useDebounce";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import {
   skillsSchema,
   type SkillsFormValues,
 } from "@/features/profile/schemas";
+import { skillProficiencies } from "@/features/profile/api/UpdateUserSkillProfile";
 import {
-  updateUserSkillProfileRequest,
-  skillProficiencies,
-} from "@/features/profile/api/UpdateUserSkillProfile";
+  useCurrentUserSkillProfile,
+  useUpdateUserSkillProfile,
+} from "@/shared/hooks/useCurrentUserSkillProfile";
 
 interface Skill {
   id: string;
@@ -50,6 +50,9 @@ export const WantedSkillsStep: React.FC<WantedSkillsStepProps> = ({
   const [wantedSkillSearch, setWantedSkillSearch] = useState("");
   const [wantedSearchResults, setWantedSearchResults] = useState<Skill[]>([]);
 
+  const { data: skillProfileData } = useCurrentUserSkillProfile();
+  const mutation = useUpdateUserSkillProfile();
+
   const form = useForm<SkillsFormValues>({
     resolver: zodResolver(skillsSchema),
     defaultValues: {
@@ -65,26 +68,18 @@ export const WantedSkillsStep: React.FC<WantedSkillsStepProps> = ({
     },
   });
 
-  const mutation = useMutation({
-    mutationFn: async (data: SkillsFormValues) => {
-      const requestData = {
-        offered: data.offered,
-        wanted: data.wanted || [],
-      };
-      await updateUserSkillProfileRequest(requestData);
-    },
-    onSuccess: () => {
-      toast.success("Skills updated successfully!");
-      if (onComplete) {
-        onComplete();
-      }
-    },
-    onError: () => {
-      toast.error("Failed to update skills. Please try again.");
-    },
-  });
-
   const debouncedWantedSkillSearch = useDebounce(wantedSkillSearch, 300);
+
+  // Update wanted skills from skill profile query
+  useEffect(() => {
+    if (skillProfileData?.wanted && onUpdate) {
+      const currentWantedSkills = skillProfileData.wanted.map((item) => ({
+        ...item.skill,
+        alternateNames: [],
+      }));
+      onUpdate(currentWantedSkills);
+    }
+  }, [skillProfileData]);
 
   // Search for wanted skills when debounced search changes
   useEffect(() => {
@@ -154,7 +149,17 @@ export const WantedSkillsStep: React.FC<WantedSkillsStepProps> = ({
       offered: data.offered,
       wanted: data.wanted || [],
     };
-    mutation.mutate(requestData);
+    mutation.mutate(requestData, {
+      onSuccess: () => {
+        toast.success("Skills updated successfully!");
+        if (onComplete) {
+          onComplete();
+        }
+      },
+      onError: () => {
+        toast.error("Failed to update skills. Please try again.");
+      },
+    });
   };
 
   return (
