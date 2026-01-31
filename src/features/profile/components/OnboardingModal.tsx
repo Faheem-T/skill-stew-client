@@ -20,10 +20,8 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:w-[90%] h-[90%] sm:max-w-full">
-        <div className="overflow-auto">
-          <Onboarding onComplete={handleProfileComplete} />
-        </div>
+      <DialogContent className="w-[90vw] h-[90vh] sm:max-w-none p-0 border-0 bg-transparent rounded-2xl overflow-hidden">
+        <Onboarding onComplete={handleProfileComplete} />
       </DialogContent>
     </Dialog>
   );

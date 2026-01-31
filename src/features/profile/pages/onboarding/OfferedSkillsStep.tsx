@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
-import { CardContent } from "@/shared/components/ui/card";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
 import { Slider } from "@/shared/components/ui/slider";
-import { X, Search } from "lucide-react";
+import { X, Search, Award } from "lucide-react";
 import { searchSkillsApi } from "@/shared/api/searchSkillsApi";
 import { skillProficiencies } from "@/features/profile/api/UpdateUserSkillProfile";
 import { useDebounce } from "@/shared/hooks/useDebounce";
@@ -130,27 +129,28 @@ export const OfferedSkillsStep: React.FC<OfferedSkillsStepProps> = ({
   };
 
   return (
-    <CardContent className="flex flex-col h-full">
-      <div className="flex-1 overflow-y-auto">
-        <h3 className="text-lg font-semibold">
-          Select the skills you can offer
-        </h3>
+    <div className="flex flex-col h-full">
+      <div className="flex-1 overflow-y-auto px-8 py-4">
+        <div className="grid lg:grid-cols-2 gap-8">
+          {/* Left side - Search and selection */}
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-lg font-semibold text-slate-900 mb-2">Add Your Skills</h3>
+              <p className="text-sm text-slate-600">Search and select the skills you're proficient in</p>
+            </div>
 
-        <div className="flex gap-4">
-          {/* Left side - Search input and selected skill */}
-          <div className="flex-1 space-y-4">
-            {/* Search input - always visible */}
+            {/* Search input */}
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
               <Input
                 placeholder="Search for a skill..."
                 value={currentSkillSearch}
                 onChange={(e) => setCurrentSkillSearch(e.target.value)}
-                className="pl-10"
+                className="pl-10 h-11 border-slate-200"
               />
-              {/* Dropdown results using SelectContent styling */}
+              {/* Dropdown results */}
               {searchResults.length > 0 && (
-                <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-popover text-popover-foreground border rounded-md shadow-md max-h-40 overflow-y-auto">
+                <div className="absolute top-full left-0 right-0 z-50 mt-2 bg-white border border-slate-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
                   {searchResults.map((skill) => {
                     const isAlreadySelected = offeredSkills.some(
                       (selected) => selected.skill.id === skill.id,
@@ -158,28 +158,26 @@ export const OfferedSkillsStep: React.FC<OfferedSkillsStepProps> = ({
                     return (
                       <div
                         key={skill.id}
-                        className={`p-2 rounded-sm flex items-center gap-2 ${
+                        className={`p-3 rounded-lg flex items-center gap-2 transition-colors ${
                           isAlreadySelected
-                            ? "opacity-50 cursor-not-allowed bg-gray-50"
-                            : "hover:bg-accent hover:text-accent-foreground cursor-pointer"
+                            ? "opacity-50 bg-slate-50 cursor-not-allowed"
+                            : "hover:bg-primary/5 cursor-pointer"
                         }`}
                         onClick={() =>
                           !isAlreadySelected && handleSelectSkill(skill)
                         }
                       >
                         <div className="flex-1">
-                          <div className="font-medium">{skill.name}</div>
+                          <div className="font-medium text-sm text-slate-900">{skill.name}</div>
                           {skill.alternateNames.length > 0 && (
-                            <div className="text-xs text-gray-500">
+                            <div className="text-xs text-slate-500">
                               Also known as: {skill.alternateNames.join(", ")}
                             </div>
                           )}
-                          {isAlreadySelected && (
-                            <div className="text-xs text-orange-600 font-medium">
-                              Already selected as an offered skill
-                            </div>
-                          )}
                         </div>
+                        {isAlreadySelected && (
+                          <Award className="w-4 h-4 text-amber-500" />
+                        )}
                       </div>
                     );
                   })}
@@ -187,87 +185,100 @@ export const OfferedSkillsStep: React.FC<OfferedSkillsStepProps> = ({
               )}
             </div>
 
-            {/* Selected skill and proficiency slider - animated slide down */}
-            <div
-              className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                selectedSkill ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-              }`}
-            >
-              {selectedSkill && (
-                <div className="space-y-4 p-4 bg-blue-50 border border-blue-200 rounded-md">
-                  <div className="flex items-center justify-between">
-                    <span className="font-medium text-blue-900">
-                      {selectedSkill.name}
-                    </span>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setSelectedSkill(null)}
-                      className="h-6 w-6 p-0"
-                    >
-                      <X className="h-3 w-3" />
-                    </Button>
-                  </div>
-
-                  {/* Proficiency Slider */}
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">
-                      How proficient are you at this skill?
-                    </label>
-                    <Slider
-                      value={currentProficiency}
-                      onValueChange={setCurrentProficiency}
-                      min={0}
-                      max={skillProficiencies.length - 1}
-                      step={1}
-                      className="mb-8"
-                    />
-                    <div className="text-center text-sm text-gray-600">
-                      {skillProficiencies[currentProficiency[0]]}
-                    </div>
-                  </div>
-
+            {/* Selected skill detail card - animated */}
+            {selectedSkill && (
+              <div className="space-y-4 p-6 bg-gradient-to-br from-primary/10 to-accent/10 border border-primary/20 rounded-xl">
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold text-slate-900">
+                    {selectedSkill.name}
+                  </span>
                   <Button
-                    onClick={handleAddSkillWithProficiency}
-                    className="w-full"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setSelectedSkill(null)}
+                    className="h-6 w-6 p-0 hover:bg-blue-200"
                   >
-                    Add Skill
+                    <X className="h-4 w-4" />
                   </Button>
                 </div>
-              )}
-            </div>
+
+                {/* Proficiency Slider */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm font-medium text-slate-700">
+                      Proficiency Level
+                    </label>
+                    <span className="text-xs font-semibold text-primary bg-primary/20 px-2 py-1 rounded">
+                      {skillProficiencies[currentProficiency[0]]}
+                    </span>
+                  </div>
+                  <Slider
+                    value={currentProficiency}
+                    onValueChange={setCurrentProficiency}
+                    min={0}
+                    max={skillProficiencies.length - 1}
+                    step={1}
+                    className="mb-2"
+                  />
+                  <div className="flex justify-between text-xs text-slate-500 px-1">
+                    <span>Beginner</span>
+                    <span>Expert</span>
+                  </div>
+                </div>
+
+                <Button
+                  onClick={handleAddSkillWithProficiency}
+                  className="w-full bg-primary hover:bg-primary/90"
+                >
+                  Add Skill
+                </Button>
+              </div>
+            )}
           </div>
 
           {/* Right side - Selected skills list */}
-          <div className="w-80">
-            {offeredSkills.length > 0 && (
-              <div className="space-y-2">
-                <h4 className="text-sm font-medium">Selected Skills:</h4>
-                <div className="space-y-2 max-h-64 overflow-y-auto">
-                  {offeredSkills.map((item) => (
-                    <div
-                      key={item.skill.id}
-                      className="flex items-center justify-between p-2 bg-gray-50 border rounded-md"
-                    >
-                      <div className="flex-1">
-                        <div className="font-medium text-sm">
-                          {item.skill.name}
-                        </div>
-                        <div className="text-xs text-gray-500">
-                          {item.proficiency}
-                        </div>
+          <div className="space-y-4">
+            <div>
+              <h3 className="text-lg font-semibold text-slate-900 mb-2">
+                Selected Skills ({offeredSkills.length})
+              </h3>
+              <p className="text-sm text-slate-600">Your current skill profile</p>
+            </div>
+
+            {offeredSkills.length > 0 ? (
+              <div className="space-y-3 max-h-96 overflow-y-auto">
+                {offeredSkills.map((item) => (
+                  <div
+                    key={item.skill.id}
+                    className="flex items-center justify-between p-4 bg-slate-50 border border-slate-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-all group"
+                  >
+                    <div className="flex-1">
+                      <div className="font-medium text-slate-900">
+                        {item.skill.name}
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleRemoveOfferedSkill(item.skill.id)}
-                        className="h-6 w-6 p-0"
-                      >
-                        <X className="h-3 w-3" />
-                      </Button>
+                      <div className="text-xs text-slate-600 mt-1">
+                        <span className="inline-block bg-amber-100 text-amber-800 px-2 py-1 rounded font-medium">
+                          {item.proficiency}
+                        </span>
+                      </div>
                     </div>
-                  ))}
-                </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleRemoveOfferedSkill(item.skill.id)}
+                      className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <X className="h-4 w-4 text-red-600" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-12 px-4 bg-slate-50 border-2 border-dashed border-slate-300 rounded-lg">
+                <Award className="w-10 h-10 text-slate-400 mb-2" />
+                <p className="text-sm text-slate-600 text-center">
+                  No skills added yet. Search and add your skills to get started!
+                </p>
               </div>
             )}
           </div>
@@ -275,20 +286,25 @@ export const OfferedSkillsStep: React.FC<OfferedSkillsStepProps> = ({
       </div>
 
       {/* Navigation buttons at bottom */}
-      <div className="flex justify-between mt-auto">
+      <div className="flex justify-between gap-4 px-8 py-4 border-t border-slate-200 bg-slate-50 shrink-0">
         {onBack ? (
-          <Button type="button" variant="outline" onClick={onBack}>
+          <Button type="button" variant="outline" onClick={onBack} className="px-6">
             Back
           </Button>
         ) : (
-          <Button type="button" variant="outline" disabled>
+          <Button type="button" variant="outline" disabled className="px-6">
             Back
           </Button>
         )}
-        <Button type="button" onClick={handleNext}>
+        <Button
+          type="button"
+          onClick={handleNext}
+          disabled={offeredSkills.length === 0}
+          className="px-8 bg-primary hover:bg-primary/90 text-primary-foreground disabled:opacity-50"
+        >
           Next
         </Button>
       </div>
-    </CardContent>
+    </div>
   );
 };

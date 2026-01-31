@@ -4,6 +4,7 @@ import { OfferedSkillsStep } from "./OfferedSkillsStep";
 import { WantedSkillsStep } from "./WantedSkillsStep";
 import { AnimatePresence, motion, type Transition } from "motion/react";
 import { StepIndicator } from "@/features/profile/components/StepIndicator";
+import { CheckCircle2, Sparkles } from "lucide-react";
 
 interface SkillWithProficiency {
   skill: {
@@ -96,13 +97,47 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
         );
       case 4:
         return (
-          <div className="flex items-center justify-center min-h-screen">
-            <button
-              onClick={onComplete}
-              className="px-6 py-3 bg-blue-500 text-white rounded-lg"
+          <div className="flex flex-col items-center justify-center py-16 px-8">
+            <motion.div
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ type: "spring", stiffness: 100, damping: 15 }}
+              className="mb-6"
             >
-              Complete Onboarding
-            </button>
+              <div className="relative w-24 h-24 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center shadow-lg">
+                <CheckCircle2 className="w-12 h-12 text-white" />
+              </div>
+            </motion.div>
+
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="text-3xl font-bold text-slate-900 text-center mb-2"
+            >
+              Profile Complete!
+            </motion.h2>
+
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="text-slate-600 text-center mb-8 max-w-sm"
+            >
+              Your profile is all set. You're ready to start exchanging skills with our community!
+            </motion.p>
+
+            <motion.button
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={onComplete}
+              className="px-8 py-3 bg-primary text-white rounded-lg font-semibold shadow-lg hover:bg-primary/90 hover:shadow-xl transition-shadow"
+            >
+              Get Started
+            </motion.button>
           </div>
         );
       default:
@@ -111,27 +146,50 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
   };
 
   return (
-    <div className="relative w-full max-w-3xl mx-auto h-full flex flex-col overflow-hidden">
-      <StepIndicator
-        currentStep={step}
-        totalSteps={totalSteps}
-        title={stepTitles[step] || ""}
-        className="flex-none"
-      />
-      <AnimatePresence mode="wait" initial={false} custom={direction}>
-        <motion.div
-          key={step}
-          custom={direction}
-          variants={slideVariants}
-          initial="enter"
-          animate="center"
-          exit="exit"
-          transition={slideTransition}
-          className="w-full flex-1"
-        >
-          {renderStep()}
-        </motion.div>
-      </AnimatePresence>
+    <div className="w-full h-full bg-gradient-to-br from-slate-50 via-slate-50 to-slate-100 flex flex-col overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute top-0 left-0 w-72 h-72 bg-primary/20 rounded-full mix-blend-multiply filter blur-3xl opacity-20 -z-10 animate-pulse" />
+      <div className="absolute bottom-0 right-0 w-72 h-72 bg-accent/30 rounded-full mix-blend-multiply filter blur-3xl opacity-20 -z-10 animate-pulse" />
+
+      {/* Header with gradient */}
+      <div className="bg-primary px-8 py-3 shrink-0">
+        <div className="flex items-center gap-2 mb-1">
+          <Sparkles className="w-4 h-4 text-primary-foreground" />
+          <p className="text-primary-foreground text-xs font-medium">Setup Your Profile</p>
+        </div>
+        <h1 className="text-xl font-bold text-primary-foreground">
+          {stepTitles[step] || "Welcome"}
+        </h1>
+      </div>
+
+      {/* Step Indicator */}
+      <div className="px-8 py-4 border-b border-slate-200 bg-white shrink-0">
+        <StepIndicator
+          currentStep={step}
+          totalSteps={totalSteps}
+          title=""
+        />
+      </div>
+
+      {/* Content Area - Scrollable */}
+      <div className="flex-1 overflow-y-auto min-h-0">
+        <div className="relative overflow-x-hidden">
+          <AnimatePresence mode="wait" initial={false} custom={direction}>
+            <motion.div
+              key={step}
+              custom={direction}
+              variants={slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={slideTransition}
+              className="w-full"
+            >
+              {renderStep()}
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      </div>
     </div>
   );
 };

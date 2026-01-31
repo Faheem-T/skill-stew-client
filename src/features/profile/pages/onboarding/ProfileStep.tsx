@@ -1,5 +1,4 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CardContent } from "@/shared/components/ui/card";
 import { Button } from "@/shared/components/ui/button";
 import { useEffect, useRef, useState } from "react";
 import { CURRENT_USER_PROFILE_QUERY_KEY } from "@/shared/hooks/useCurrentUserProfile";
@@ -52,7 +51,6 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({
     },
   });
   const {
-    handleSubmit,
     setValue,
     watch,
     setError,
@@ -268,23 +266,25 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({
   };
 
   return (
-    <CardContent className="flex flex-col h-full">
-      <div className="flex-1 overflow-y-auto">
+    <div className="flex flex-col h-full">
+      <div className="flex-1 overflow-y-auto px-8 py-4">
         <div className="grid md:grid-cols-3 gap-6 items-start">
-          <ProfileAvatar
-            profile={profile}
-            avatarPreviewUrl={avatarPreviewUrl}
-            selectedAvatarFile={selectedAvatarFile}
-            onPickAvatar={onPickAvatar}
-            handleAvatarSelected={handleAvatarSelected}
-            handleUndoAvatarSelection={handleUndoAvatarSelection}
-            isUploading={isUploading}
-            fileInputRef={fileInputRef}
-          />
+          <div className="md:col-span-1">
+            <ProfileAvatar
+              profile={profile}
+              avatarPreviewUrl={avatarPreviewUrl}
+              selectedAvatarFile={selectedAvatarFile}
+              onPickAvatar={onPickAvatar}
+              handleAvatarSelected={handleAvatarSelected}
+              handleUndoAvatarSelection={handleUndoAvatarSelection}
+              isUploading={isUploading}
+              fileInputRef={fileInputRef}
+            />
+          </div>
 
           <div className="md:col-span-2">
             <Form {...form}>
-              <form className="grid grid-cols-1 gap-4">
+              <form className="grid grid-cols-1 gap-6">
                 <ProfileFormFields
                   isCheckingUsername={isCheckingUsername}
                   isUsernameAvailable={isUsernameAvailable}
@@ -301,13 +301,13 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({
       </div>
 
       {/* Navigation buttons at bottom */}
-      <div className="flex justify-between mt-auto">
+      <div className="flex justify-between gap-4 px-8 py-4 border-t border-slate-200 bg-slate-50 shrink-0">
         {onBack ? (
-          <Button type="button" variant="outline" onClick={onBack}>
+          <Button type="button" variant="outline" onClick={onBack} className="px-6">
             Back
           </Button>
         ) : (
-          <Button type="button" variant="outline" disabled>
+          <Button type="button" variant="outline" disabled className="px-6">
             Back
           </Button>
         )}
@@ -315,10 +315,11 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({
           type="button"
           disabled={!formState.isValid}
           onClick={form.handleSubmit(onSubmit)}
+          className="px-8 bg-primary hover:bg-primary/90 text-primary-foreground"
         >
           Next
         </Button>
       </div>
-    </CardContent>
+    </div>
   );
 };
