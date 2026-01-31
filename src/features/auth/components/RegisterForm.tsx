@@ -26,6 +26,7 @@ import type { AxiosError } from "axios";
 import { useMutation } from "@tanstack/react-query";
 import { useAppStore } from "@/app/store";
 import { useNavigate } from "react-router";
+import { GoogleLoginButton } from "@/features/auth/components/GoogleAuthButton";
 
 const registerSchema = z
   .object({
@@ -255,6 +256,21 @@ export const RegisterForm = () => {
           )}
         </CardContent>
       </Card>
+
+      <div className="relative my-6">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-slate-200" />
+        </div>
+        <div className="relative flex justify-center text-sm">
+          <span className="px-4 bg-slate-50 text-slate-500">
+            Or continue with
+          </span>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-center">
+        <GoogleLoginButton />
+      </div>
     </div>
   );
 };
