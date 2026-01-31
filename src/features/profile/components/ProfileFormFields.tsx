@@ -17,6 +17,12 @@ import { useFormContext } from "react-hook-form";
 import type { FormValues } from "../schemas";
 import type { UserProfile } from "@/shared/hooks/useUserProfile";
 
+// Create languages array once outside the component - ISO codes never change
+const languages: MultiSelectOption[] = ISO6391.getAllCodes().map((code) => ({
+  value: code,
+  label: ISO6391.getName(code),
+}));
+
 interface ProfileFormFieldsProps {
   isCheckingUsername: boolean;
   isUsernameAvailable: boolean;
@@ -150,13 +156,6 @@ export const ProfileFormFields = ({
         control={control}
         name="languages"
         render={({ field }) => {
-          const languages: MultiSelectOption[] = ISO6391.getAllCodes().map(
-            (code) => ({
-              value: code,
-              label: ISO6391.getName(code),
-            }),
-          );
-
           return (
             <FormItem>
               <FormLabel>Languages</FormLabel>
