@@ -173,7 +173,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
 
       {/* Content Area - Scrollable */}
       <div className="flex-1 overflow-y-auto min-h-0">
-        <div className="relative overflow-x-hidden">
+        <div className="relative overflow-x-hidden h-full">
           <AnimatePresence mode="wait" initial={false} custom={direction}>
             <motion.div
               key={step}
@@ -183,7 +183,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
               animate="center"
               exit="exit"
               transition={slideTransition}
-              className="w-full"
+              className="w-full h-full"
             >
               {renderStep()}
             </motion.div>
