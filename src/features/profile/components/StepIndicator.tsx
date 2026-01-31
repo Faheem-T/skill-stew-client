@@ -40,7 +40,7 @@ export const StepIndicator: React.FC<StepIndicatorProps> = ({
       {/* Step number display */}
       <div className="text-center">
         <span className="text-sm font-semibold text-slate-700">
-          Step <span className="text-blue-600">{currentStep}</span> of {totalSteps}
+          Step <span className="text-primary">{currentStep}</span> of {totalSteps}
         </span>
       </div>
     </div>
