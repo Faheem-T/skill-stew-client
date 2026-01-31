@@ -32,7 +32,7 @@ export const TopBar: React.FC = () => {
         <a href="#contact" className="text-slate-700 hover:text-primary font-medium transition-colors">Contact</a>
       </div>
       {/*Actions*/}
-      <div className="p-4">
+      <div className="flex items-center">
         {user?.role === "USER" ? (
           <UserAvatar />
         ) : (
@@ -57,7 +57,7 @@ const UserAvatar: React.FC = () => {
   const { data, isPending: isProfilePending } = useUserProfile();
   if (isProfilePending) {
     return (
-      <Avatar className="cursor-pointer">
+      <Avatar className="h-10 w-10 cursor-pointer">
         <AvatarFallback className="bg-primary/10">U</AvatarFallback>
       </Avatar>
     );
@@ -66,8 +66,8 @@ const UserAvatar: React.FC = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Avatar className="cursor-pointer ring-2 ring-offset-2 ring-primary/30 hover:ring-primary/60 transition-all">
-          <AvatarImage src={data.avatarUrl} />
+        <Avatar className="h-10 w-10 cursor-pointer ring-2 ring-offset-2 ring-primary/30 hover:ring-primary/60 transition-all overflow-hidden rounded-full">
+          <AvatarImage src={data.avatarUrl} className="h-full w-full object-cover" />
           <AvatarFallback className="bg-primary/10 text-primary font-semibold">
             {user.email.slice(0, 2).toUpperCase()}
           </AvatarFallback>
