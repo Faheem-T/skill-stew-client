@@ -77,6 +77,13 @@ export const WantedSkillsStep: React.FC<WantedSkillsStepProps> = ({
         alternateNames: [],
       }));
       onUpdate(currentWantedSkills);
+      
+      // Also update the form values
+      const formWantedSkills = currentWantedSkills.map((item) => ({
+        skillId: item.id,
+        skillName: item.name,
+      }));
+      form.setValue("wanted", formWantedSkills);
     }
   }, [skillProfileData]);
 
