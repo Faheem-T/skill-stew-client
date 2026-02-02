@@ -5,6 +5,8 @@ import { HowItWorksSection } from "../components/HowItWorksSection";
 import { CTASection } from "../components/CTASection";
 import { useRef } from "react";
 import { ReviewsSection } from "../components/ReviewsSection";
+import { FeaturesSection } from "../components/FeaturesSection";
+import { Footer } from "../components/Footer";
 
 export const HomePage = () => {
   const sectionRef = useRef<null | HTMLDivElement>(null);
@@ -15,14 +17,15 @@ export const HomePage = () => {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-stone-50">
       <TopBar />
       <HeroSection onLearnMoreButtonClick={handleLearnMoreButtonClick} />
       <InfoSection ref={sectionRef} />
+      <FeaturesSection />
       <HowItWorksSection />
       <ReviewsSection />
       <CTASection />
-      <div className="h-40"></div>
+      <Footer />
     </div>
   );
 };

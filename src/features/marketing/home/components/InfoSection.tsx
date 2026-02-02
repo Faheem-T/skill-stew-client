@@ -1,39 +1,62 @@
 import { APP_NAME } from "@/shared/config/constants";
-import { HoverInfoCard } from "./HoverInfoCard";
 import { forwardRef } from "react";
+import { Users, GraduationCap } from "lucide-react";
+import type React from "react";
 
 export const InfoSection = forwardRef<HTMLDivElement>(({}, ref) => {
   return (
-    <div className="bg-primary text-background min-h-[70vh] py-8" ref={ref}>
-      <div className="container mx-auto px-4">
-        <div className="font-semibold text-4xl md:text-5xl p-2">
-          What is {APP_NAME}?
+    <section
+      id="about"
+      className="py-24 md:py-32 bg-primary text-white"
+      ref={ref}
+    >
+      <div className="container mx-auto px-6 md:px-12">
+        {/* Section header */}
+        <div className="max-w-3xl">
+          <h2 className="text-3xl md:text-5xl font-bold tracking-tight">
+            What is {APP_NAME}?
+          </h2>
+          <p className="mt-4 text-lg md:text-xl text-white/80 leading-relaxed">
+            {APP_NAME} connects learners with{" "}
+            <span className="text-accent font-medium">
+              verified industry experts
+            </span>{" "}
+            who lead live, cohort-based workshops. Learn effectively through
+            structured content, community support, and flexible schedules that
+            fit your life.
+          </p>
         </div>
-        <div className="p-4 text-lg md:text-xl">
-          {APP_NAME} is a new way to acquire skills through
-          <span> Skill Exchanges</span> and <span>Expert Workshops</span>
-        </div>
-        <div className="flex flex-col md:flex-row p-4 gap-4">
-          <HoverInfoCard emoji="💡" mainText="Skill Exchanges">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-            aliquip ex ea commodo consequat. Duis aute irure dolor in
-            reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-            pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-            culpa qui officia deserunt mollit anim id est laborum
-          </HoverInfoCard>
-          <HoverInfoCard emoji="🎓" mainText="Expert Workshops">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-            aliquip ex ea commodo consequat. Duis aute irure dolor in
-            reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-            pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-            culpa qui officia deserunt mollit anim id est laborum
-          </HoverInfoCard>
+
+        {/* Cards grid */}
+        <div className="grid md:grid-cols-2 gap-6 mt-12">
+          <InfoCard
+            icon={<GraduationCap className="w-6 h-6" />}
+            title="Expert-Led Workshops"
+            description="Learn from verified industry professionals. Structured curriculum, live Q&A sessions, and real-time feedback to ensure you master practical skills."
+          />
+          <InfoCard
+            icon={<Users className="w-6 h-6" />}
+            title="Community Learning"
+            description="Join group chats and forums with your cohort. Share ideas, collaborate on projects, and stay motivated with peers on the same learning journey."
+          />
         </div>
       </div>
-    </div>
+    </section>
   );
 });
+
+const InfoCard: React.FC<{
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+}> = ({ icon, title, description }) => {
+  return (
+    <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 md:p-8 border border-white/10 hover:bg-white/15 transition-colors">
+      <div className="w-12 h-12 rounded-lg bg-accent/20 flex items-center justify-center text-accent mb-4">
+        {icon}
+      </div>
+      <h3 className="text-xl md:text-2xl font-semibold text-white">{title}</h3>
+      <p className="mt-3 text-white/70 leading-relaxed">{description}</p>
+    </div>
+  );
+};
