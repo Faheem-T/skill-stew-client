@@ -127,6 +127,14 @@ const UserAvatar: React.FC = () => {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
+          <Link
+            to="/profile"
+            className="cursor-pointer text-stone-600 hover:text-primary"
+          >
+            Profile
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
           <Button
             disabled={isPending}
             onClick={() => mutate()}
