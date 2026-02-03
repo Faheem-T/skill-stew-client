@@ -16,5 +16,5 @@ export type UpdateProfileBody = {
 export const updateProfileRequest = async (
   body: UpdateProfileBody,
 ): Promise<ApiResponseType> => {
-  return api.patch("/users/profile", body);
+  return api.patch("/me", body);
 };
