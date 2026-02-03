@@ -15,7 +15,7 @@ import { InitialLoadScreen } from "./pages/InitialLoadScreen";
 import { DashboardRoutingPage } from "./pages/DashboardRoutingPage";
 import { UserDashboard } from "@/features/user/pages/UserDashboard";
 import { UserProfilePage } from "@/features/user/pages/UserProfilePage";
-import { ProfileStep } from "@/features/profile/pages/onboarding/ProfileStep";
+import { ProfileStep } from "@/features/onboarding/pages/onboarding/ProfileStep";
 import { AppRoot } from "./AppRoot";
 
 export const router = createBrowserRouter([

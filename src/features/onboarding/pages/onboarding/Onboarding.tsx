@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ProfileStep } from "./ProfileStep";
 import { OfferedSkillsStep } from "./OfferedSkillsStep";
 import { WantedSkillsStep } from "./WantedSkillsStep";
+import { RecommendedUsersStep } from "./RecommendedUsersStep";
 import { AnimatePresence, motion, type Transition } from "motion/react";
 import { StepIndicator } from "@/features/onboarding/components/StepIndicator";
 import { CheckCircle2, Sparkles } from "lucide-react";
@@ -32,12 +33,13 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
   );
   const [wantedSkills, setWantedSkills] = useState<any[]>([]);
 
-  const totalSteps = 4;
+  const totalSteps = 5;
   const stepTitles: Record<number, string> = {
     1: "Tell us about yourself",
     2: "Skills you can offer",
     3: "Skills you want to learn",
-    4: "Complete your profile",
+    4: "Meet the community",
+    5: "Complete your profile",
   };
 
   const handleStepChange = (newStep: number) => {
@@ -96,6 +98,8 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
           />
         );
       case 4:
+        return <RecommendedUsersStep onComplete={() => handleStepChange(5)} />;
+      case 5:
         return (
           <div className="flex flex-col items-center justify-center py-16 px-8">
             <motion.div

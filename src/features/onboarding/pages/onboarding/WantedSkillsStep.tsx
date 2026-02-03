@@ -157,7 +157,6 @@ export const WantedSkillsStep: React.FC<WantedSkillsStepProps> = ({
     };
     mutation.mutate(requestData, {
       onSuccess: () => {
-        toast.success("Skills updated successfully!");
         if (onComplete) {
           onComplete();
         }

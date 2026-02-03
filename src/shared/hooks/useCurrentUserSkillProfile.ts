@@ -6,7 +6,7 @@ import {
 } from "@tanstack/react-query";
 import type { ApiErrorResponseType } from "@/shared/api/baseApi";
 import { getCurrentUserSkillProfile } from "@/shared/api/currentUserSkillProfile";
-import { updateUserSkillProfileRequest } from "@/features/profile/api/UpdateUserSkillProfile";
+import { updateUserSkillProfileRequest } from "@/features/onboarding/api/UpdateUserSkillProfile";
 
 export const CURRENT_USER_SKILL_PROFILE_QUERY_KEY = [
   "currentUserSkillProfile",
