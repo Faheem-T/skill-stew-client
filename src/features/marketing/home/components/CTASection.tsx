@@ -34,7 +34,7 @@ export const CTASection: React.FC = () => {
               <Button
                 variant="outline"
                 size="lg"
-                className="border-white/60 text-white hover:bg-white/15 hover:border-white rounded-lg px-8 h-12 text-base font-medium"
+                className="border-white/60 text-primary hover:bg-white/15 hover:border-white rounded-lg px-8 h-12 text-base font-medium"
                 onClick={() => navigate("/login")}
               >
                 Log In

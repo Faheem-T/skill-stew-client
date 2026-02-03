@@ -8,6 +8,7 @@ import {
   ArrowRight,
   Plus,
   BadgeAlertIcon,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { Badge } from "@/shared/components/ui/badge";
@@ -22,12 +23,26 @@ import { SkillExchangeCard } from "../components/SkillExchangeCard";
 import { PersonCard } from "../components/PersonCard";
 import { ActivityFeed } from "../components/ActivityFeed";
 import { useAppStore } from "@/app/store";
+import { useQuery } from "@tanstack/react-query";
+import { getRecommendedUsersRequest } from "@/features/user/api/GetRecommendedUsers";
+import { DefaultAvatarIllustration } from "@/features/onboarding/components/DefaultAvatarIllustration";
 
 export const UserDashboard = () => {
   const { data } = useUserProfile();
   const setIsOnboardingModalOpen = useAppStore(
     (state) => state.setIsOnboardingModalOpen,
   );
+
+  const {
+    data: recommendedUsersData,
+    isLoading: isLoadingRecommended,
+    error: recommendedError,
+  } = useQuery({
+    queryKey: ["recommended-users"],
+    queryFn: getRecommendedUsersRequest,
+  });
+
+  const recommendedUsers = recommendedUsersData?.data || [];
 
   return (
     <div className="min-h-screen bg-stone-50">
@@ -158,7 +173,7 @@ export const UserDashboard = () => {
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl md:text-2xl font-bold text-stone-900 tracking-tight flex items-center gap-2">
                   <Users className="w-5 h-5 text-primary" />
-                  People You Might Like
+                  People You Might Be Interested In
                 </h2>
                 <Button
                   variant="ghost"
@@ -169,59 +184,95 @@ export const UserDashboard = () => {
                 </Button>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-4">
-                <PersonCard
-                  name="Alex Thompson"
-                  rating={4.8}
-                  exchanges={23}
-                  canTeach={["React", "Node.js"]}
-                  wantsToLearn={["UI/UX Design"]}
-                  avatarFallback="AL"
-                  avatarBgClass="bg-primary text-white"
-                  bgClass="bg-white"
-                  borderClass="border-stone-200 hover:border-primary/30"
-                  buttonVariant="primary"
-                />
-
-                <PersonCard
-                  name="Lisa Martinez"
-                  rating={4.9}
-                  exchanges={31}
-                  canTeach={["French", "Piano"]}
-                  wantsToLearn={["Data Science"]}
-                  avatarFallback="LM"
-                  avatarBgClass="bg-primary text-white"
-                  bgClass="bg-white"
-                  borderClass="border-stone-200 hover:border-primary/30"
-                  buttonVariant="primary"
-                />
-
-                <PersonCard
-                  name="Raj Kumar"
-                  rating={4.7}
-                  exchanges={18}
-                  canTeach={["Python", "Machine Learning"]}
-                  wantsToLearn={["Public Speaking"]}
-                  avatarFallback="RK"
-                  avatarBgClass="bg-primary text-white"
-                  bgClass="bg-white"
-                  borderClass="border-stone-200 hover:border-primary/30"
-                  buttonVariant="primary"
-                />
-
-                <PersonCard
-                  name="Emma Wilson"
-                  rating={5.0}
-                  exchanges={12}
-                  canTeach={["Yoga", "Meditation"]}
-                  wantsToLearn={["Photography"]}
-                  avatarFallback="EM"
-                  avatarBgClass="bg-primary text-white"
-                  bgClass="bg-white"
-                  borderClass="border-stone-200 hover:border-primary/30"
-                  buttonVariant="primary"
-                />
-              </div>
+              {isLoadingRecommended ? (
+                <div className="flex items-center justify-center py-12">
+                  <Loader2 className="w-8 h-8 text-primary animate-spin" />
+                </div>
+              ) : recommendedError ? (
+                <div className="text-center py-12 bg-white rounded-lg border border-stone-200">
+                  <p className="text-stone-600">
+                    Failed to load recommendations
+                  </p>
+                </div>
+              ) : recommendedUsers.length === 0 ? (
+                <div className="text-center py-12 bg-white rounded-lg border border-stone-200">
+                  <p className="text-stone-600">No users found yet</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {recommendedUsers.map((user) => (
+                    <div
+                      key={user.id}
+                      className="p-4 border border-stone-200 rounded-lg hover:border-primary/50 hover:shadow-md transition-all bg-white"
+                    >
+                      <div className="flex items-center justify-between gap-4">
+                        <div className="flex items-start gap-4 flex-1 min-w-0">
+                          <div className="w-12 h-12 rounded-full shrink-0 overflow-hidden bg-accent/20 flex items-center justify-center">
+                            {user.avatarUrl ? (
+                              <img
+                                src={user.avatarUrl}
+                                alt={user.name || "User"}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <DefaultAvatarIllustration />
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-semibold text-stone-900 truncate">
+                              {user.name || user.username || "User"}
+                            </p>
+                            {user.location && (
+                              <p className="text-sm text-stone-500">
+                                {user.location}
+                              </p>
+                            )}
+                            {user.offeredSkills &&
+                              user.offeredSkills.length > 0 && (
+                                <div className="mt-2">
+                                  <p className="text-xs font-medium text-stone-600 mb-1">
+                                    Offers:
+                                  </p>
+                                  <div className="flex flex-wrap gap-1">
+                                    {user.offeredSkills.map((skill) => (
+                                      <span
+                                        key={skill.skillId}
+                                        className="text-xs bg-primary/10 text-primary px-2 py-1 rounded"
+                                      >
+                                        {skill.skillName}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                            {user.wantedSkills &&
+                              user.wantedSkills.length > 0 && (
+                                <div className="mt-2">
+                                  <p className="text-xs font-medium text-stone-600 mb-1">
+                                    Wants to learn:
+                                  </p>
+                                  <div className="flex flex-wrap gap-1">
+                                    {user.wantedSkills.map((skill) => (
+                                      <span
+                                        key={skill.skillId}
+                                        className="text-xs bg-accent/30 text-stone-700 px-2 py-1 rounded"
+                                      >
+                                        {skill.skillName}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                          </div>
+                        </div>
+                        <button className="px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors shrink-0 whitespace-nowrap">
+                          Connect
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </section>
           </div>
 
