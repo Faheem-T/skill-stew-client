@@ -56,7 +56,7 @@ export const RegisterForm = () => {
   const totalSteps = 2;
   const navigate = useNavigate();
 
-  const { mutate } = useMutation<
+  const { mutate, isPending } = useMutation<
     RegisterResponseType,
     AxiosError<RegisterErrorResponseType>,
     z.infer<typeof registerSchema>
@@ -243,7 +243,12 @@ export const RegisterForm = () => {
                   >
                     Back
                   </Button>
-                  <Button type="submit" size="sm" className="font-medium">
+                  <Button
+                    type="submit"
+                    size="sm"
+                    className="font-medium"
+                    disabled={isPending}
+                  >
                     Submit
                   </Button>
                 </div>
