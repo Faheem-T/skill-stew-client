@@ -9,7 +9,9 @@ import {
   GraduationCap,
   Languages,
   Link as LinkIcon,
+  User,
 } from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/shared/components/ui/button";
 import { Badge } from "@/shared/components/ui/badge";
 import { AppNavbar } from "@/shared/components/layout/AppNavbar";
@@ -21,6 +23,8 @@ import {
   AvatarImage,
 } from "@/shared/components/ui/avatar";
 import ISO6391 from "iso-639-1";
+import { EditProfileModal } from "../components/EditProfileModal";
+import { EditUsernameModal } from "../components/EditUsernameModal";
 
 // Helper to pluralize words
 const pluralize = (count: number, singular: string, plural: string) =>
@@ -34,6 +38,9 @@ export const UserProfilePage = () => {
   const { data: profile, isLoading: isProfileLoading } = useUserProfile();
   const { data: skillProfile, isLoading: isSkillProfileLoading } =
     useCurrentUserSkillProfile();
+
+  const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
+  const [isEditUsernameOpen, setIsEditUsernameOpen] = useState(false);
 
   if (isProfileLoading || isSkillProfileLoading) {
     return (
@@ -94,13 +101,24 @@ export const UserProfilePage = () => {
                     <p className="text-stone-500">@{profile.username}</p>
                   )}
                 </div>
-                <Button
-                  variant="outline"
-                  className="border-stone-300 text-stone-700 hover:bg-stone-100 hover:text-primary rounded-lg px-6 h-10 font-medium w-fit"
-                >
-                  <Edit2 className="w-4 h-4 mr-2" />
-                  Edit Profile
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    className="border-stone-300 text-stone-700 hover:bg-stone-100 hover:text-primary rounded-lg px-6 h-10 font-medium"
+                    onClick={() => setIsEditUsernameOpen(true)}
+                  >
+                    <User className="w-4 h-4 mr-2" />
+                    Edit Username
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="border-stone-300 text-stone-700 hover:bg-stone-100 hover:text-primary rounded-lg px-6 h-10 font-medium"
+                    onClick={() => setIsEditProfileOpen(true)}
+                  >
+                    <Edit2 className="w-4 h-4 mr-2" />
+                    Edit Profile
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
@@ -340,6 +358,22 @@ export const UserProfilePage = () => {
           </div>
         </div>
       </div>
+
+      {/* Modals */}
+      {profile?.role === "USER" && (
+        <>
+          <EditProfileModal
+            open={isEditProfileOpen}
+            onOpenChange={setIsEditProfileOpen}
+            profile={profile}
+          />
+          <EditUsernameModal
+            open={isEditUsernameOpen}
+            onOpenChange={setIsEditUsernameOpen}
+            currentUsername={profile.username}
+          />
+        </>
+      )}
     </div>
   );
 };
