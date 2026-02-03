@@ -55,8 +55,11 @@ export const LoginPage = () => {
       if (error.response?.data) {
         if (error.response.data.errors) {
           for (const { message, field } of error.response.data.errors) {
-            if (field)
+            if (field) {
               form.setError(field as keyof typeof variables, { message });
+            } else {
+              form.setError("root", { message });
+            }
           }
         }
         if (error.response.data.message) {
@@ -66,10 +69,7 @@ export const LoginPage = () => {
     },
     async onSuccess(data) {
       setAccessToken(data.data.accessToken);
-
-      await fetchProfile();
-
-      navigate("/");
+      navigate("/dashboard");
     },
   });
 
