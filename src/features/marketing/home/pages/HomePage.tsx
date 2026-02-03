@@ -1,4 +1,4 @@
-import { TopBar } from "../components/TopBar";
+import { TopBar } from "../../../../shared/components/layout/TopBar";
 import { HeroSection } from "../components/HeroSection";
 import { InfoSection } from "../components/InfoSection";
 import { HowItWorksSection } from "../components/HowItWorksSection";

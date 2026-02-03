@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { Badge } from "@/shared/components/ui/badge";
-import { TopBar } from "@/features/marketing/home/components/TopBar";
+import { AppNavbar } from "@/shared/components/layout/AppNavbar";
 import { useUserProfile } from "@/shared/hooks/useUserProfile";
 import {
   Alert,
@@ -32,7 +32,7 @@ export const UserDashboard = () => {
   return (
     <div className="min-h-screen bg-stone-50">
       {/* Header */}
-      <TopBar />
+      <AppNavbar />
 
       <div className="container mx-auto px-6 md:px-12 py-12 md:py-16">
         {/* Welcome Section */}

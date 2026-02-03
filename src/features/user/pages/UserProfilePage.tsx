@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { Badge } from "@/shared/components/ui/badge";
-import { TopBar } from "@/features/marketing/home/components/TopBar";
+import { AppNavbar } from "@/shared/components/layout/AppNavbar";
 import { useUserProfile } from "@/shared/hooks/useUserProfile";
 import { useCurrentUserSkillProfile } from "@/shared/hooks/useCurrentUserSkillProfile";
 import {
@@ -38,7 +38,7 @@ export const UserProfilePage = () => {
   if (isProfileLoading || isSkillProfileLoading) {
     return (
       <div className="min-h-screen bg-stone-50">
-        <TopBar />
+        <AppNavbar />
         <div className="container mx-auto px-6 md:px-12 py-12">
           <div className="animate-pulse space-y-8">
             <div className="h-48 bg-stone-200 rounded-lg" />
@@ -52,7 +52,7 @@ export const UserProfilePage = () => {
 
   return (
     <div className="min-h-screen bg-stone-50">
-      <TopBar />
+      <AppNavbar />
 
       <div className="container mx-auto px-6 md:px-12 py-12 md:py-16">
         {/* Profile Header */}
