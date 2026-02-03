@@ -8,6 +8,7 @@ export function useLogout() {
     mutationFn: logoutRequest,
     onSuccess: () => {
       logout();
+      window.location.reload();
     },
   });
 }
