@@ -80,16 +80,12 @@ export const RegisterForm = () => {
   } = form;
 
   const onSubmit = async (formData: registerSchemaType) => {
-    console.log(formData);
-
     mutate(formData, {
       onSuccess(data) {
-        toast.success(data.message);
         setAccessToken(data.data.accessToken);
         setStep(0);
         reset();
-        // navigate to onboarding profile step
-        navigate("/onboarding/profile");
+        navigate("/dashboard");
       },
       onError(error) {
         if (error.response) {

@@ -1,4 +1,3 @@
-// import { Carousel } from "@/shared/components/ui/Carousel";
 import { useNavigate } from "react-router";
 import { RegisterForm } from "../../components/RegisterForm";
 import { APP_NAME } from "@/shared/config/constants";
