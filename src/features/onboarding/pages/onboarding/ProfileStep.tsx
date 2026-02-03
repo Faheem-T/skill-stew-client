@@ -72,12 +72,12 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({
   // Check availability when debounced username changes
   useEffect(() => {
     const checkAvailability = async () => {
-      // make sure validation runs first
-      await form.trigger("username");
-
       if (!debouncedUsername) {
         return;
       }
+
+      // make sure validation runs first
+      await form.trigger("username");
 
       if (formState.errors.username) {
         return;
