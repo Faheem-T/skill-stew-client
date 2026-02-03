@@ -3,11 +3,11 @@ import type { ApiResponseType } from "@/shared/api/baseApi";
 
 export type UpdateProfileBody = {
   name?: string;
-  username?: string;
   phoneNumber?: string;
   avatarKey?: string;
+  bannerKey?: string;
   timezone?: string;
-  location?: { city?: string; country?: string } | undefined;
+  location?: { placeId: string };
   about?: string;
   socialLinks?: string[];
   languages?: string[];

@@ -13,7 +13,7 @@ import { useUserProfile } from "@/shared/hooks/useUserProfile";
 import { generatePresignedUploadUrlRequest } from "../../api/GeneratePresignedUploadUrl";
 import type { GeneratePresignedUploadUrlResponse } from "../../api/GeneratePresignedUploadUrl";
 import { checkUsernameAvailabilityRequest } from "@/features/onboarding/api/CheckUsernameAvailability";
-import { updateUsernameRequest } from "@/features/onboarding/api/UpdateUsername";
+import { updateUsernameRequest } from "@/shared/api/UpdateUsername";
 import type { ApiErrorResponseType } from "@/shared/api/baseApi";
 import { DevTool } from "@hookform/devtools";
 import { useDebounce } from "@/shared/hooks/useDebounce";
