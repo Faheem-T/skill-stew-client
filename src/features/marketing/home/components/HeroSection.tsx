@@ -36,8 +36,7 @@ export const HeroSection: React.FC<{
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
           >
-            Master practical skills{" "}
-            <span className="text-primary">with live expert workshops</span>
+            Master practical skills with live expert workshops
           </motion.h1>
 
           {/* Subheading */}
