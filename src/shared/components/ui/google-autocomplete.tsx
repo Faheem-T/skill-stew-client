@@ -22,12 +22,19 @@ export const GoogleMapsAutocomplete: React.FC<{
 
       // Listen for place selection
       autocompleteEl.addEventListener("gmp-select", async (e: any) => {
-        const place = e.placePrediction.toPlace();
+        const placePrediction = e.placePrediction;
+        const place = placePrediction.toPlace();
         await place.fetchFields({
           fields: ["id"],
         });
 
-        onPlaceSelected(place.toJSON());
+        onPlaceSelected({
+          ...place.toJSON(),
+          name:
+            placePrediction.text?.text ||
+            placePrediction.mainText?.text ||
+            "Location",
+        });
       });
 
       container.appendChild(autocompleteEl);
