@@ -21,6 +21,7 @@ export function useCurrentUserProfile(
       return res.data;
     },
     staleTime: Infinity,
+    retry: false,
     ...options,
   });
 }
