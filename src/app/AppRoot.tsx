@@ -10,7 +10,7 @@ export const AppRoot: React.FC = () => {
   const { isOnboardingModalOpen, setIsOnboardingModalOpen } = useAppStore();
 
   useEffect(() => {
-    if (userProfile?.role === "USER" && userProfile.isOnboardingComplete) {
+    if (userProfile?.role === "USER" && !userProfile.isOnboardingComplete) {
       setIsOnboardingModalOpen(true);
     }
   }, [userProfile]);

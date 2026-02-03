@@ -9,4 +9,5 @@ export async function fetchProfile() {
   }
   const { role, email } = data;
   useAppStore.getState().setUser({ role, email });
+  return data;
 }

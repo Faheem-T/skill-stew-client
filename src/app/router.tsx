@@ -1,4 +1,5 @@
 import { createBrowserRouter } from "react-router";
+import { QueryClient } from "@tanstack/react-query";
 import { LoginPage } from "@/features/auth/pages/LoginPage";
 import { RegisterPage } from "@/features/auth/pages/register/RegisterPage";
 import { SetPasswordPage } from "@/features/auth/pages/SetPasswordPage";
@@ -17,6 +18,8 @@ import { UserDashboard } from "@/features/user/pages/UserDashboard";
 import { UserProfilePage } from "@/features/user/pages/UserProfilePage";
 import { ProfileStep } from "@/features/onboarding/pages/onboarding/ProfileStep";
 import { AppRoot } from "./AppRoot";
+
+export const queryClient = new QueryClient();
 
 export const router = createBrowserRouter([
   {
