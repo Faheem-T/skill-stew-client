@@ -1,107 +1,93 @@
-import { Star } from "lucide-react";
-import { Button } from "@/shared/components/ui/button";
-import { Badge } from "@/shared/components/ui/badge";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/shared/components/ui/avatar";
-import { cn } from "@/shared/lib/utils";
+import { DefaultAvatarIllustration } from "@/features/onboarding/components/DefaultAvatarIllustration";
+
+interface Skill {
+  skillId: string;
+  skillName: string;
+}
 
 interface PersonCardProps {
-  name: string;
-  rating: number;
-  exchanges: number;
-  canTeach: string[];
-  wantsToLearn: string[];
-  avatarSrc?: string;
-  avatarFallback: string;
-  avatarBgClass: string;
-  bgClass: string;
-  borderClass: string;
-  buttonVariant?: "accent" | "secondary" | "primary";
+  id: string;
+  name?: string;
+  username?: string;
+  location?: string;
+  avatarUrl?: string;
+  offeredSkills?: Skill[];
+  wantedSkills?: Skill[];
   onConnect?: () => void;
 }
 
 export const PersonCard = ({
   name,
-  rating,
-  exchanges,
-  canTeach,
-  wantsToLearn,
-  avatarSrc,
-  avatarFallback,
-  avatarBgClass,
-  bgClass,
-  borderClass,
-  buttonVariant = "accent",
+  username,
+  location,
+  avatarUrl,
+  offeredSkills,
+  wantedSkills,
   onConnect,
 }: PersonCardProps) => {
-  const getButtonVariant = () => {
-    switch (buttonVariant) {
-      case "accent":
-        return "bg-accent hover:bg-accent/90 text-background";
-      case "secondary":
-        return "bg-secondary hover:bg-secondary/90 text-background";
-      case "primary":
-        return "bg-primary hover:bg-primary/90 text-background";
-      default:
-        return "bg-accent hover:bg-accent/90 text-background";
-    }
-  };
-
   return (
-    <div
-      className={cn(
-        "p-4 rounded-lg border transition-all duration-200 hover:shadow-md hover:scale-102",
-        bgClass,
-        borderClass,
-      )}
-    >
-      <div className="flex items-start space-x-3 mb-3">
-        <Avatar>
-          <AvatarImage src={avatarSrc} />
-          <AvatarFallback className={avatarBgClass}>
-            {avatarFallback}
-          </AvatarFallback>
-        </Avatar>
-        <div className="flex-1">
-          <h4 className="font-semibold text-primary">{name}</h4>
-          <div className="flex items-center text-sm text-text/70 mb-2">
-            <Star className="w-4 h-4 text-accent mr-1" />
-            {rating} • {exchanges} exchanges
+    <div className="p-4 border border-stone-200 rounded-lg hover:border-primary/50 hover:shadow-md transition-all bg-white">
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex items-start gap-4 flex-1 min-w-0">
+          <div className="w-12 h-12 rounded-full shrink-0 overflow-hidden bg-accent/20 flex items-center justify-center">
+            {avatarUrl ? (
+              <img
+                src={avatarUrl}
+                alt={name || "User"}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <DefaultAvatarIllustration />
+            )}
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="font-semibold text-stone-900 truncate">
+              {name || username || "User"}
+            </p>
+            {location && <p className="text-sm text-stone-500">{location}</p>}
+            {offeredSkills && offeredSkills.length > 0 && (
+              <div className="mt-2">
+                <p className="text-xs font-medium text-stone-600 mb-1">
+                  Offers:
+                </p>
+                <div className="flex flex-wrap gap-1">
+                  {offeredSkills.map((skill) => (
+                    <span
+                      key={skill.skillId}
+                      className="text-xs bg-primary/10 text-primary px-2 py-1 rounded"
+                    >
+                      {skill.skillName}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+            {wantedSkills && wantedSkills.length > 0 && (
+              <div className="mt-2">
+                <p className="text-xs font-medium text-stone-600 mb-1">
+                  Wants to learn:
+                </p>
+                <div className="flex flex-wrap gap-1">
+                  {wantedSkills.map((skill) => (
+                    <span
+                      key={skill.skillId}
+                      className="text-xs bg-accent/30 text-stone-700 px-2 py-1 rounded"
+                    >
+                      {skill.skillName}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
+        <button
+          className="px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors shrink-0 whitespace-nowrap"
+          onClick={onConnect}
+        >
+          Connect
+        </button>
       </div>
-      <div className="space-y-2 mb-4">
-        <div>
-          <p className="text-sm font-medium text-accent">Can teach:</p>
-          <div className="flex flex-wrap gap-1 mt-1">
-            {canTeach.map((skill, index) => (
-              <Badge key={index} variant="secondary" className="text-xs">
-                {skill}
-              </Badge>
-            ))}
-          </div>
-        </div>
-        <div>
-          <p className="text-sm font-medium text-primary">Wants to learn:</p>
-          <div className="flex flex-wrap gap-1 mt-1">
-            {wantsToLearn.map((skill, index) => (
-              <Badge key={index} variant="outline" className="text-xs">
-                {skill}
-              </Badge>
-            ))}
-          </div>
-        </div>
-      </div>
-      <Button
-        size="sm"
-        className={cn("w-full", getButtonVariant())}
-        onClick={onConnect}
-      >
-        Connect
-      </Button>
     </div>
   );
 };

@@ -20,12 +20,11 @@ import {
   AlertTitle,
 } from "@/shared/components/ui/alert";
 import { SkillExchangeCard } from "../components/SkillExchangeCard";
-import { PersonCard } from "../components/PersonCard";
 import { ActivityFeed } from "../components/ActivityFeed";
+import { PersonCard } from "../components/PersonCard";
 import { useAppStore } from "@/app/store";
 import { useQuery } from "@tanstack/react-query";
 import { getRecommendedUsersRequest } from "@/features/user/api/GetRecommendedUsers";
-import { DefaultAvatarIllustration } from "@/features/onboarding/components/DefaultAvatarIllustration";
 
 export const UserDashboard = () => {
   const { data } = useUserProfile();
@@ -201,75 +200,7 @@ export const UserDashboard = () => {
               ) : (
                 <div className="space-y-4">
                   {recommendedUsers.map((user) => (
-                    <div
-                      key={user.id}
-                      className="p-4 border border-stone-200 rounded-lg hover:border-primary/50 hover:shadow-md transition-all bg-white"
-                    >
-                      <div className="flex items-center justify-between gap-4">
-                        <div className="flex items-start gap-4 flex-1 min-w-0">
-                          <div className="w-12 h-12 rounded-full shrink-0 overflow-hidden bg-accent/20 flex items-center justify-center">
-                            {user.avatarUrl ? (
-                              <img
-                                src={user.avatarUrl}
-                                alt={user.name || "User"}
-                                className="w-full h-full object-cover"
-                              />
-                            ) : (
-                              <DefaultAvatarIllustration />
-                            )}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="font-semibold text-stone-900 truncate">
-                              {user.name || user.username || "User"}
-                            </p>
-                            {user.location && (
-                              <p className="text-sm text-stone-500">
-                                {user.location}
-                              </p>
-                            )}
-                            {user.offeredSkills &&
-                              user.offeredSkills.length > 0 && (
-                                <div className="mt-2">
-                                  <p className="text-xs font-medium text-stone-600 mb-1">
-                                    Offers:
-                                  </p>
-                                  <div className="flex flex-wrap gap-1">
-                                    {user.offeredSkills.map((skill) => (
-                                      <span
-                                        key={skill.skillId}
-                                        className="text-xs bg-primary/10 text-primary px-2 py-1 rounded"
-                                      >
-                                        {skill.skillName}
-                                      </span>
-                                    ))}
-                                  </div>
-                                </div>
-                              )}
-                            {user.wantedSkills &&
-                              user.wantedSkills.length > 0 && (
-                                <div className="mt-2">
-                                  <p className="text-xs font-medium text-stone-600 mb-1">
-                                    Wants to learn:
-                                  </p>
-                                  <div className="flex flex-wrap gap-1">
-                                    {user.wantedSkills.map((skill) => (
-                                      <span
-                                        key={skill.skillId}
-                                        className="text-xs bg-accent/30 text-stone-700 px-2 py-1 rounded"
-                                      >
-                                        {skill.skillName}
-                                      </span>
-                                    ))}
-                                  </div>
-                                </div>
-                              )}
-                          </div>
-                        </div>
-                        <button className="px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors shrink-0 whitespace-nowrap">
-                          Connect
-                        </button>
-                      </div>
-                    </div>
+                    <PersonCard key={user.id} {...user} />
                   ))}
                 </div>
               )}
