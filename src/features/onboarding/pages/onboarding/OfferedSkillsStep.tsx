@@ -4,7 +4,7 @@ import { Input } from "@/shared/components/ui/input";
 import { Slider } from "@/shared/components/ui/slider";
 import { X, Search, Award } from "lucide-react";
 import { searchSkillsApi } from "@/shared/api/searchSkillsApi";
-import { skillProficiencies } from "@/features/profile/api/UpdateUserSkillProfile";
+import { skillProficiencies } from "@/features/onboarding/api/UpdateUserSkillProfile";
 import { useDebounce } from "@/shared/hooks/useDebounce";
 import { useCurrentUserSkillProfile } from "@/shared/hooks/useCurrentUserSkillProfile";
 
@@ -50,11 +50,9 @@ export const OfferedSkillsStep: React.FC<OfferedSkillsStepProps> = ({
           ...item.skill,
           alternateNames: [],
         },
-        proficiency: (
-          typeof item.proficiency === "string"
-            ? item.proficiency
-            : item.proficiency[0]
-        ) as (typeof skillProficiencies)[number],
+        proficiency: (typeof item.proficiency === "string"
+          ? item.proficiency
+          : item.proficiency[0]) as (typeof skillProficiencies)[number],
       }));
       onUpdate(currentOfferedSkills);
     }
@@ -135,8 +133,12 @@ export const OfferedSkillsStep: React.FC<OfferedSkillsStepProps> = ({
           {/* Left side - Search and selection */}
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-semibold text-slate-900 mb-2">Add Your Skills</h3>
-              <p className="text-sm text-slate-600">Search and select the skills you're proficient in</p>
+              <h3 className="text-lg font-semibold text-slate-900 mb-2">
+                Add Your Skills
+              </h3>
+              <p className="text-sm text-slate-600">
+                Search and select the skills you're proficient in
+              </p>
             </div>
 
             {/* Search input */}
@@ -168,7 +170,9 @@ export const OfferedSkillsStep: React.FC<OfferedSkillsStepProps> = ({
                         }
                       >
                         <div className="flex-1">
-                          <div className="font-medium text-sm text-slate-900">{skill.name}</div>
+                          <div className="font-medium text-sm text-slate-900">
+                            {skill.name}
+                          </div>
                           {skill.alternateNames.length > 0 && (
                             <div className="text-xs text-slate-500">
                               Also known as: {skill.alternateNames.join(", ")}
@@ -242,7 +246,9 @@ export const OfferedSkillsStep: React.FC<OfferedSkillsStepProps> = ({
               <h3 className="text-lg font-semibold text-slate-900 mb-2">
                 Selected Skills ({offeredSkills.length})
               </h3>
-              <p className="text-sm text-slate-600">Your current skill profile</p>
+              <p className="text-sm text-slate-600">
+                Your current skill profile
+              </p>
             </div>
 
             {offeredSkills.length > 0 ? (
@@ -277,7 +283,8 @@ export const OfferedSkillsStep: React.FC<OfferedSkillsStepProps> = ({
               <div className="flex flex-col items-center justify-center py-12 px-4 bg-slate-50 border-2 border-dashed border-slate-300 rounded-lg">
                 <Award className="w-10 h-10 text-slate-400 mb-2" />
                 <p className="text-sm text-slate-600 text-center">
-                  No skills added yet. Search and add your skills to get started!
+                  No skills added yet. Search and add your skills to get
+                  started!
                 </p>
               </div>
             )}
@@ -288,7 +295,12 @@ export const OfferedSkillsStep: React.FC<OfferedSkillsStepProps> = ({
       {/* Navigation buttons at bottom */}
       <div className="flex justify-between gap-4 px-8 py-4 border-t border-slate-200 bg-slate-50 shrink-0">
         {onBack ? (
-          <Button type="button" variant="outline" onClick={onBack} className="px-6">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onBack}
+            className="px-6"
+          >
             Back
           </Button>
         ) : (

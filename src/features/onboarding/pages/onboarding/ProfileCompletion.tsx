@@ -17,9 +17,9 @@ import {
 } from "@/shared/components/ui/form";
 import { MultiSelect } from "@/shared/components/ui/multi-select";
 import type { MultiSelectOption } from "@/shared/components/ui/multi-select";
-import type { UpdateProfileBody } from "@/features/profile/api/UpdateProfile";
+import type { UpdateProfileBody } from "@/features/onboarding/api/UpdateProfile";
 import { useForm } from "react-hook-form";
-import { useUpdateProfile } from "@/features/profile/hooks/useUpdateProfile";
+import { useUpdateProfile } from "@/features/onboarding/hooks/useUpdateProfile";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
 import ISO6391 from "iso-639-1";

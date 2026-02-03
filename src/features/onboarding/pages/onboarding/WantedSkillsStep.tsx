@@ -11,8 +11,8 @@ import toast from "react-hot-toast";
 import {
   skillsSchema,
   type SkillsFormValues,
-} from "@/features/profile/schemas";
-import { skillProficiencies } from "@/features/profile/api/UpdateUserSkillProfile";
+} from "@/features/onboarding/schemas";
+import { skillProficiencies } from "@/features/onboarding/api/UpdateUserSkillProfile";
 import {
   useCurrentUserSkillProfile,
   useUpdateUserSkillProfile,
@@ -77,7 +77,7 @@ export const WantedSkillsStep: React.FC<WantedSkillsStepProps> = ({
         alternateNames: [],
       }));
       onUpdate(currentWantedSkills);
-      
+
       // Also update the form values
       const formWantedSkills = currentWantedSkills.map((item) => ({
         skillId: item.id,
@@ -213,10 +213,14 @@ export const WantedSkillsStep: React.FC<WantedSkillsStepProps> = ({
                               ? "opacity-50 bg-slate-50 cursor-not-allowed"
                               : "hover:bg-primary/5 cursor-pointer"
                           }`}
-                          onClick={() => !isDisabled && handleAddWantedSkill(skill)}
+                          onClick={() =>
+                            !isDisabled && handleAddWantedSkill(skill)
+                          }
                         >
                           <div className="flex-1">
-                            <div className="font-medium text-sm text-slate-900">{skill.name}</div>
+                            <div className="font-medium text-sm text-slate-900">
+                              {skill.name}
+                            </div>
                             {skill.alternateNames.length > 0 && (
                               <div className="text-xs text-slate-500">
                                 Also known as: {skill.alternateNames.join(", ")}
@@ -233,7 +237,9 @@ export const WantedSkillsStep: React.FC<WantedSkillsStepProps> = ({
                               </div>
                             )}
                           </div>
-                          {isDisabled && <X className="w-4 h-4 text-slate-400" />}
+                          {isDisabled && (
+                            <X className="w-4 h-4 text-slate-400" />
+                          )}
                         </div>
                       );
                     })}
@@ -247,7 +253,10 @@ export const WantedSkillsStep: React.FC<WantedSkillsStepProps> = ({
               <Lightbulb className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
               <div className="text-sm text-primary/80">
                 <p className="font-medium">Pro tip:</p>
-                <p>You can't select a skill you're already offering as a wanted skill</p>
+                <p>
+                  You can't select a skill you're already offering as a wanted
+                  skill
+                </p>
               </div>
             </div>
           </div>
@@ -258,7 +267,9 @@ export const WantedSkillsStep: React.FC<WantedSkillsStepProps> = ({
               <h3 className="text-lg font-semibold text-slate-900 mb-2">
                 Learning Goals ({wantedSkills.length})
               </h3>
-              <p className="text-sm text-slate-600">Skills you want to acquire</p>
+              <p className="text-sm text-slate-600">
+                Skills you want to acquire
+              </p>
             </div>
 
             {wantedSkills.length > 0 ? (
@@ -297,7 +308,12 @@ export const WantedSkillsStep: React.FC<WantedSkillsStepProps> = ({
       {/* Navigation buttons at bottom */}
       <div className="flex justify-between gap-4 px-8 py-4 border-t border-slate-200 bg-slate-50 shrink-0">
         {onBack ? (
-          <Button type="button" variant="outline" onClick={onBack} className="px-6">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onBack}
+            className="px-6"
+          >
             Back
           </Button>
         ) : (

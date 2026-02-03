@@ -3,7 +3,7 @@ import { ProfileStep } from "./ProfileStep";
 import { OfferedSkillsStep } from "./OfferedSkillsStep";
 import { WantedSkillsStep } from "./WantedSkillsStep";
 import { AnimatePresence, motion, type Transition } from "motion/react";
-import { StepIndicator } from "@/features/profile/components/StepIndicator";
+import { StepIndicator } from "@/features/onboarding/components/StepIndicator";
 import { CheckCircle2, Sparkles } from "lucide-react";
 
 interface SkillWithProficiency {
@@ -124,7 +124,8 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
               transition={{ delay: 0.3 }}
               className="text-slate-600 text-center mb-8 max-w-sm"
             >
-              Your profile is all set. You're ready to start exchanging skills with our community!
+              Your profile is all set. You're ready to start exchanging skills
+              with our community!
             </motion.p>
 
             <motion.button
@@ -155,7 +156,9 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
       <div className="bg-primary px-8 py-3 shrink-0">
         <div className="flex items-center gap-2 mb-1">
           <Sparkles className="w-4 h-4 text-primary-foreground" />
-          <p className="text-primary-foreground text-xs font-medium">Setup Your Profile</p>
+          <p className="text-primary-foreground text-xs font-medium">
+            Setup Your Profile
+          </p>
         </div>
         <h1 className="text-xl font-bold text-primary-foreground">
           {stepTitles[step] || "Welcome"}
@@ -164,11 +167,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
 
       {/* Step Indicator */}
       <div className="px-8 py-4 border-b border-slate-200 bg-white shrink-0">
-        <StepIndicator
-          currentStep={step}
-          totalSteps={totalSteps}
-          title=""
-        />
+        <StepIndicator currentStep={step} totalSteps={totalSteps} title="" />
       </div>
 
       {/* Content Area - Scrollable */}

@@ -3,8 +3,8 @@ import { Button } from "@/shared/components/ui/button";
 import { useEffect, useRef, useState } from "react";
 import { CURRENT_USER_PROFILE_QUERY_KEY } from "@/shared/hooks/useCurrentUserProfile";
 import { Form } from "@/shared/components/ui/form";
-import type { OnboardingUpdateProfileBody } from "@/features/profile/api/OnboardingUpdateProfile";
-import { onboardingUpdateProfileRequest } from "@/features/profile/api/OnboardingUpdateProfile";
+import type { OnboardingUpdateProfileBody } from "@/features/onboarding/api/OnboardingUpdateProfile";
+import { onboardingUpdateProfileRequest } from "@/features/onboarding/api/OnboardingUpdateProfile";
 import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
@@ -12,15 +12,15 @@ import { useNavigate } from "react-router";
 import { useUserProfile } from "@/shared/hooks/useUserProfile";
 import { generatePresignedUploadUrlRequest } from "../../api/GeneratePresignedUploadUrl";
 import type { GeneratePresignedUploadUrlResponse } from "../../api/GeneratePresignedUploadUrl";
-import { checkUsernameAvailabilityRequest } from "@/features/profile/api/CheckUsernameAvailability";
-import { updateUsernameRequest } from "@/features/profile/api/UpdateUsername";
+import { checkUsernameAvailabilityRequest } from "@/features/onboarding/api/CheckUsernameAvailability";
+import { updateUsernameRequest } from "@/features/onboarding/api/UpdateUsername";
 import type { ApiErrorResponseType } from "@/shared/api/baseApi";
 import { DevTool } from "@hookform/devtools";
 import { useDebounce } from "@/shared/hooks/useDebounce";
-import { profileSchema } from "@/features/profile/schemas";
-import type { FormValues } from "@/features/profile/schemas";
-import { ProfileAvatar } from "@/features/profile/components/ProfileAvatar";
-import { ProfileFormFields } from "@/features/profile/components/ProfileFormFields";
+import { profileSchema } from "@/features/onboarding/schemas";
+import type { FormValues } from "@/features/onboarding/schemas";
+import { ProfileAvatar } from "@/features/onboarding/components/ProfileAvatar";
+import { ProfileFormFields } from "@/features/onboarding/components/ProfileFormFields";
 
 interface ProfileStepProps {
   onComplete?: () => void;
@@ -50,14 +50,7 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({
       languages: [],
     },
   });
-  const {
-    setValue,
-    watch,
-    setError,
-    clearErrors,
-    formState,
-    control,
-  } = form;
+  const { setValue, watch, setError, clearErrors, formState, control } = form;
 
   // prefilling form with existing profile data
   const { data: profile } = useUserProfile();
@@ -303,7 +296,12 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({
       {/* Navigation buttons at bottom */}
       <div className="flex justify-between gap-4 px-8 py-4 border-t border-slate-200 bg-slate-50 shrink-0">
         {onBack ? (
-          <Button type="button" variant="outline" onClick={onBack} className="px-6">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onBack}
+            className="px-6"
+          >
             Back
           </Button>
         ) : (
