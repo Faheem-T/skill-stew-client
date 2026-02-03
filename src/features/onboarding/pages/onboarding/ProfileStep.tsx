@@ -6,7 +6,7 @@ import { Form } from "@/shared/components/ui/form";
 import type { OnboardingUpdateProfileBody } from "@/features/onboarding/api/OnboardingUpdateProfile";
 import { onboardingUpdateProfileRequest } from "@/features/onboarding/api/OnboardingUpdateProfile";
 import { useForm } from "react-hook-form";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
 import { useUserProfile } from "@/shared/hooks/useUserProfile";
@@ -133,12 +133,17 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({
   }, [debouncedUsername]);
 
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const mutation = useMutation<void, unknown, OnboardingUpdateProfileBody>({
     mutationFn: async (body: OnboardingUpdateProfileBody) => {
       await onboardingUpdateProfileRequest(body);
     },
-    mutationKey: CURRENT_USER_PROFILE_QUERY_KEY,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: CURRENT_USER_PROFILE_QUERY_KEY,
+      });
+    },
   });
   // avatar upload handling
   const onPickAvatar = () => {
