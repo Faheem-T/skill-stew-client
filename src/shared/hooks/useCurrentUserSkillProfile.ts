@@ -39,6 +39,7 @@ export function useCurrentUserSkillProfile(
       return res.data as CurrentUserSkillProfile;
     },
     staleTime: Infinity,
+    retry: false,
     ...options,
   });
 }

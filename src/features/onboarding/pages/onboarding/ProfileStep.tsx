@@ -15,7 +15,6 @@ import type { GeneratePresignedUploadUrlResponse } from "../../api/GeneratePresi
 import { checkUsernameAvailabilityRequest } from "@/features/onboarding/api/CheckUsernameAvailability";
 import { updateUsernameRequest } from "@/shared/api/UpdateUsername";
 import type { ApiErrorResponseType } from "@/shared/api/baseApi";
-import { DevTool } from "@hookform/devtools";
 import { useDebounce } from "@/shared/hooks/useDebounce";
 import { profileSchema } from "@/features/onboarding/schemas";
 import type { FormValues } from "@/features/onboarding/schemas";
@@ -50,7 +49,7 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({
       languages: [],
     },
   });
-  const { setValue, watch, setError, clearErrors, formState, control } = form;
+  const { setValue, watch, setError, clearErrors, formState } = form;
 
   // prefilling form with existing profile data
   const { data: profile } = useUserProfile();
@@ -181,9 +180,7 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({
   };
 
   const onSubmit = async (values: FormValues) => {
-    console.log("Hello there");
     if (!formState.isDirty && onComplete) {
-      console.log("Form is not dirty");
       onComplete();
       return;
     }
@@ -293,7 +290,6 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({
                 />
               </form>
             </Form>
-            <DevTool control={control} />
           </div>
         </div>
       </div>
