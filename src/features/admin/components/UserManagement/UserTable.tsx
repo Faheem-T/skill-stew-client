@@ -12,7 +12,6 @@ import {
   TableRow,
 } from "@/shared/components/ui/table";
 import { cn } from "@/shared/lib/utils";
-import { AvatarImage } from "@radix-ui/react-avatar";
 import { BlockUserButton } from "./BlockUserButton";
 import type { UserQueryFilters } from "@/features/admin/types/UserQueryFilters";
 import type { User } from "@/features/admin/api/users/GetUsers";
@@ -50,7 +49,6 @@ export const UserTable: React.FC<{
       <TableHeader>
         <TableRow>
           <TableHead></TableHead>
-          <TableHead>Name</TableHead>
           <TableHead>Username</TableHead>
           <TableHead>Email</TableHead>
           <TableHead>Verified</TableHead>
@@ -87,42 +85,23 @@ const UserRow = ({
   user: User;
   filters: UserQueryFilters;
 }) => {
-  const {
-    id,
-    name,
-    username,
-    email,
-    role,
-    is_blocked,
-    is_subscribed,
-    is_verified,
-    languages,
-    social_links,
-    about,
-    avatar_url,
-    phone_number,
-    timezone,
-  } = user;
+  const { id, username, email, role, isBlocked, isVerified } = user;
   return (
     <TableRow>
       <TableCell>
         <Avatar>
-          <AvatarImage src={avatar_url} />
           <AvatarFallback>{email.slice(0, 2)}</AvatarFallback>
         </Avatar>
-      </TableCell>
-      <TableCell className={cn(name ? "" : "text-muted-foreground")}>
-        {name ?? "Not set"}
       </TableCell>
       <TableCell className={cn(username ? "" : "text-muted-foreground")}>
         {username ?? "Not set"}
       </TableCell>
       <TableCell>{email}</TableCell>
-      <TableCell>{is_verified ? "true" : "false"}</TableCell>
+      <TableCell>{isVerified ? "true" : "false"}</TableCell>
 
       <TableCell>
         <BlockUserButton
-          currentlyBlocked={is_blocked}
+          currentlyBlocked={isBlocked}
           userId={id}
           filters={filters}
         />

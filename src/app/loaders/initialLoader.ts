@@ -10,6 +10,9 @@ export const initialLoader = async () => {
     useAppStore.getState().setAccessToken(data.accessToken);
     const profileData = await fetchProfile();
     queryClient.setQueryData(CURRENT_USER_PROFILE_QUERY_KEY, profileData);
+    if (window.location.pathname === "/") {
+      window.location.replace("/dashboard");
+    }
   } catch {
     useAppStore.getState().logout();
   }

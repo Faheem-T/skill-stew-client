@@ -1,10 +1,23 @@
-import { useAppStore } from "@/app/store";
+import useCurrentUserProfile from "@/shared/hooks/useCurrentUserProfile";
 import type React from "react";
 import { Navigate } from "react-router";
+import { InitialLoadScreen } from "./InitialLoadScreen";
 
 export const DashboardRoutingPage: React.FC = () => {
-  const user = useAppStore((state) => state.user)!;
+  const { data: userProfile, isFetching } = useCurrentUserProfile();
+
+  if (isFetching) {
+    return <InitialLoadScreen />;
+  }
+
+  if (!userProfile) {
+    return <Navigate to="/" replace={true} />;
+  }
+
   return (
-    <Navigate to={`/dashboard/${user.role.toLowerCase()}`} replace={true} />
+    <Navigate
+      to={`/dashboard/${userProfile.role.toLowerCase()}`}
+      replace={true}
+    />
   );
 };

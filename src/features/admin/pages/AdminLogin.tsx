@@ -11,7 +11,7 @@ import {
 } from "@/shared/components/ui/form";
 import { Input } from "@/shared/components/ui/input";
 import { Button } from "@/shared/components/ui/button";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { ApiErrorResponseType } from "@/shared/api/baseApi";
 import { useNavigate } from "react-router";
 import { adminLoginRequest } from "@/features/admin/api/auth/AdminLoginRequest";
@@ -20,6 +20,7 @@ import { PasswordInput } from "@/shared/components/ui/password-input";
 import { loginRequest } from "@/features/auth/api/LoginRequest";
 import { APP_NAME } from "@/shared/config/constants";
 import { Shield } from "lucide-react";
+import { CURRENT_USER_PROFILE_QUERY_KEY } from "@/shared/hooks/useCurrentUserProfile";
 
 export const adminLoginSchema = z.object({
   email: z.string(),
@@ -30,7 +31,7 @@ export const AdminLoginPage = () => {
   const navigate = useNavigate();
 
   const setAccessToken = useAppStore((state) => state.setAccessToken);
-  const setUser = useAppStore((state) => state.setUser);
+  const queryClient = useQueryClient();
 
   const form = useForm<z.infer<typeof adminLoginSchema>>({
     resolver: zodResolver(adminLoginSchema),
@@ -49,7 +50,7 @@ export const AdminLoginPage = () => {
     onError(error, variables, _context) {
       if (error.response?.data) {
         if (error.response.data.errors) {
-          for (const { error: message, field } of error.response.data.errors) {
+          for (const { field, message } of error.response.data.errors) {
             if (field)
               form.setError(field as keyof typeof variables, { message });
           }
@@ -63,10 +64,12 @@ export const AdminLoginPage = () => {
 
   async function onSubmit(values: z.infer<typeof adminLoginSchema>) {
     mutate(values, {
-      onSuccess: (response) => {
+      onSuccess: async (response) => {
         setAccessToken(response.data.accessToken);
-        setUser({ role: "ADMIN" });
-        navigate("/admin/dashboard");
+        await queryClient.invalidateQueries({
+          queryKey: CURRENT_USER_PROFILE_QUERY_KEY,
+        });
+        navigate("/dashboard/admin");
       },
     });
   }

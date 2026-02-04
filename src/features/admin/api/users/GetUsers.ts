@@ -4,17 +4,9 @@ export interface User {
   id: string;
   role: "USER";
   email: string;
-  name?: string;
   username?: string;
-  phone_number?: string;
-  avatar_url?: string;
-  timezone?: string;
-  about?: string;
-  social_links: string[];
-  languages: string[];
-  is_subscribed: boolean;
-  is_verified: boolean;
-  is_blocked: boolean;
+  isVerified: boolean;
+  isBlocked: boolean;
 }
 
 type UserFilters = {
@@ -39,4 +31,3 @@ export const getUsers = async ({
   }
   return api.get(`/users?${params.toString()}`);
 };
-
