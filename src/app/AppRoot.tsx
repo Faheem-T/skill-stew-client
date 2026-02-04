@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import { useAppStore } from "./store";
 
 export const AppRoot: React.FC = () => {
-  const { data: userProfile, isFetching } = useCurrentUserProfile();
+  const { data: userProfile, isLoading } = useCurrentUserProfile();
   const { isOnboardingModalOpen, setIsOnboardingModalOpen } = useAppStore();
 
   useEffect(() => {
@@ -15,7 +15,7 @@ export const AppRoot: React.FC = () => {
     }
   }, [userProfile]);
 
-  if (isFetching) {
+  if (isLoading) {
     return <InitialLoadScreen />;
   }
 

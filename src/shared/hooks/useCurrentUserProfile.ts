@@ -22,6 +22,9 @@ export function useCurrentUserProfile(
     },
     staleTime: Infinity,
     retry: false,
+    retryOnMount: false,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
     ...options,
   });
 }
