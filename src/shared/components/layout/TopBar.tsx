@@ -12,7 +12,7 @@ import type React from "react";
 import { Button } from "@/shared/components/ui/button";
 import { useLogout } from "@/features/auth/hooks/useLogout";
 import { Link } from "react-router";
-import { useUserProfile } from "@/shared/hooks/useUserProfile";
+import { useCurrentUserProfile } from "@/shared/hooks/useCurrentUserProfile";
 
 export const TopBar: React.FC = () => {
   const user = useAppStore((state) => state.user);
@@ -85,7 +85,7 @@ const UserAvatar: React.FC = () => {
   }
 
   const { mutate, isPending } = useLogout();
-  const { data, isPending: isProfilePending } = useUserProfile();
+  const { data, isPending: isProfilePending } = useCurrentUserProfile();
   if (isProfilePending) {
     return (
       <Avatar className="h-9 w-9 cursor-pointer">
@@ -101,7 +101,7 @@ const UserAvatar: React.FC = () => {
       <DropdownMenuTrigger asChild>
         <Avatar className="h-9 w-9 cursor-pointer ring-2 ring-primary/20 hover:ring-primary/40 transition-all overflow-hidden rounded-full">
           <AvatarImage
-            src={data.avatarUrl}
+            src={data?.role === "USER" ? data?.avatarUrl : undefined}
             className="h-full w-full object-cover"
           />
           <AvatarFallback className="bg-stone-200 text-stone-600 text-sm font-medium">
@@ -114,8 +114,14 @@ const UserAvatar: React.FC = () => {
         className="w-48 rounded-lg border-stone-200"
       >
         <DropdownMenuItem className="flex flex-col items-start py-3">
-          <div className="text-sm font-medium text-stone-900">{user.email}</div>
-          <div className="text-xs text-stone-500 mt-0.5">Member</div>
+          <div className="text-sm font-medium text-stone-900">
+            {data?.role === "USER" && data?.name ? data.name : user.email}
+          </div>
+          {data?.role === "USER" && data?.username && (
+            <div className="text-xs text-stone-500 mt-0.5">
+              @{data.username}
+            </div>
+          )}
         </DropdownMenuItem>
         <DropdownMenuItem disabled className="h-px bg-stone-100 p-0" />
         <DropdownMenuItem asChild>
