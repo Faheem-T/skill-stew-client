@@ -51,8 +51,11 @@ export const AdminLoginPage = () => {
       if (error.response?.data) {
         if (error.response.data.errors) {
           for (const { field, message } of error.response.data.errors) {
-            if (field)
+            if (field) {
               form.setError(field as keyof typeof variables, { message });
+            } else {
+              form.setError("root", { message });
+            }
           }
         }
         if (error.response.data.message) {
