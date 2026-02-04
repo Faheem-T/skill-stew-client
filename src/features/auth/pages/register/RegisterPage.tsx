@@ -32,17 +32,18 @@ export const RegisterPage = () => {
 
       {/* Right side - Register form */}
       <div className="flex-1 flex flex-col items-center justify-center p-8 bg-slate-50">
-        <div className="absolute right-8 top-8 text-sm text-slate-600">
-          Already have an account?{" "}
-          <span
-            className="font-semibold text-primary hover:underline cursor-pointer"
-            onClick={() => navigate("/login")}
-          >
-            Sign in
-          </span>
-        </div>
-
         <div className="w-full max-w-md">
+          {/* Sign in link - desktop */}
+          <div className="hidden sm:block text-center mb-6 text-sm text-slate-600">
+            Already have an account?{" "}
+            <span
+              className="font-semibold text-primary hover:underline cursor-pointer"
+              onClick={() => navigate("/login")}
+            >
+              Sign in
+            </span>
+          </div>
+
           {/* Mobile logo */}
           <div className="lg:hidden flex items-center justify-center gap-3 mb-8">
             <img src="/logo.png" className="h-10 w-10 object-contain" />
