@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/shared/components/ui/button";
-import { useEffect, useRef, useState } from "react";
+import { useEffect } from "react";
 import { CURRENT_USER_PROFILE_QUERY_KEY } from "@/shared/hooks/useCurrentUserProfile";
 import { Form } from "@/shared/components/ui/form";
 import type { OnboardingUpdateProfileBody } from "@/features/onboarding/api/OnboardingUpdateProfile";
@@ -10,17 +10,14 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
 import { useUserProfile } from "@/shared/hooks/useUserProfile";
-import { generatePresignedUploadUrlRequest } from "../../api/GeneratePresignedUploadUrl";
-import type { GeneratePresignedUploadUrlResponse } from "../../api/GeneratePresignedUploadUrl";
-import { checkUsernameAvailabilityRequest } from "@/features/onboarding/api/CheckUsernameAvailability";
 import { updateUsernameRequest } from "@/shared/api/UpdateUsername";
-import type { ApiErrorResponseType } from "@/shared/api/baseApi";
-import { useDebounce } from "@/shared/hooks/useDebounce";
 import { profileSchema } from "@/features/onboarding/schemas";
 import type { FormValues } from "@/features/onboarding/schemas";
 import { ProfileAvatar } from "@/features/onboarding/components/ProfileAvatar";
 import { ProfileFormFields } from "@/features/onboarding/components/ProfileFormFields";
 import { DevTool } from "@hookform/devtools";
+import { useImageFileUpload } from "@/shared/hooks/useImageFileUpload";
+import { useUploadToS3 } from "@/shared/hooks/useUploadToS3";
 
 interface ProfileStepProps {
   onComplete?: () => void;
@@ -31,15 +28,8 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({
   onComplete,
   onBack,
 }) => {
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
-  const [selectedAvatarFile, setSelectedAvatarFile] = useState<File | null>(
-    null,
-  );
-  const [avatarPreviewUrl, setAvatarPreviewUrl] = useState<string | null>(null);
-  const [editingLocation, setEditingLocation] = useState(false);
-  const [isCheckingUsername, setIsCheckingUsername] = useState(false);
-  const [isUsernameAvailable, setIsUsernameAvailable] = useState(false);
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(profileSchema),
@@ -50,11 +40,11 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({
       languages: [],
     },
   });
-  const { setValue, watch, setError, clearErrors, formState } = form;
 
-  const { isDirty, isValid, errors } = formState;
+  const { setValue, formState } = form;
+  const { isDirty, isValid } = formState;
 
-  // prefilling form with existing profile data
+  // Prefill form with existing profile data
   const { data: profile } = useUserProfile();
   useEffect(() => {
     if (!profile) return;
@@ -67,6 +57,7 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({
       setValue("username", profile.username, {
         shouldDirty: false,
         shouldTouch: false,
+        shouldValidate: false,
       });
     if (profile.languages && profile.languages.length) {
       setValue("languages", profile.languages, {
@@ -81,77 +72,15 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({
         { shouldDirty: false, shouldTouch: false },
       );
     }
-  }, [profile]);
+  }, [profile, setValue]);
 
-  const watchedUsername = watch("username");
-  const debouncedUsername = useDebounce(watchedUsername, 500);
+  // Avatar upload hook
+  const avatar = useImageFileUpload("avatar");
 
-  // Check availability when debounced username changes
-  useEffect(() => {
-    const checkAvailability = async () => {
-      if (!debouncedUsername) {
-        return;
-      }
+  // S3 upload hook
+  const { upload } = useUploadToS3();
 
-      // make sure validation runs first
-      await form.trigger("username");
-
-      if (errors.username) {
-        return;
-      }
-
-      if (debouncedUsername === profile?.username) {
-        setIsUsernameAvailable(true);
-        return;
-      }
-
-      setIsCheckingUsername(true);
-      try {
-        const { data } =
-          await checkUsernameAvailabilityRequest(debouncedUsername);
-
-        if (!data.available) {
-          setError("username", {
-            type: "manual",
-            message: "Username is already taken",
-          });
-          setIsUsernameAvailable(false);
-        } else {
-          clearErrors("username");
-          // Only show available if it's different from current username
-          if (debouncedUsername !== profile?.username) {
-            setIsUsernameAvailable(true);
-          }
-        }
-      } catch (error) {
-        const err = error as ApiErrorResponseType;
-        if (err.response) {
-          err.response.data.errors?.forEach(({ message, field }) => {
-            console.log(`Field: ${field}, Message: ${message}`);
-            if (
-              !field ||
-              !["username", "name", "languages", "location"].includes(field)
-            ) {
-              toast.error(message);
-              return;
-            }
-
-            setError(field as any, { type: "manual", message });
-          });
-        } else {
-          toast.error("Error checking username availability");
-        }
-      } finally {
-        setIsCheckingUsername(false);
-      }
-    };
-
-    checkAvailability();
-  }, [debouncedUsername]);
-
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
-
+  // Profile update mutation
   const mutation = useMutation<void, unknown, OnboardingUpdateProfileBody>({
     mutationFn: async (body: OnboardingUpdateProfileBody) => {
       await onboardingUpdateProfileRequest(body);
@@ -162,46 +91,14 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({
       });
     },
   });
-  // avatar upload handling
-  const onPickAvatar = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleAvatarSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const mimetype = file.type as "image/png" | "image/jpeg" | "image/webp";
-
-    if (!["image/png", "image/jpeg", "image/webp"].includes(mimetype)) {
-      toast.error("Please select a PNG, JPEG, or WEBP image.");
-      return;
-    }
-
-    // Stage the file and create preview
-    setSelectedAvatarFile(file);
-    const previewUrl = URL.createObjectURL(file);
-    setAvatarPreviewUrl(previewUrl);
-  };
-
-  const handleUndoAvatarSelection = () => {
-    // Clean up preview URL
-    if (avatarPreviewUrl) {
-      URL.revokeObjectURL(avatarPreviewUrl);
-    }
-    setSelectedAvatarFile(null);
-    setAvatarPreviewUrl(null);
-    // Reset file input
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-  };
 
   const onSubmit = async (values: FormValues) => {
     if (!isDirty && !!onComplete) {
       onComplete();
       return;
     }
+
+    // Update username if changed
     try {
       if (values.username && values.username !== profile?.username) {
         await updateUsernameRequest(values.username);
@@ -212,47 +109,19 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({
       return;
     }
 
+    // Upload avatar if selected
     let avatarKey: string | undefined;
-
-    // Upload avatar if one was selected
-    if (selectedAvatarFile) {
+    if (avatar.selectedFile) {
       try {
-        setIsUploading(true);
-        const mimetype = selectedAvatarFile.type as
-          | "image/png"
-          | "image/jpeg"
-          | "image/webp";
-
-        const response = await generatePresignedUploadUrlRequest({
-          type: "avatar",
-          mimetype,
-        });
-        const { data } = response;
-        const presigned: GeneratePresignedUploadUrlResponse = data;
-
-        const putRes = await fetch(presigned.uploadUrl, {
-          method: "PUT",
-          headers: {
-            "Content-Type": mimetype,
-          },
-          body: selectedAvatarFile,
-        });
-
-        if (!putRes.ok) {
-          throw new Error("Upload failed");
-        }
-
-        avatarKey = presigned.key;
+        avatarKey = await upload(avatar.selectedFile, "avatar");
       } catch (err) {
         console.error(err);
         toast.error("Failed to upload avatar. Please try again.");
-        setIsUploading(false);
         return;
-      } finally {
-        setIsUploading(false);
       }
     }
 
+    // Submit profile update
     const payload: OnboardingUpdateProfileBody = {
       name: values.name,
       languages: values.languages,
@@ -263,8 +132,8 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({
     mutation.mutate(payload, {
       onSuccess() {
         // Clean up preview URL
-        if (avatarPreviewUrl) {
-          URL.revokeObjectURL(avatarPreviewUrl);
+        if (avatar.previewUrl) {
+          URL.revokeObjectURL(avatar.previewUrl);
         }
         if (onComplete) {
           onComplete();
@@ -285,27 +154,20 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({
           <div className="md:col-span-1">
             <ProfileAvatar
               profile={profile}
-              avatarPreviewUrl={avatarPreviewUrl}
-              selectedAvatarFile={selectedAvatarFile}
-              onPickAvatar={onPickAvatar}
-              handleAvatarSelected={handleAvatarSelected}
-              handleUndoAvatarSelection={handleUndoAvatarSelection}
-              isUploading={isUploading}
-              fileInputRef={fileInputRef}
+              avatarPreviewUrl={avatar.previewUrl}
+              selectedAvatarFile={avatar.selectedFile}
+              onPickAvatar={avatar.onPickFile}
+              handleAvatarSelected={avatar.handleFileSelected}
+              handleUndoAvatarSelection={avatar.handleUndoSelection}
+              isUploading={false}
+              fileInputRef={avatar.fileInputRef}
             />
           </div>
 
           <div className="md:col-span-2">
             <Form {...form}>
               <form className="grid grid-cols-1 gap-6">
-                <ProfileFormFields
-                  isCheckingUsername={isCheckingUsername}
-                  isUsernameAvailable={isUsernameAvailable}
-                  debouncedUsername={debouncedUsername}
-                  profile={profile}
-                  editingLocation={editingLocation}
-                  setEditingLocation={setEditingLocation}
-                />
+                <ProfileFormFields profile={profile} />
               </form>
             </Form>
           </div>
