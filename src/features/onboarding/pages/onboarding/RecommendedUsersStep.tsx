@@ -15,6 +15,9 @@ export const RecommendedUsersStep: React.FC<RecommendedUsersStepProps> = ({
   const { data, isLoading, error } = useQuery({
     queryKey: ["recommended-users"],
     queryFn: getRecommendedUsersRequest,
+    retry: false,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
 
   const users = data?.data || [];

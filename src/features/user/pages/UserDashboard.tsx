@@ -39,6 +39,9 @@ export const UserDashboard = () => {
   } = useQuery({
     queryKey: ["recommended-users"],
     queryFn: getRecommendedUsersRequest,
+    retry: false,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
 
   const recommendedUsers = recommendedUsersData?.data || [];
