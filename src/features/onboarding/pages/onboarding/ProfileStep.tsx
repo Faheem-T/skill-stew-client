@@ -11,13 +11,17 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
 import { useUserProfile } from "@/shared/hooks/useUserProfile";
 import { useUpdateUsername } from "@/shared/hooks/useUpdateUsername";
-import { profileSchema } from "@/features/onboarding/schemas";
-import type { FormValues } from "@/features/onboarding/schemas";
+import { usernameSchema, profileSchema } from "@/features/onboarding/schemas";
+import { z } from "zod";
 import { ProfileAvatar } from "@/features/onboarding/components/ProfileAvatar";
 import { ProfileFormFields } from "@/features/onboarding/components/ProfileFormFields";
 import { DevTool } from "@hookform/devtools";
 import { useImageFileUpload } from "@/shared/hooks/useImageFileUpload";
 import { useUploadToS3 } from "@/shared/hooks/useUploadToS3";
+
+// Combine schemas for the form
+const combinedSchema = usernameSchema.merge(profileSchema);
+type CombinedFormValues = z.infer<typeof combinedSchema>;
 
 interface ProfileStepProps {
   onComplete?: () => void;
@@ -31,8 +35,9 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  const form = useForm<FormValues>({
-    resolver: zodResolver(profileSchema),
+  const form = useForm<CombinedFormValues>({
+    resolver: zodResolver(combinedSchema),
+    mode: "onChange",
     defaultValues: {
       name: "",
       username: "",
@@ -97,7 +102,7 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({
       },
     });
 
-  const onSubmit = async (values: FormValues) => {
+  const onSubmit = async (values: CombinedFormValues) => {
     if (!isDirty && !!onComplete) {
       onComplete();
       return;
@@ -142,7 +147,7 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({
 
     // Update username if changed
     if (values.username && values.username !== profile?.username) {
-      updateUsernameMutation(values.username, {
+      updateUsernameMutation(values.username as string, {
         onError: (error) => {
           console.error(error);
           toast.error("Failed to update username. It might be taken.");

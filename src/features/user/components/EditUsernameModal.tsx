@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import {
   Dialog,
   DialogContent,
@@ -24,26 +23,9 @@ import { Alert, AlertDescription } from "@/shared/components/ui/alert";
 import toast from "react-hot-toast";
 import { useUpdateUsername } from "@/shared/hooks/useUpdateUsername";
 import { useUsernameValidation } from "@/shared/hooks/useUsernameValidation";
+import { usernameSchema } from "@/features/onboarding/schemas";
+import type { UsernameFormValues } from "@/features/onboarding/schemas";
 import { Loader2, CheckCircle2, AlertTriangle } from "lucide-react";
-
-const usernameSchema = z.object({
-  username: z
-    .string()
-    .min(5)
-    .max(20)
-    .regex(/^[a-zA-Z0-9._]+$/, "Only letters, numbers, . and _ allowed")
-    .refine((v) => !v.startsWith(".") && !v.startsWith("_"), {
-      message: "Username cannot start with '.' or '_'",
-    })
-    .refine((v) => !v.endsWith(".") && !v.endsWith("_"), {
-      message: "Username cannot end with '.' or '_'",
-    })
-    .refine((v) => !/([._]{2})/.test(v), {
-      message: "No consecutive '.' or '_'",
-    }),
-});
-
-type UsernameFormValues = z.infer<typeof usernameSchema>;
 
 interface EditUsernameModalProps {
   open: boolean;
@@ -98,7 +80,7 @@ export const EditUsernameModal = ({
       setShowConfirmation(true);
       return;
     }
-    updateUsername(values.username, {
+    updateUsername(values.username as string, {
       onSuccess: () => {
         toast.success("Username updated successfully!");
         onOpenChange(false);

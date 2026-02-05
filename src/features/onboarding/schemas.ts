@@ -1,7 +1,6 @@
 import { z } from "zod";
 
-export const profileSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters").optional(),
+export const usernameSchema = z.object({
   username: z
     .string()
     .min(5)
@@ -17,6 +16,10 @@ export const profileSchema = z.object({
       message: "No consecutive '.' or '_'",
     })
     .optional(),
+});
+
+export const profileSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters").optional(),
   location: z.object({ placeId: z.string() }).optional(),
   languages: z.array(z.string()).optional(),
 });
@@ -47,5 +50,6 @@ export const skillsSchema = z.object({
     .optional(),
 });
 
+export type UsernameFormValues = z.infer<typeof usernameSchema>;
 export type FormValues = z.infer<typeof profileSchema>;
 export type SkillsFormValues = z.infer<typeof skillsSchema>;

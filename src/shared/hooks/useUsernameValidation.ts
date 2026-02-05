@@ -54,7 +54,8 @@ export const useUsernameValidation = ({
   useEffect(() => {
     if (!debouncedUsername) return;
 
-    // Only show "current username" error if user has actually modified the field
+    // Only manage availability and current username errors
+    // Don't touch Zod validation errors (format, length, etc.)
     if (isSameAsCurrent && isDirty) {
       setError("username", {
         type: "manual",
@@ -68,8 +69,11 @@ export const useUsernameValidation = ({
         type: "manual",
         message: "Username is already taken",
       });
-    } else if (!isSameAsCurrent || isAvailable) {
-      // Clear errors when username changes to something different, or when available
+    } else if (
+      (!isSameAsCurrent && isAvailable && !hasValidationErrors) ||
+      !debouncedUsername
+    ) {
+      // Only clear availability/current username errors, not Zod validation errors
       clearErrors("username");
     }
   }, [
@@ -79,6 +83,7 @@ export const useUsernameValidation = ({
     isAvailable,
     availabilityData,
     isDirty,
+    hasValidationErrors,
     setError,
     clearErrors,
   ]);

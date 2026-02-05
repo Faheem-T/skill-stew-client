@@ -8,8 +8,13 @@ import {
 import { Input } from "@/shared/components/ui/input";
 import { CheckIcon } from "lucide-react";
 import { useFormContext } from "react-hook-form";
-import type { FormValues } from "../../schemas";
 import { useUsernameValidation } from "@/shared/hooks/useUsernameValidation";
+import { z } from "zod";
+import { usernameSchema, profileSchema } from "../../schemas";
+
+// Define the combined form values type
+const combinedSchema = usernameSchema.merge(profileSchema);
+type CombinedFormValues = z.infer<typeof combinedSchema>;
 
 interface UsernameFieldProps {
   currentUsername?: string;
@@ -17,7 +22,7 @@ interface UsernameFieldProps {
 
 export const UsernameField = ({ currentUsername }: UsernameFieldProps) => {
   const { control, watch, formState, setError, clearErrors } =
-    useFormContext<FormValues>();
+    useFormContext<CombinedFormValues>();
   const username = watch("username");
   const { errors, dirtyFields } = formState;
 
