@@ -22,7 +22,7 @@ import {
 import { Input } from "@/shared/components/ui/input";
 import { Alert, AlertDescription } from "@/shared/components/ui/alert";
 import toast from "react-hot-toast";
-import { updateUsernameRequest } from "@/shared/api/UpdateUsername";
+import { useUpdateUsername } from "@/shared/hooks/useUpdateUsername";
 import { useUsernameValidation } from "@/shared/hooks/useUsernameValidation";
 import { Loader2, CheckCircle2, AlertTriangle } from "lucide-react";
 
@@ -56,9 +56,11 @@ export const EditUsernameModal = ({
   onOpenChange,
   currentUsername,
 }: EditUsernameModalProps) => {
-  const [isSaving, setIsSaving] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [confirmationChecked, setConfirmationChecked] = useState(false);
+
+  const { mutate: updateUsername, isPending: isUpdateUsernamePending } =
+    useUpdateUsername();
 
   const form = useForm<UsernameFormValues>({
     resolver: zodResolver(usernameSchema),
@@ -96,17 +98,15 @@ export const EditUsernameModal = ({
       setShowConfirmation(true);
       return;
     }
-
-    try {
-      setIsSaving(true);
-      await updateUsernameRequest(values.username);
-      toast.success("Username updated successfully!");
-      onOpenChange(false);
-    } catch (error) {
-      toast.error("Failed to update username. Please try again.");
-    } finally {
-      setIsSaving(false);
-    }
+    updateUsername(values.username, {
+      onSuccess: () => {
+        toast.success("Username updated successfully!");
+        onOpenChange(false);
+      },
+      onError: () => {
+        toast.error("Failed to update username. Please try again.");
+      },
+    });
   };
 
   const handleConfirmChange = (checked: boolean) => {
@@ -164,7 +164,7 @@ export const EditUsernameModal = ({
                         <Input
                           placeholder="username"
                           {...field}
-                          disabled={isSaving}
+                          disabled={isUpdateUsernamePending}
                         />
                       </FormControl>
                       <FormDescription>
@@ -183,13 +183,13 @@ export const EditUsernameModal = ({
                     type="button"
                     variant="outline"
                     onClick={() => onOpenChange(false)}
-                    disabled={isSaving}
+                    disabled={isUpdateUsernamePending}
                   >
                     Cancel
                   </Button>
                   <Button
                     type="submit"
-                    disabled={!isUsernameAvailable || isSaving}
+                    disabled={!isUsernameAvailable || isUpdateUsernamePending}
                     className="bg-primary hover:bg-primary/90"
                   >
                     Continue
@@ -243,16 +243,16 @@ export const EditUsernameModal = ({
                     type="button"
                     variant="outline"
                     onClick={() => setShowConfirmation(false)}
-                    disabled={isSaving}
+                    disabled={isUpdateUsernamePending}
                   >
                     Back
                   </Button>
                   <Button
                     type="submit"
-                    disabled={!confirmationChecked || isSaving}
+                    disabled={!confirmationChecked || isUpdateUsernamePending}
                     className="bg-primary hover:bg-primary/90"
                   >
-                    {isSaving ? "Updating..." : "Confirm Change"}
+                    {isUpdateUsernamePending ? "Updating..." : "Confirm Change"}
                   </Button>
                 </div>
               </>

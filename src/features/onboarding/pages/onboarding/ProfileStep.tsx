@@ -10,7 +10,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
 import { useUserProfile } from "@/shared/hooks/useUserProfile";
-import { updateUsernameRequest } from "@/shared/api/UpdateUsername";
+import { useUpdateUsername } from "@/shared/hooks/useUpdateUsername";
 import { profileSchema } from "@/features/onboarding/schemas";
 import type { FormValues } from "@/features/onboarding/schemas";
 import { ProfileAvatar } from "@/features/onboarding/components/ProfileAvatar";
@@ -78,34 +78,28 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({
   const avatar = useImageFileUpload("avatar");
 
   // S3 upload hook
-  const { upload } = useUploadToS3();
+  const { upload, isUploading } = useUploadToS3();
+
+  // Username update mutation
+  const { mutate: updateUsernameMutation, isPending: isUpdateUsernamePending } =
+    useUpdateUsername();
 
   // Profile update mutation
-  const mutation = useMutation<void, unknown, OnboardingUpdateProfileBody>({
-    mutationFn: async (body: OnboardingUpdateProfileBody) => {
-      await onboardingUpdateProfileRequest(body);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: CURRENT_USER_PROFILE_QUERY_KEY,
-      });
-    },
-  });
+  const { mutate: updateProfileMutation, isPending: isUpdateProfilePending } =
+    useMutation<void, unknown, OnboardingUpdateProfileBody>({
+      mutationFn: async (body: OnboardingUpdateProfileBody) => {
+        await onboardingUpdateProfileRequest(body);
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: CURRENT_USER_PROFILE_QUERY_KEY,
+        });
+      },
+    });
 
   const onSubmit = async (values: FormValues) => {
     if (!isDirty && !!onComplete) {
       onComplete();
-      return;
-    }
-
-    // Update username if changed
-    try {
-      if (values.username && values.username !== profile?.username) {
-        await updateUsernameRequest(values.username);
-      }
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to update username. It might be taken.");
       return;
     }
 
@@ -129,7 +123,7 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({
       ...(avatarKey && { avatarKey }),
     };
 
-    mutation.mutate(payload, {
+    updateProfileMutation(payload, {
       onSuccess() {
         // Clean up preview URL
         if (avatar.previewUrl) {
@@ -145,6 +139,17 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({
         toast.error("Failed to update profile. Please try again.");
       },
     });
+
+    // Update username if changed
+    if (values.username && values.username !== profile?.username) {
+      updateUsernameMutation(values.username, {
+        onError: (error) => {
+          console.error(error);
+          toast.error("Failed to update username. It might be taken.");
+          return;
+        },
+      });
+    }
   };
 
   return (
@@ -191,7 +196,12 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({
         )}
         <Button
           type="button"
-          disabled={!isValid}
+          disabled={
+            !isValid ||
+            isUpdateUsernamePending ||
+            isUpdateProfilePending ||
+            isUploading
+          }
           onClick={form.handleSubmit(onSubmit)}
           className="px-8 bg-primary hover:bg-primary/90 text-primary-foreground"
         >
