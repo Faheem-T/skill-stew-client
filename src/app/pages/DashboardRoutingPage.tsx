@@ -4,9 +4,9 @@ import { Navigate } from "react-router";
 import { InitialLoadScreen } from "./InitialLoadScreen";
 
 export const DashboardRoutingPage: React.FC = () => {
-  const { data: userProfile, isFetching } = useCurrentUserProfile();
+  const { data: userProfile, isLoading } = useCurrentUserProfile();
 
-  if (isFetching) {
+  if (isLoading) {
     return <InitialLoadScreen />;
   }
 

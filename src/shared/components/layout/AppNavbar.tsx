@@ -4,7 +4,6 @@ import {
   AvatarImage,
 } from "@/shared/components/ui/avatar";
 import { APP_NAME } from "@/shared/config/constants";
-import { useAppStore } from "@/app/store";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,16 +17,22 @@ import { Link, useLocation } from "react-router";
 import { useCurrentUserProfile } from "@/shared/hooks/useCurrentUserProfile";
 import { Bell, Search } from "lucide-react";
 import { Input } from "@/shared/components/ui/input";
+import { InitialLoadScreen } from "@/app/pages/InitialLoadScreen";
 
 /**
  * AppNavbar - Navigation bar for authenticated users
  * Shows app-specific navigation, search, notifications, and user menu
  */
 export const AppNavbar: React.FC = () => {
-  const user = useAppStore((state) => state.user);
+  const { data: userProfile, isPending: isProfilePending } =
+    useCurrentUserProfile();
   const location = useLocation();
 
   const isActive = (path: string) => location.pathname === path;
+
+  if (isProfilePending) {
+    return <InitialLoadScreen />;
+  }
 
   return (
     <div className="h-16 flex items-center justify-between bg-white border-b border-stone-200 px-6 md:px-12 sticky top-0 z-50">
@@ -110,16 +115,16 @@ export const AppNavbar: React.FC = () => {
         </Button>
 
         {/* User avatar */}
-        {user && <UserAvatar />}
+        {userProfile && <UserAvatar />}
       </div>
     </div>
   );
 };
 
 const UserAvatar: React.FC = () => {
-  const user = useAppStore((state) => state.user)!;
   const { mutate, isPending } = useLogout();
-  const { data, isPending: isProfilePending } = useCurrentUserProfile();
+  const { data: userProfile, isPending: isProfilePending } =
+    useCurrentUserProfile();
 
   if (isProfilePending) {
     return (
@@ -136,11 +141,15 @@ const UserAvatar: React.FC = () => {
       <DropdownMenuTrigger asChild>
         <Avatar className="h-9 w-9 cursor-pointer ring-2 ring-primary/20 hover:ring-primary/40 transition-all overflow-hidden rounded-full">
           <AvatarImage
-            src={data?.role === "USER" || data?.role === "ADMIN" ? data?.avatarUrl : undefined}
+            src={
+              userProfile?.role === "USER" || userProfile?.role === "ADMIN"
+                ? userProfile?.avatarUrl
+                : undefined
+            }
             className="h-full w-full object-cover"
           />
           <AvatarFallback className="bg-stone-200 text-stone-600 text-sm font-medium">
-            {user.email.slice(0, 2).toUpperCase()}
+            {userProfile?.email.slice(0, 2).toUpperCase()}
           </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
@@ -150,10 +159,14 @@ const UserAvatar: React.FC = () => {
       >
         <DropdownMenuItem className="flex flex-col items-start py-3">
           <div className="text-sm font-medium text-stone-900">
-            {data?.role === "USER" && data?.name ? data.name : user.email}
+            {userProfile?.role === "USER" && userProfile?.name
+              ? userProfile.name
+              : userProfile?.email}
           </div>
           <div className="text-xs text-stone-500 mt-0.5">
-            {(data?.role === "USER" || data?.role === "ADMIN") && data?.username && `@${data.username}`}
+            {(userProfile?.role === "USER" || userProfile?.role === "ADMIN") &&
+              userProfile?.username &&
+              `@${userProfile.username}`}
           </div>
         </DropdownMenuItem>
         <DropdownMenuItem disabled className="h-px bg-stone-100 p-0" />

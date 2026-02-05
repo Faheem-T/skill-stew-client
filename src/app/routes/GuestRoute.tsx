@@ -1,12 +1,17 @@
-import { useAppStore } from "@/app/store";
 import { Navigate, Outlet } from "react-router";
+import { InitialLoadScreen } from "../pages/InitialLoadScreen";
+import useCurrentUserProfile from "@/shared/hooks/useCurrentUserProfile";
 
 export const GuestRoute = () => {
-  const user = useAppStore((state) => state.user);
-  if (user) {
-    if (user.role === "ADMIN") {
-      return <Navigate to="/admin/dashboard" replace />;
-    }
+  const { data: userProfile, isLoading } = useCurrentUserProfile();
+
+  if (isLoading) {
+    return <InitialLoadScreen />;
   }
-  return user ? <Navigate to="/dashboard" replace /> : <Outlet />;
+
+  if (userProfile) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return <Outlet />;
 };

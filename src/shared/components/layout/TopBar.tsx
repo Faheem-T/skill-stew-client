@@ -13,9 +13,16 @@ import { Button } from "@/shared/components/ui/button";
 import { useLogout } from "@/features/auth/hooks/useLogout";
 import { Link } from "react-router";
 import { useCurrentUserProfile } from "@/shared/hooks/useCurrentUserProfile";
+import { InitialLoadScreen } from "@/app/pages/InitialLoadScreen";
 
 export const TopBar: React.FC = () => {
-  const user = useAppStore((state) => state.user);
+  const { data: userProfile, isPending: isProfilePending } =
+    useCurrentUserProfile();
+
+  if (isProfilePending) {
+    return <InitialLoadScreen />;
+  }
+
   return (
     <div className="h-16 flex items-center justify-between bg-stone-50/80 backdrop-blur-md border-b border-stone-200/60 px-6 md:px-12 sticky top-0 z-50">
       {/* Logo */}
@@ -54,7 +61,7 @@ export const TopBar: React.FC = () => {
 
       {/* Actions */}
       <div className="flex items-center gap-3">
-        {user?.role === "USER" ? (
+        {userProfile?.role === "USER" ? (
           <UserAvatar />
         ) : (
           <>
@@ -79,13 +86,10 @@ export const TopBar: React.FC = () => {
 };
 
 const UserAvatar: React.FC = () => {
-  const user = useAppStore((state) => state.user)!;
-  if (user.role === "ADMIN") {
-    throw new Error("Unexpected User");
-  }
-
   const { mutate, isPending } = useLogout();
-  const { data, isPending: isProfilePending } = useCurrentUserProfile();
+  const { data: userProfile, isPending: isProfilePending } =
+    useCurrentUserProfile();
+
   if (isProfilePending) {
     return (
       <Avatar className="h-9 w-9 cursor-pointer">
@@ -101,11 +105,13 @@ const UserAvatar: React.FC = () => {
       <DropdownMenuTrigger asChild>
         <Avatar className="h-9 w-9 cursor-pointer ring-2 ring-primary/20 hover:ring-primary/40 transition-all overflow-hidden rounded-full">
           <AvatarImage
-            src={data?.role === "USER" ? data?.avatarUrl : undefined}
+            src={
+              userProfile?.role === "USER" ? userProfile?.avatarUrl : undefined
+            }
             className="h-full w-full object-cover"
           />
           <AvatarFallback className="bg-stone-200 text-stone-600 text-sm font-medium">
-            {user.email.slice(0, 2).toUpperCase()}
+            {userProfile?.email.slice(0, 2).toUpperCase()}
           </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
@@ -115,11 +121,13 @@ const UserAvatar: React.FC = () => {
       >
         <DropdownMenuItem className="flex flex-col items-start py-3">
           <div className="text-sm font-medium text-stone-900">
-            {data?.role === "USER" && data?.name ? data.name : user.email}
+            {userProfile?.role === "USER" && userProfile?.name
+              ? userProfile.name
+              : userProfile?.email}
           </div>
-          {data?.role === "USER" && data?.username && (
+          {userProfile?.role === "USER" && userProfile?.username && (
             <div className="text-xs text-stone-500 mt-0.5">
-              @{data.username}
+              @{userProfile.username}
             </div>
           )}
         </DropdownMenuItem>

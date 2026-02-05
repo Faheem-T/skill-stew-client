@@ -24,7 +24,6 @@ api.interceptors.response.use(
       }
 
       if (error.response.status === 401) {
-        console.log(error.config.url);
         if (error.config.url === "/auth/refresh") {
           useAppStore.getState().logout();
           return Promise.reject(error);

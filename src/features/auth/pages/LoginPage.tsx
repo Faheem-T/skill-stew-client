@@ -17,10 +17,11 @@ import type { ApiErrorResponseType } from "@/shared/api/baseApi";
 import { useNavigate } from "react-router";
 import { useAppStore } from "@/app/store";
 import { GoogleLoginButton } from "@/features/auth/components/GoogleAuthButton";
-import { fetchProfile } from "@/features/auth/lib/fetchProfile";
 import { PasswordInput } from "@/shared/components/ui/password-input";
 import { APP_NAME } from "@/shared/config/constants";
 import { Sparkles } from "lucide-react";
+import useCurrentUserProfile from "@/shared/hooks/useCurrentUserProfile";
+import { InitialLoadScreen } from "@/app/pages/InitialLoadScreen";
 
 export const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address."),
@@ -29,11 +30,14 @@ export const loginSchema = z.object({
 
 export const LoginPage = () => {
   const navigate = useNavigate();
-
-  const user = useAppStore((state) => state.user);
   const setAccessToken = useAppStore((state) => state.setAccessToken);
 
-  if (user) {
+  const { data: userProfile, isLoading } = useCurrentUserProfile();
+  if (isLoading) {
+    return <InitialLoadScreen />;
+  }
+
+  if (userProfile) {
     navigate("/");
   }
 

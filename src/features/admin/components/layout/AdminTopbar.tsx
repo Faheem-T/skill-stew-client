@@ -1,15 +1,24 @@
 import { Bell, MessageSquareDotIcon } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/shared/components/ui/avatar";
-import { useAppStore } from "@/app/store";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/shared/components/ui/avatar";
 import type React from "react";
+import { InitialLoadScreen } from "@/app/pages/InitialLoadScreen";
+import { useAdminProfile } from "@/shared/hooks/useAdminProfile";
 
 export const AdminTopBar: React.FC<{
   mainText: string;
   subText?: string;
   sideItems?: React.ReactNode;
 }> = ({ mainText, subText, sideItems }) => {
-  const user = useAppStore((state) => state.user)!;
+  const { data: userProfile, isLoading } = useAdminProfile();
+
+  if (isLoading) {
+    return <InitialLoadScreen />;
+  }
 
   return (
     <div className="flex justify-between items-center m-4 h-14">
@@ -28,7 +37,7 @@ export const AdminTopBar: React.FC<{
           <Avatar className="rounded-full">
             <AvatarImage src="person.jpg" className="object-cover" />
             <AvatarFallback>
-              {user?.username?.slice(0, 2) ?? "A"}
+              {userProfile?.username?.slice(0, 2) ?? "A"}
             </AvatarFallback>
           </Avatar>
         </div>

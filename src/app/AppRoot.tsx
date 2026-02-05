@@ -13,7 +13,7 @@ export const AppRoot: React.FC = () => {
     if (userProfile?.role === "USER" && !userProfile.isOnboardingComplete) {
       setIsOnboardingModalOpen(true);
     }
-  }, [userProfile]);
+  }, [userProfile?.role]);
 
   if (isLoading) {
     return <InitialLoadScreen />;

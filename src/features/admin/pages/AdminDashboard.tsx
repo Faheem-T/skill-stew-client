@@ -11,15 +11,21 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/shared/components/ui/chart";
-import { useAppStore } from "@/app/store";
 import { DollarSign, Users } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { useAdminProfile } from "@/shared/hooks/useAdminProfile";
+import { InitialLoadScreen } from "@/app/pages/InitialLoadScreen";
 
 export const AdminDashboard = () => {
-  const user = useAppStore((state) => state.user);
+  const { data: userProfile, isLoading } = useAdminProfile();
+
+  if (isLoading) {
+    return <InitialLoadScreen />;
+  }
+
   return (
     <div className="">
-      <AdminTopBar mainText={`Welcome back ${user?.username}!`} />
+      <AdminTopBar mainText={`Welcome back ${userProfile?.username}!`} />
       <div className="flex gap-4">
         <RevenueChart />
       </div>
