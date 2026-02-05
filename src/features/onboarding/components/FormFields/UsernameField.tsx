@@ -7,7 +7,7 @@ import {
 } from "@/shared/components/ui/form";
 import { Input } from "@/shared/components/ui/input";
 import { CheckIcon } from "lucide-react";
-import { useFormContext } from "react-hook-form";
+import { useFormContext, useWatch } from "react-hook-form";
 import { useUsernameValidation } from "@/shared/hooks/useUsernameValidation";
 import { z } from "zod";
 import { usernameSchema, profileSchema } from "../../schemas";
@@ -21,9 +21,9 @@ interface UsernameFieldProps {
 }
 
 export const UsernameField = ({ currentUsername }: UsernameFieldProps) => {
-  const { control, watch, formState, setError, clearErrors } =
+  const { control, formState, setError, clearErrors } =
     useFormContext<CombinedFormValues>();
-  const username = watch("username");
+  const username = useWatch({ control, name: "username" });
   const { errors, dirtyFields } = formState;
 
   const { isAvailable, isChecking } = useUsernameValidation({

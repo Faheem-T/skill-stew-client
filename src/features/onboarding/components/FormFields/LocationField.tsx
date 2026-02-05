@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   FormControl,
   FormDescription,
@@ -11,13 +12,12 @@ import { PencilIcon, XIcon } from "lucide-react";
 import { useFormContext } from "react-hook-form";
 import type { FormValues } from "../../schemas";
 import type { UserProfile } from "@/shared/hooks/useUserProfile";
-import { useState } from "react";
 
 interface LocationFieldProps {
-  profile: UserProfile | null | undefined;
+  location: UserProfile["location"] | undefined;
 }
 
-export const LocationField = ({ profile }: LocationFieldProps) => {
+export const LocationField = ({ location }: LocationFieldProps) => {
   const { control, setValue } = useFormContext<FormValues>();
   const [editingLocation, setEditingLocation] = useState(false);
 
@@ -29,11 +29,9 @@ export const LocationField = ({ profile }: LocationFieldProps) => {
         <FormItem>
           <FormLabel>Location</FormLabel>
           <FormControl>
-            {profile?.location?.formattedAddress && !editingLocation ? (
+            {location?.formattedAddress && !editingLocation ? (
               <div className="flex items-center gap-2 py-2 px-3 bg-muted rounded text-sm">
-                <span className="flex-1">
-                  {profile.location.formattedAddress}
-                </span>
+                <span className="flex-1">{location.formattedAddress}</span>
                 <button
                   type="button"
                   className="p-1 hover:bg-accent rounded transition-colors"
@@ -52,7 +50,7 @@ export const LocationField = ({ profile }: LocationFieldProps) => {
                     setEditingLocation(false);
                   }}
                 />
-                {profile?.location?.formattedAddress && (
+                {location?.formattedAddress && (
                   <Button
                     type="button"
                     variant="outline"

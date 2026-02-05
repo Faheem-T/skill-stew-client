@@ -1,3 +1,4 @@
+import { memo } from "react";
 import {
   FormControl,
   FormDescription,
@@ -18,7 +19,7 @@ const languages: MultiSelectOption[] = ISO6391.getAllCodes().map((code) => ({
   label: ISO6391.getName(code),
 }));
 
-export const LanguagesField = () => {
+export const LanguagesField = memo(() => {
   const { control } = useFormContext<FormValues>();
 
   return (
@@ -49,4 +50,4 @@ export const LanguagesField = () => {
       }}
     />
   );
-};
+});

@@ -177,7 +177,10 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({
           <div className="md:col-span-2">
             <Form {...form}>
               <form className="grid grid-cols-1 gap-6">
-                <ProfileFormFields profile={profile} />
+                <ProfileFormFields
+                  username={profile?.username}
+                  location={profile?.location}
+                />
               </form>
             </Form>
           </div>
