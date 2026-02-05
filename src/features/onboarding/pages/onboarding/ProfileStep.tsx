@@ -20,6 +20,7 @@ import { profileSchema } from "@/features/onboarding/schemas";
 import type { FormValues } from "@/features/onboarding/schemas";
 import { ProfileAvatar } from "@/features/onboarding/components/ProfileAvatar";
 import { ProfileFormFields } from "@/features/onboarding/components/ProfileFormFields";
+import { DevTool } from "@hookform/devtools";
 
 interface ProfileStepProps {
   onComplete?: () => void;
@@ -51,19 +52,36 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({
   });
   const { setValue, watch, setError, clearErrors, formState } = form;
 
+  const { isDirty, isValid, errors } = formState;
+
   // prefilling form with existing profile data
   const { data: profile } = useUserProfile();
   useEffect(() => {
     if (!profile) return;
-    if (profile.name) setValue("name", profile.name);
-    if (profile.username) setValue("username", profile.username);
+    if (profile.name)
+      setValue("name", profile.name, {
+        shouldDirty: false,
+        shouldTouch: false,
+      });
+    if (profile.username)
+      setValue("username", profile.username, {
+        shouldDirty: false,
+        shouldTouch: false,
+      });
     if (profile.languages && profile.languages.length) {
-      setValue("languages", profile.languages);
+      setValue("languages", profile.languages, {
+        shouldDirty: false,
+        shouldTouch: false,
+      });
     }
     if (profile.location && profile.location.placeId) {
-      setValue("location", { placeId: profile.location.placeId });
+      setValue(
+        "location",
+        { placeId: profile.location.placeId },
+        { shouldDirty: false, shouldTouch: false },
+      );
     }
-  }, [profile, setValue]);
+  }, [profile]);
 
   const watchedUsername = watch("username");
   const debouncedUsername = useDebounce(watchedUsername, 500);
@@ -78,7 +96,7 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({
       // make sure validation runs first
       await form.trigger("username");
 
-      if (formState.errors.username) {
+      if (errors.username) {
         return;
       }
 
@@ -180,7 +198,7 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({
   };
 
   const onSubmit = async (values: FormValues) => {
-    if (!formState.isDirty && onComplete) {
+    if (!isDirty && !!onComplete) {
       onComplete();
       return;
     }
@@ -293,7 +311,6 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({
           </div>
         </div>
       </div>
-
       {/* Navigation buttons at bottom */}
       <div className="flex justify-between gap-4 px-8 py-4 border-t border-slate-200 bg-slate-50 shrink-0">
         {onBack ? (
@@ -312,13 +329,14 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({
         )}
         <Button
           type="button"
-          disabled={!formState.isValid}
+          disabled={!isValid}
           onClick={form.handleSubmit(onSubmit)}
           className="px-8 bg-primary hover:bg-primary/90 text-primary-foreground"
         >
           Next
         </Button>
       </div>
+      <DevTool control={form.control} />
     </div>
   );
 };
