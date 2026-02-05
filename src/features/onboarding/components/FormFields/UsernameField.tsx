@@ -48,6 +48,7 @@ export const UsernameField = ({ currentUsername }: UsernameFieldProps) => {
                 {...field}
                 placeholder="username123"
                 value={field.value || ""}
+                onChange={(e) => field.onChange(e.target.value.toLowerCase())}
               />
             </div>
           </FormControl>

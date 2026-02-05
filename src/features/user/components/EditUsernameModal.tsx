@@ -146,6 +146,10 @@ export const EditUsernameModal = ({
                         <Input
                           placeholder="username"
                           {...field}
+                          value={field.value || ""}
+                          onChange={(e) =>
+                            field.onChange(e.target.value.toLowerCase())
+                          }
                           disabled={isUpdateUsernamePending}
                         />
                       </FormControl>
