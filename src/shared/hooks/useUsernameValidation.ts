@@ -7,7 +7,7 @@ import type {
 import { useDebounce } from "@/shared/hooks/useDebounce";
 import { useCheckUsernameAvailability } from "@/shared/hooks/useCheckUsernameAvailability";
 
-export interface UseUsernameValidationOptions {
+interface UseUsernameValidationOptions {
   username: string | undefined;
   currentUsername: string | undefined;
   setError: UseFormSetError<any>;
@@ -16,13 +16,17 @@ export interface UseUsernameValidationOptions {
   isDirty?: boolean;
 }
 
-export interface UseUsernameValidationReturn {
+interface UseUsernameValidationReturn {
   isAvailable: boolean;
   isChecking: boolean;
 }
 
 /**
- * Hook for validating username availability with debouncing
+ * Hook for validating username availability with debouncing.
+ * Handles three types of validation errors:
+ * 1. Zod schema errors (format, length) - managed by react-hook-form
+ * 2. "This is your current username" - when user re-enters their existing username
+ * 3. "Username is already taken" - from availability API check
  */
 export const useUsernameValidation = ({
   username,
@@ -34,56 +38,47 @@ export const useUsernameValidation = ({
 }: UseUsernameValidationOptions): UseUsernameValidationReturn => {
   const debouncedUsername = useDebounce(username, 500);
 
-  const hasValidationErrors = !!errors?.username;
-  const isSameAsCurrent = debouncedUsername === currentUsername;
-  const shouldCheckAvailability =
-    !isSameAsCurrent &&
-    !!debouncedUsername &&
-    debouncedUsername.length > 0 &&
-    !hasValidationErrors;
+  const hasZodError = !!errors?.username && errors.username.type !== "manual";
+  const matchesCurrent = debouncedUsername === currentUsername;
+  const isSettled = debouncedUsername === username;
 
-  const { data: availabilityData, isLoading: isChecking } =
-    useCheckUsernameAvailability(
-      debouncedUsername || "",
-      shouldCheckAvailability,
-    );
+  const shouldCheck =
+    isSettled && !matchesCurrent && !!debouncedUsername && !hasZodError;
 
-  const isAvailable = availabilityData?.data?.available ?? false;
+  const { data, isLoading: isChecking } = useCheckUsernameAvailability(
+    debouncedUsername || "",
+    shouldCheck,
+  );
 
-  // Sync availability state with form errors
+  const isTaken = data?.data?.available === false;
+  const isAvailable = data?.data?.available === true;
+
+  // Sync custom errors with form state
   useEffect(() => {
-    if (!debouncedUsername) return;
+    if (hasZodError || !debouncedUsername) {
+      if (!hasZodError) clearErrors("username");
+      return;
+    }
 
-    // Only manage availability and current username errors
-    // Don't touch Zod validation errors (format, length, etc.)
-    if (isSameAsCurrent && isDirty) {
+    if (matchesCurrent && isDirty) {
       setError("username", {
         type: "manual",
         message: "This is your current username",
       });
-    } else if (
-      !isSameAsCurrent &&
-      availabilityData?.data?.available === false
-    ) {
+    } else if (isTaken) {
       setError("username", {
         type: "manual",
         message: "Username is already taken",
       });
-    } else if (
-      (!isSameAsCurrent && isAvailable && !hasValidationErrors) ||
-      !debouncedUsername
-    ) {
-      // Only clear availability/current username errors, not Zod validation errors
+    } else if (!matchesCurrent) {
       clearErrors("username");
     }
   }, [
     debouncedUsername,
-    currentUsername,
-    isSameAsCurrent,
-    isAvailable,
-    availabilityData,
+    matchesCurrent,
     isDirty,
-    hasValidationErrors,
+    hasZodError,
+    isTaken,
     setError,
     clearErrors,
   ]);
