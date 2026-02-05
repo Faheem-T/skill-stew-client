@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import toast from "react-hot-toast";
 import { googleAuth } from "@/features/auth/api/googleAuth";
 import { useAppStore } from "@/app/store";
@@ -15,6 +15,20 @@ if (!CLIENT_ID) {
 declare global {
   interface Window {
     googleAuthCallback: (user: any) => void;
+    google?: {
+      accounts?: {
+        id?: {
+          initialize: (options: {
+            client_id: string;
+            callback: (payload: any) => void;
+          }) => void;
+          renderButton: (
+            container: HTMLElement,
+            options: Record<string, string>,
+          ) => void;
+        };
+      };
+    };
   }
 }
 export const GoogleLoginButton = () => {
@@ -22,17 +36,14 @@ export const GoogleLoginButton = () => {
   const setAccessToken = useAppStore((state) => state.setAccessToken);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const buttonRef = useRef<HTMLDivElement | null>(null);
+  // Prevent multiple concurrent FedCM requests (Google blocks duplicate credential.get calls)
+  const inFlightRef = useRef(false);
 
   useEffect(() => {
-    // Load Google's authentication script dynamically
-    const script = document.createElement("script");
-    script.src = "https://accounts.google.com/gsi/client";
-    script.async = true;
-    script.defer = true;
-    document.body.appendChild(script);
-
-    // Define the callback function
-    window.googleAuthCallback = async (payload: any) => {
+    const handleCredential = async (payload: any) => {
+      if (inFlightRef.current) return;
+      inFlightRef.current = true;
       try {
         const { data } = await googleAuthFn(payload.credential);
         const { accessToken } = data;
@@ -55,34 +66,61 @@ export const GoogleLoginButton = () => {
         } else {
           toast.error("Something unexpected occured during Google login");
         }
+      } finally {
+        inFlightRef.current = false;
       }
     };
 
-    return () => {
-      document.body.removeChild(script);
+    window.googleAuthCallback = handleCredential;
+
+    // Load Google script only once, even if component mounts multiple times
+    const existingScript = document.getElementById(
+      "google-identity-script",
+    ) as HTMLScriptElement | null;
+
+    // Initialize and render button imperatively instead of using HTML nodes
+    const initializeGoogle = () => {
+      if (!window.google?.accounts?.id || !buttonRef.current) return;
+      window.google.accounts.id.initialize({
+        client_id: CLIENT_ID,
+        callback: handleCredential,
+      });
+      buttonRef.current.innerHTML = "";
+      window.google.accounts.id.renderButton(buttonRef.current, {
+        type: "standard",
+        shape: "rectangular",
+        theme: "outline",
+        text: "signin_with",
+        size: "large",
+        logo_alignment: "left",
+      });
     };
-  }, []);
+
+    if (existingScript) {
+      if (window.google?.accounts?.id) {
+        initializeGoogle();
+      } else {
+        existingScript.addEventListener("load", initializeGoogle, {
+          once: true,
+        });
+      }
+    } else {
+      const script = document.createElement("script");
+      script.id = "google-identity-script";
+      script.src = "https://accounts.google.com/gsi/client";
+      script.async = true;
+      script.defer = true;
+      script.addEventListener("load", initializeGoogle, { once: true });
+      document.body.appendChild(script);
+    }
+
+    return () => {
+      window.googleAuthCallback = () => {};
+    };
+  }, [googleAuthFn, navigate, queryClient, setAccessToken]);
   return (
     <div>
-      <div
-        id="g_id_onload"
-        data-client_id={CLIENT_ID}
-        data-context="signin"
-        data-ux_mode="popup"
-        data-callback="googleAuthCallback"
-        data-auto_select="false"
-        data-itp_support="true"
-      ></div>
-
-      <div
-        className="g_id_signin"
-        data-type="standard"
-        data-shape="rectangular"
-        data-theme="outline"
-        data-text="signin_with"
-        data-size="large"
-        data-logo_alignment="left"
-      ></div>
+      <div ref={buttonRef} />
     </div>
   );
 };
