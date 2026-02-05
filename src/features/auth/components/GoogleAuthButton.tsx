@@ -4,6 +4,8 @@ import { googleAuth } from "@/features/auth/api/googleAuth";
 import { useAppStore } from "@/app/store";
 import { isAxiosError } from "axios";
 import { useNavigate } from "react-router";
+import { CURRENT_USER_PROFILE_QUERY_KEY } from "@/shared/hooks/useCurrentUserProfile";
+import { useQueryClient } from "@tanstack/react-query";
 
 const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 if (!CLIENT_ID) {
@@ -19,6 +21,7 @@ export const GoogleLoginButton = () => {
   const googleAuthFn = googleAuth;
   const setAccessToken = useAppStore((state) => state.setAccessToken);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     // Load Google's authentication script dynamically
@@ -34,7 +37,10 @@ export const GoogleLoginButton = () => {
         const { data } = await googleAuthFn(payload.credential);
         const { accessToken } = data;
         setAccessToken(accessToken);
-        navigate("/dashboard");
+        queryClient.invalidateQueries({
+          queryKey: CURRENT_USER_PROFILE_QUERY_KEY,
+        });
+        navigate("/dashboard", { replace: true });
       } catch (err) {
         if (
           isAxiosError<{
@@ -60,7 +66,7 @@ export const GoogleLoginButton = () => {
     <div>
       <div
         id="g_id_onload"
-        data-client_id="1034130598395-dlkao983u8emgg5c0ti72qpega3m0pg7.apps.googleusercontent.com"
+        data-client_id={CLIENT_ID}
         data-context="signin"
         data-ux_mode="popup"
         data-callback="googleAuthCallback"

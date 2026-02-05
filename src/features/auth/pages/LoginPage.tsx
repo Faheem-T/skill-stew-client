@@ -11,7 +11,7 @@ import {
 } from "@/shared/components/ui/form";
 import { Input } from "@/shared/components/ui/input";
 import { Button } from "@/shared/components/ui/button";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { loginRequest } from "@/features/auth/api/LoginRequest";
 import type { ApiErrorResponseType } from "@/shared/api/baseApi";
 import { useNavigate } from "react-router";
@@ -20,7 +20,9 @@ import { GoogleLoginButton } from "@/features/auth/components/GoogleAuthButton";
 import { PasswordInput } from "@/shared/components/ui/password-input";
 import { APP_NAME } from "@/shared/config/constants";
 import { Sparkles } from "lucide-react";
-import useCurrentUserProfile from "@/shared/hooks/useCurrentUserProfile";
+import useCurrentUserProfile, {
+  CURRENT_USER_PROFILE_QUERY_KEY,
+} from "@/shared/hooks/useCurrentUserProfile";
 import { InitialLoadScreen } from "@/app/pages/InitialLoadScreen";
 
 export const loginSchema = z.object({
@@ -31,6 +33,7 @@ export const loginSchema = z.object({
 export const LoginPage = () => {
   const navigate = useNavigate();
   const setAccessToken = useAppStore((state) => state.setAccessToken);
+  const queryClient = useQueryClient();
 
   const { data: userProfile, isLoading } = useCurrentUserProfile();
   if (isLoading) {
@@ -38,7 +41,7 @@ export const LoginPage = () => {
   }
 
   if (userProfile) {
-    navigate("/");
+    navigate("/", { replace: true });
   }
 
   const form = useForm<z.infer<typeof loginSchema>>({
@@ -73,7 +76,10 @@ export const LoginPage = () => {
     },
     async onSuccess(data) {
       setAccessToken(data.data.accessToken);
-      navigate("/dashboard");
+      queryClient.invalidateQueries({
+        queryKey: CURRENT_USER_PROFILE_QUERY_KEY,
+      });
+      navigate("/dashboard", { replace: true });
     },
   });
 

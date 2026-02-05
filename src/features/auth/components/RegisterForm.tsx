@@ -18,10 +18,11 @@ import {
   type RegisterResponseType,
 } from "@/features/auth/api/RegisterRequest";
 import type { AxiosError } from "axios";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAppStore } from "@/app/store";
 import { useNavigate } from "react-router";
 import { GoogleLoginButton } from "@/features/auth/components/GoogleAuthButton";
+import { CURRENT_USER_PROFILE_QUERY_KEY } from "@/shared/hooks/useCurrentUserProfile";
 
 const registerSchema = z
   .object({
@@ -48,6 +49,7 @@ type registerSchemaType = z.infer<typeof registerSchema>;
 export const RegisterForm = () => {
   const setAccessToken = useAppStore((state) => state.setAccessToken);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const { mutate, isPending } = useMutation<
     RegisterResponseType,
@@ -64,13 +66,16 @@ export const RegisterForm = () => {
     resolver: zodResolver(registerSchema),
   });
 
-  const { handleSubmit, control, reset } = form;
+  const { handleSubmit, control } = form;
 
   const onSubmit = async (formData: registerSchemaType) => {
     mutate(formData, {
       onSuccess(data) {
         setAccessToken(data.data.accessToken);
-        reset();
+        queryClient.invalidateQueries({
+          queryKey: CURRENT_USER_PROFILE_QUERY_KEY,
+        });
+
         navigate("/dashboard");
       },
       onError(error) {
