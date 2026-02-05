@@ -16,11 +16,19 @@ interface UsernameFieldProps {
 }
 
 export const UsernameField = ({ currentUsername }: UsernameFieldProps) => {
-  const { control, watch, formState } = useFormContext<FormValues>();
-  const { isAvailable, isChecking, debouncedUsername } = useUsernameValidation(
-    watch("username"),
+  const { control, watch, formState, setError, clearErrors } =
+    useFormContext<FormValues>();
+  const username = watch("username");
+  const { errors, dirtyFields } = formState;
+
+  const { isAvailable, isChecking } = useUsernameValidation({
+    username,
     currentUsername,
-  );
+    setError,
+    clearErrors,
+    errors: errors,
+    isDirty: dirtyFields.username,
+  });
 
   return (
     <FormField
@@ -45,8 +53,7 @@ export const UsernameField = ({ currentUsername }: UsernameFieldProps) => {
           ) : (
             isAvailable &&
             field.value?.trim() &&
-            !formState.errors.username &&
-            debouncedUsername !== currentUsername && (
+            !errors.username && (
               <div className="flex items-center gap-1 mt-2 text-sm text-green-600 font-medium">
                 <CheckIcon className="w-4 h-4" />
                 <span>Username is available</span>

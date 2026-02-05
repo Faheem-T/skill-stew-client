@@ -1,79 +1,87 @@
 import { useEffect } from "react";
-import { useFormContext } from "react-hook-form";
+import type {
+  UseFormSetError,
+  UseFormClearErrors,
+  FieldErrors,
+} from "react-hook-form";
 import { useDebounce } from "@/shared/hooks/useDebounce";
 import { useCheckUsernameAvailability } from "@/shared/hooks/useCheckUsernameAvailability";
+
+export interface UseUsernameValidationOptions {
+  username: string | undefined;
+  currentUsername: string | undefined;
+  setError: UseFormSetError<any>;
+  clearErrors: UseFormClearErrors<any>;
+  errors: FieldErrors;
+  isDirty?: boolean;
+}
 
 export interface UseUsernameValidationReturn {
   isAvailable: boolean;
   isChecking: boolean;
-  debouncedUsername: string | undefined;
 }
 
 /**
  * Hook for validating username availability with debouncing
- * Syncs validation state with React Hook Form context
- * Requires form to be wrapped with FormProvider
  */
-export const useUsernameValidation = (
-  username: string | undefined,
-  currentUsername: string | undefined,
-): UseUsernameValidationReturn => {
-  const { setError, clearErrors, formState, getFieldState } = useFormContext();
-  const { errors } = formState;
-  const { isDirty } = getFieldState("username");
-
+export const useUsernameValidation = ({
+  username,
+  currentUsername,
+  setError,
+  clearErrors,
+  errors,
+  isDirty = false,
+}: UseUsernameValidationOptions): UseUsernameValidationReturn => {
   const debouncedUsername = useDebounce(username, 500);
 
-  // Only check availability if validation passes and username changed
-  const hasValidationErrors = !!errors.username;
+  const hasValidationErrors = !!errors?.username;
+  const isSameAsCurrent = debouncedUsername === currentUsername;
   const shouldCheckAvailability =
-    debouncedUsername !== currentUsername &&
-    debouncedUsername &&
+    !isSameAsCurrent &&
+    !!debouncedUsername &&
     debouncedUsername.length > 0 &&
-    !hasValidationErrors &&
-    isDirty;
-  const { data: availabilityData, isLoading: isCheckingUsername } =
+    !hasValidationErrors;
+
+  const { data: availabilityData, isLoading: isChecking } =
     useCheckUsernameAvailability(
       debouncedUsername || "",
-      shouldCheckAvailability ? shouldCheckAvailability : false,
+      shouldCheckAvailability,
     );
 
-  const isUsernameAvailable = availabilityData?.data?.available ?? false;
+  const isAvailable = availabilityData?.data?.available ?? false;
 
   // Sync availability state with form errors
   useEffect(() => {
-    if (!debouncedUsername || !isDirty) {
-      return;
-    }
+    if (!debouncedUsername) return;
 
-    if (debouncedUsername === currentUsername && debouncedUsername) {
+    // Only show "current username" error if user has actually modified the field
+    if (isSameAsCurrent && isDirty) {
       setError("username", {
         type: "manual",
         message: "This is your current username",
       });
     } else if (
-      !isUsernameAvailable &&
+      !isSameAsCurrent &&
       availabilityData?.data?.available === false
     ) {
       setError("username", {
         type: "manual",
         message: "Username is already taken",
       });
-    } else if (isUsernameAvailable) {
+    } else if (!isSameAsCurrent || isAvailable) {
+      // Clear errors when username changes to something different, or when available
       clearErrors("username");
     }
   }, [
     debouncedUsername,
     currentUsername,
-    isUsernameAvailable,
+    isSameAsCurrent,
+    isAvailable,
     availabilityData,
+    isDirty,
     setError,
     clearErrors,
   ]);
 
-  return {
-    isAvailable: isUsernameAvailable,
-    isChecking: isCheckingUsername,
-    debouncedUsername,
-  };
+  return { isAvailable, isChecking };
 };

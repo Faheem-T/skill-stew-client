@@ -23,8 +23,7 @@ import { Input } from "@/shared/components/ui/input";
 import { Alert, AlertDescription } from "@/shared/components/ui/alert";
 import toast from "react-hot-toast";
 import { updateUsernameRequest } from "@/shared/api/UpdateUsername";
-import { useDebounce } from "@/shared/hooks/useDebounce";
-import { useCheckUsernameAvailability } from "@/shared/hooks/useCheckUsernameAvailability";
+import { useUsernameValidation } from "@/shared/hooks/useUsernameValidation";
 import { Loader2, CheckCircle2, AlertTriangle } from "lucide-react";
 
 const usernameSchema = z.object({
@@ -42,9 +41,6 @@ const usernameSchema = z.object({
     .refine((v) => !/([._]{2})/.test(v), {
       message: "No consecutive '.' or '_'",
     }),
-  confirmation: z.boolean().refine((val) => val === true, {
-    message: "You must confirm to proceed",
-  }),
 });
 
 type UsernameFormValues = z.infer<typeof usernameSchema>;
@@ -62,62 +58,36 @@ export const EditUsernameModal = ({
 }: EditUsernameModalProps) => {
   const [isSaving, setIsSaving] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [confirmationChecked, setConfirmationChecked] = useState(false);
 
   const form = useForm<UsernameFormValues>({
     resolver: zodResolver(usernameSchema),
     mode: "onChange",
     defaultValues: {
       username: currentUsername || "",
-      confirmation: false,
     },
   });
 
   const watchedUsername = form.watch("username");
-  const debouncedUsername = useDebounce(watchedUsername, 500);
 
-  // Only check availability if Zod validation passes and username changed
-  const hasValidationErrors = !!form.formState.errors.username;
-  const shouldCheckAvailability =
-    debouncedUsername !== currentUsername &&
-    debouncedUsername.length > 0 &&
-    !hasValidationErrors;
-
-  const { data: availabilityData, isLoading: isCheckingUsername } =
-    useCheckUsernameAvailability(debouncedUsername, shouldCheckAvailability);
-
-  const isUsernameAvailable = availabilityData?.data?.available ?? false;
-
-  useEffect(() => {
-    if (debouncedUsername === currentUsername && debouncedUsername) {
-      form.setError("username", {
-        type: "manual",
-        message: "This is your current username",
-      });
-    } else if (
-      !isUsernameAvailable &&
-      availabilityData?.data?.available === false
-    ) {
-      form.setError("username", {
-        type: "manual",
-        message: "Username is already taken",
-      });
-    } else if (isUsernameAvailable) {
-      form.clearErrors("username");
-    }
-  }, [
-    debouncedUsername,
-    currentUsername,
-    isUsernameAvailable,
-    availabilityData,
-  ]);
+  // Use the shared username validation hook with form methods
+  const { isAvailable: isUsernameAvailable, isChecking: isCheckingUsername } =
+    useUsernameValidation({
+      username: watchedUsername,
+      currentUsername,
+      setError: form.setError,
+      clearErrors: form.clearErrors,
+      errors: form.formState.errors,
+      isDirty: form.formState.dirtyFields.username,
+    });
 
   useEffect(() => {
     if (open) {
       form.reset({
         username: currentUsername || "",
-        confirmation: false,
       });
       setShowConfirmation(false);
+      setConfirmationChecked(false);
     }
   }, [open, currentUsername, form]);
 
@@ -137,6 +107,10 @@ export const EditUsernameModal = ({
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const handleConfirmChange = (checked: boolean) => {
+    setConfirmationChecked(checked);
   };
 
   const getUsernameStatus = () => {
@@ -244,28 +218,25 @@ export const EditUsernameModal = ({
                   </AlertDescription>
                 </Alert>
 
-                <FormField
-                  control={form.control}
-                  name="confirmation"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                      <FormControl>
-                        <input
-                          type="checkbox"
-                          checked={field.value}
-                          onChange={field.onChange}
-                          className="mt-1 h-4 w-4 rounded border-stone-300 text-primary focus:ring-primary"
-                        />
-                      </FormControl>
-                      <div className="space-y-1 leading-none">
-                        <FormLabel className="text-sm font-normal cursor-pointer">
-                          I understand that I am changing my username
-                        </FormLabel>
-                        <FormMessage />
-                      </div>
-                    </FormItem>
-                  )}
-                />
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                  <FormControl>
+                    <input
+                      type="checkbox"
+                      id="confirmation"
+                      checked={confirmationChecked}
+                      onChange={(e) => handleConfirmChange(e.target.checked)}
+                      className="mt-1 h-4 w-4 rounded border-stone-300 text-primary focus:ring-primary"
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <label
+                      htmlFor="confirmation"
+                      className="text-sm font-normal cursor-pointer"
+                    >
+                      I understand that I am changing my username
+                    </label>
+                  </div>
+                </FormItem>
 
                 <div className="flex justify-end gap-3 pt-4">
                   <Button
@@ -278,7 +249,7 @@ export const EditUsernameModal = ({
                   </Button>
                   <Button
                     type="submit"
-                    disabled={!form.watch("confirmation") || isSaving}
+                    disabled={!confirmationChecked || isSaving}
                     className="bg-primary hover:bg-primary/90"
                   >
                     {isSaving ? "Updating..." : "Confirm Change"}
