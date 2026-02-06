@@ -191,7 +191,7 @@ export const OfferedSkillsStep: React.FC<OfferedSkillsStepProps> = ({
 
             {/* Selected skill detail card - animated */}
             {selectedSkill && (
-              <div className="space-y-4 p-6 bg-gradient-to-br from-primary/10 to-accent/10 border border-primary/20 rounded-xl">
+              <div className="space-y-4 p-6 bg-linear-to-br from-primary/10 to-accent/10 border border-primary/20 rounded-xl">
                 <div className="flex items-center justify-between">
                   <span className="font-semibold text-slate-900">
                     {selectedSkill.name}

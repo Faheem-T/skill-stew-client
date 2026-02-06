@@ -203,7 +203,7 @@ export const ProfileCompletion = () => {
                           <textarea
                             {...field}
                             placeholder="A short bio"
-                            className="w-full rounded-md border px-3 py-2 min-h-[96px]"
+                            className="w-full rounded-md border px-3 py-2 min-h-24"
                           />
                         </FormControl>
                         <FormDescription>
@@ -225,7 +225,7 @@ export const ProfileCompletion = () => {
                             <textarea
                               {...field}
                               placeholder="One link per line"
-                              className="w-full rounded-md border px-3 py-2 min-h-[72px]"
+                              className="w-full rounded-md border px-3 py-2 min-h-18"
                             />
                           </FormControl>
                           <FormDescription>
