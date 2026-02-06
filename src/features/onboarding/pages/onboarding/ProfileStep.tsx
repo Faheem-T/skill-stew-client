@@ -15,7 +15,6 @@ import { usernameSchema, profileSchema } from "@/features/onboarding/schemas";
 import { z } from "zod";
 import { ProfileAvatar } from "@/features/onboarding/components/ProfileAvatar";
 import { ProfileFormFields } from "@/features/onboarding/components/ProfileFormFields";
-import { DevTool } from "@hookform/devtools";
 import { useImageFileUpload } from "@/shared/hooks/useImageFileUpload";
 import { useUploadToS3 } from "@/shared/hooks/useUploadToS3";
 
@@ -216,7 +215,6 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({
           Next
         </Button>
       </div>
-      <DevTool control={form.control} />
     </div>
   );
 };
