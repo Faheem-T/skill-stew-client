@@ -1,0 +1,18 @@
+export const RoutePath = {
+  Home: "/",
+  Login: "/login",
+  Register: "/register",
+  SetPassword: "/set-password",
+  AdminLogin: "/admin/login",
+  Dashboard: "/dashboard",
+  UserDashboard: "/dashboard/user",
+  UserProfile: "/profile",
+  AdminDashboard: "/dashboard/admin",
+  AdminUsers: "/admin/users",
+  AdminSubscriptions: "/admin/subscriptions",
+  Workshops: "/workshops",
+  Exchanges: "/exchanges",
+  Community: "/community",
+  Settings: "/settings",
+  TestRoute: "/test",
+} as const;
