@@ -17,6 +17,7 @@ import { ProfileAvatar } from "@/features/onboarding/components/ProfileAvatar";
 import { ProfileFormFields } from "@/features/onboarding/components/ProfileFormFields";
 import { useImageFileUpload } from "@/shared/hooks/useImageFileUpload";
 import { useUploadToS3 } from "@/shared/hooks/useUploadToS3";
+import { RoutePath } from "@/shared/config/routes";
 
 // Combine schemas for the form
 const combinedSchema = usernameSchema.merge(profileSchema);
@@ -136,7 +137,7 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({
         if (onComplete) {
           onComplete();
         } else {
-          navigate("/dashboard");
+          navigate(RoutePath.Dashboard);
         }
       },
       onError() {

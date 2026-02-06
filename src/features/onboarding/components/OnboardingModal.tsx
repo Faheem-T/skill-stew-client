@@ -6,6 +6,7 @@ import {
 } from "@/shared/components/ui/dialog";
 import { useNavigate } from "react-router";
 import { Onboarding } from "../pages/onboarding/Onboarding";
+import { RoutePath } from "@/shared/config/routes";
 
 interface OnboardingModalProps {
   isOpen: boolean;
@@ -20,7 +21,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
 
   const handleProfileComplete = () => {
     onClose();
-    navigate("/dashboard/user");
+    navigate(RoutePath.UserDashboard);
   };
 
   return (

@@ -24,6 +24,7 @@ import useCurrentUserProfile, {
   CURRENT_USER_PROFILE_QUERY_KEY,
 } from "@/shared/hooks/useCurrentUserProfile";
 import { InitialLoadScreen } from "@/app/pages/InitialLoadScreen";
+import { RoutePath } from "@/shared/config/routes";
 
 export const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address."),
@@ -41,7 +42,7 @@ export const LoginPage = () => {
   }
 
   if (userProfile) {
-    navigate("/", { replace: true });
+    navigate(RoutePath.Home, { replace: true });
   }
 
   const form = useForm<z.infer<typeof loginSchema>>({
@@ -79,7 +80,7 @@ export const LoginPage = () => {
       queryClient.invalidateQueries({
         queryKey: CURRENT_USER_PROFILE_QUERY_KEY,
       });
-      navigate("/dashboard", { replace: true });
+      navigate(RoutePath.Dashboard, { replace: true });
     },
   });
 
@@ -119,7 +120,7 @@ export const LoginPage = () => {
             Don't have an account?{" "}
             <span
               className="font-semibold text-primary hover:underline cursor-pointer"
-              onClick={() => navigate("/register")}
+              onClick={() => navigate(RoutePath.Register)}
             >
               Sign up
             </span>

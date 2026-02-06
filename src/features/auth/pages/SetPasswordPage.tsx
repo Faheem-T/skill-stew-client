@@ -21,6 +21,7 @@ import {
 import { Input } from "@/shared/components/ui/input";
 import { Button } from "@/shared/components/ui/button";
 import { Carousel } from "@/shared/components/ui/Carousel";
+import { RoutePath } from "@/shared/config/routes";
 
 export const setPasswordSchema = z
   .object({
@@ -94,7 +95,7 @@ export const SetPasswordPage = () => {
       {
         onSuccess(data) {
           if (data.message) toast.success(data.message);
-          navigate("/login");
+          navigate(RoutePath.Login);
         },
       },
     );

@@ -6,6 +6,7 @@ import { isAxiosError } from "axios";
 import { useNavigate } from "react-router";
 import { CURRENT_USER_PROFILE_QUERY_KEY } from "@/shared/hooks/useCurrentUserProfile";
 import { useQueryClient } from "@tanstack/react-query";
+import { RoutePath } from "@/shared/config/routes";
 
 const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 if (!CLIENT_ID) {
@@ -51,7 +52,7 @@ export const GoogleLoginButton = () => {
         queryClient.invalidateQueries({
           queryKey: CURRENT_USER_PROFILE_QUERY_KEY,
         });
-        navigate("/dashboard", { replace: true });
+        navigate(RoutePath.Dashboard, { replace: true });
       } catch (err) {
         if (
           isAxiosError<{

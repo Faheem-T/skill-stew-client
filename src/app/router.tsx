@@ -18,6 +18,7 @@ import { UserDashboard } from "@/features/user/pages/UserDashboard";
 import { UserProfilePage } from "@/features/user/pages/UserProfilePage";
 import { ProfileStep } from "@/features/onboarding/pages/onboarding/ProfileStep";
 import { AppRoot } from "./AppRoot";
+import { RoutePath } from "@/shared/config/routes";
 
 export const queryClient = new QueryClient();
 
@@ -28,11 +29,11 @@ export const router = createBrowserRouter([
     element: <AppRoot />,
     children: [
       {
-        path: "test",
+        path: RoutePath.TestRoute,
         element: <ProfileStep />,
       },
       {
-        path: "/",
+        path: RoutePath.Home,
         element: <HomePage />,
       },
       {
@@ -40,19 +41,19 @@ export const router = createBrowserRouter([
         element: <GuestRoute />,
         children: [
           {
-            path: "/login",
+            path: RoutePath.Login,
             element: <LoginPage />,
           },
           {
-            path: "/register",
+            path: RoutePath.Register,
             element: <RegisterPage />,
           },
           {
-            path: "/set-password",
+            path: RoutePath.SetPassword,
             element: <SetPasswordPage />,
           },
           {
-            path: "/admin/login",
+            path: RoutePath.AdminLogin,
             element: <AdminLoginPage />,
           },
         ],
@@ -60,14 +61,16 @@ export const router = createBrowserRouter([
       {
         // Authenticated users only routes
         element: <ProtectedRoute roles={["ADMIN", "EXPERT", "USER"]} />,
-        children: [{ path: "/dashboard", element: <DashboardRoutingPage /> }],
+        children: [
+          { path: RoutePath.Dashboard, element: <DashboardRoutingPage /> },
+        ],
       },
       {
         // USER only routes
         element: <ProtectedRoute roles={["USER"]} />,
         children: [
-          { path: "dashboard/user", element: <UserDashboard /> },
-          { path: "profile", element: <UserProfilePage /> },
+          { path: RoutePath.UserDashboard, element: <UserDashboard /> },
+          { path: RoutePath.UserProfile, element: <UserProfilePage /> },
         ],
       },
       {
@@ -77,13 +80,13 @@ export const router = createBrowserRouter([
           {
             element: <AdminSidebarProvider />,
             children: [
-              { path: "/dashboard/admin", element: <AdminDashboard /> },
+              { path: RoutePath.AdminDashboard, element: <AdminDashboard /> },
               {
-                path: "/admin/users",
+                path: RoutePath.AdminUsers,
                 element: <UserManagement />,
               },
               {
-                path: "/admin/subscriptions",
+                path: RoutePath.AdminSubscriptions,
                 element: <SubscriptionManagement />,
               },
             ],

@@ -23,6 +23,7 @@ import { useUpdateProfile } from "@/features/user/hooks/useUpdateProfile";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
 import ISO6391 from "iso-639-1";
+import { RoutePath } from "@/shared/config/routes";
 
 type FormValues = {
   name?: string;
@@ -77,7 +78,7 @@ export const ProfileCompletion = () => {
     mutation.mutate(payload, {
       onSuccess() {
         toast.success("Profile updated. Onboarding complete.");
-        navigate("/dashboard");
+        navigate(RoutePath.Dashboard);
       },
       onError() {
         toast.error("Failed to update profile. Please try again.");

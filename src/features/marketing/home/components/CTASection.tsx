@@ -2,6 +2,7 @@ import { Button } from "@/shared/components/ui/button";
 import type React from "react";
 import { useNavigate } from "react-router";
 import { ArrowRight } from "lucide-react";
+import { RoutePath } from "@/shared/config/routes";
 
 export const CTASection: React.FC = () => {
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ export const CTASection: React.FC = () => {
               <Button
                 size="lg"
                 className="bg-white text-primary hover:bg-white/90 rounded-lg px-8 h-12 text-base font-medium"
-                onClick={() => navigate("/register")}
+                onClick={() => navigate(RoutePath.Register)}
               >
                 Get Started
                 <ArrowRight className="ml-2 h-4 w-4" />
@@ -35,7 +36,7 @@ export const CTASection: React.FC = () => {
                 variant="outline"
                 size="lg"
                 className="border-white/60 text-primary hover:bg-white/15 hover:border-white rounded-lg px-8 h-12 text-base font-medium"
-                onClick={() => navigate("/login")}
+                onClick={() => navigate(RoutePath.Login)}
               >
                 Log In
               </Button>

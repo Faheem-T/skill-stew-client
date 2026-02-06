@@ -23,6 +23,7 @@ import { useAppStore } from "@/app/store";
 import { useNavigate } from "react-router";
 import { GoogleLoginButton } from "@/features/auth/components/GoogleAuthButton";
 import { CURRENT_USER_PROFILE_QUERY_KEY } from "@/shared/hooks/useCurrentUserProfile";
+import { RoutePath } from "@/shared/config/routes";
 
 const registerSchema = z
   .object({
@@ -76,7 +77,7 @@ export const RegisterForm = () => {
           queryKey: CURRENT_USER_PROFILE_QUERY_KEY,
         });
 
-        navigate("/dashboard");
+        navigate(RoutePath.Dashboard);
       },
       onError(error) {
         if (error.response) {

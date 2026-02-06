@@ -21,6 +21,7 @@ import { loginRequest } from "@/features/auth/api/LoginRequest";
 import { APP_NAME } from "@/shared/config/constants";
 import { Shield } from "lucide-react";
 import { CURRENT_USER_PROFILE_QUERY_KEY } from "@/shared/hooks/useCurrentUserProfile";
+import { RoutePath } from "@/shared/config/routes";
 
 export const adminLoginSchema = z.object({
   email: z.string(),
@@ -72,7 +73,7 @@ export const AdminLoginPage = () => {
         await queryClient.invalidateQueries({
           queryKey: CURRENT_USER_PROFILE_QUERY_KEY,
         });
-        navigate("/dashboard/admin");
+        navigate(RoutePath.AdminDashboard);
       },
     });
   }

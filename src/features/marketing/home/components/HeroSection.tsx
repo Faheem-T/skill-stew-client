@@ -3,6 +3,7 @@ import { motion } from "motion/react";
 import type React from "react";
 import { useNavigate } from "react-router";
 import { ArrowRight } from "lucide-react";
+import { RoutePath } from "@/shared/config/routes";
 
 export const HeroSection: React.FC<{
   onLearnMoreButtonClick: () => void;
@@ -61,7 +62,7 @@ export const HeroSection: React.FC<{
             <Button
               size="lg"
               className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg px-8 h-12 text-base font-medium"
-              onClick={() => navigate("/register")}
+              onClick={() => navigate(RoutePath.Register)}
             >
               Get Started
               <ArrowRight className="ml-2 h-4 w-4" />

@@ -1,6 +1,7 @@
 import { APP_NAME } from "@/shared/config/constants";
 import type React from "react";
 import { Link } from "react-router";
+import { RoutePath } from "@/shared/config/routes";
 
 export const Footer: React.FC = () => {
   return (
@@ -27,7 +28,7 @@ export const Footer: React.FC = () => {
             <ul className="space-y-3">
               <li>
                 <Link
-                  to="/login"
+                  to={RoutePath.Login}
                   className="text-stone-300 hover:text-white transition-colors"
                 >
                   Log In
@@ -35,7 +36,7 @@ export const Footer: React.FC = () => {
               </li>
               <li>
                 <Link
-                  to="/register"
+                  to={RoutePath.Register}
                   className="text-stone-300 hover:text-white transition-colors"
                 >
                   Sign Up

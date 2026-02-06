@@ -2,6 +2,7 @@ import useCurrentUserProfile from "@/shared/hooks/useCurrentUserProfile";
 import type React from "react";
 import { Navigate } from "react-router";
 import { InitialLoadScreen } from "./InitialLoadScreen";
+import { RoutePath } from "@/shared/config/routes";
 
 export const DashboardRoutingPage: React.FC = () => {
   const { data: userProfile, isLoading } = useCurrentUserProfile();
@@ -11,13 +12,13 @@ export const DashboardRoutingPage: React.FC = () => {
   }
 
   if (!userProfile) {
-    return <Navigate to="/" replace={true} />;
+    return <Navigate to={RoutePath.Home} replace />;
   }
 
   return (
     <Navigate
-      to={`/dashboard/${userProfile.role.toLowerCase()}`}
-      replace={true}
+      to={`${RoutePath.Dashboard}/${userProfile.role.toLowerCase()}`}
+      replace
     />
   );
 };

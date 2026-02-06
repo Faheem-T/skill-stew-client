@@ -14,22 +14,23 @@ import {
 import { Link } from "react-router";
 import { Button } from "@/shared/components/ui/button";
 import { useLogout } from "@/features/auth/hooks/useLogout";
+import { RoutePath } from "@/shared/config/routes";
 
 // Menu items
 const items = [
   {
     title: "Dashboard",
-    url: "/admin/dashboard",
+    url: RoutePath.AdminDashboard,
     icon: LayoutDashboardIcon,
   },
   {
     title: "Users",
-    url: "/admin/users",
+    url: RoutePath.AdminUsers,
     icon: User,
   },
   {
     title: "Subscription Plans",
-    url: "/admin/subscriptions",
+    url: RoutePath.AdminSubscriptions,
     icon: CircleDollarSignIcon,
   },
 ];

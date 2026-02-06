@@ -2,6 +2,7 @@ import { useNavigate } from "react-router";
 import { RegisterForm } from "../../components/RegisterForm";
 import { APP_NAME } from "@/shared/config/constants";
 import { Sparkles } from "lucide-react";
+import { RoutePath } from "@/shared/config/routes";
 
 export const RegisterPage = () => {
   const navigate = useNavigate();
@@ -38,7 +39,7 @@ export const RegisterPage = () => {
             Already have an account?{" "}
             <span
               className="font-semibold text-primary hover:underline cursor-pointer"
-              onClick={() => navigate("/login")}
+              onClick={() => navigate(RoutePath.Login)}
             >
               Sign in
             </span>

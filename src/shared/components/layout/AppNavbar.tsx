@@ -18,6 +18,7 @@ import { useCurrentUserProfile } from "@/shared/hooks/useCurrentUserProfile";
 import { Bell, Search } from "lucide-react";
 import { Input } from "@/shared/components/ui/input";
 import { InitialLoadScreen } from "@/app/pages/InitialLoadScreen";
+import { RoutePath } from "@/shared/config/routes";
 
 /**
  * AppNavbar - Navigation bar for authenticated users
@@ -37,18 +38,21 @@ export const AppNavbar: React.FC = () => {
   return (
     <div className="h-16 flex items-center justify-between bg-white border-b border-stone-200 px-6 md:px-12 sticky top-0 z-50">
       {/* Logo */}
-      <Link to="/dashboard" className="h-full flex items-center gap-2.5">
+      <Link
+        to={RoutePath.Dashboard}
+        className="h-full flex items-center gap-2.5"
+      >
         <img src="/logo.png" className="h-9 w-9 object-contain" />
         <span className="font-semibold text-lg text-primary">{APP_NAME}</span>
       </Link>
 
       {/* Navigation links - centered */}
       <nav className="hidden md:flex items-center gap-1">
-        <Link to="/dashboard">
+        <Link to={RoutePath.Dashboard}>
           <Button
             variant="ghost"
             className={
-              isActive("/dashboard") || isActive("/dashboard/user")
+              isActive(RoutePath.Dashboard) || isActive(RoutePath.UserDashboard)
                 ? "text-primary bg-primary/10"
                 : "text-stone-600 hover:text-primary hover:bg-stone-100"
             }
@@ -56,11 +60,11 @@ export const AppNavbar: React.FC = () => {
             Dashboard
           </Button>
         </Link>
-        <Link to="/workshops">
+        <Link to={RoutePath.Workshops}>
           <Button
             variant="ghost"
             className={
-              isActive("/workshops")
+              isActive(RoutePath.Workshops)
                 ? "text-primary bg-primary/10"
                 : "text-stone-600 hover:text-primary hover:bg-stone-100"
             }
@@ -68,11 +72,11 @@ export const AppNavbar: React.FC = () => {
             Workshops
           </Button>
         </Link>
-        <Link to="/exchanges">
+        <Link to={RoutePath.Exchanges}>
           <Button
             variant="ghost"
             className={
-              isActive("/exchanges")
+              isActive(RoutePath.Exchanges)
                 ? "text-primary bg-primary/10"
                 : "text-stone-600 hover:text-primary hover:bg-stone-100"
             }
@@ -80,11 +84,11 @@ export const AppNavbar: React.FC = () => {
             Skill Exchanges
           </Button>
         </Link>
-        <Link to="/community">
+        <Link to={RoutePath.Community}>
           <Button
             variant="ghost"
             className={
-              isActive("/community")
+              isActive(RoutePath.Community)
                 ? "text-primary bg-primary/10"
                 : "text-stone-600 hover:text-primary hover:bg-stone-100"
             }
@@ -172,7 +176,7 @@ const UserAvatar: React.FC = () => {
         <DropdownMenuItem disabled className="h-px bg-stone-100 p-0" />
         <DropdownMenuItem asChild>
           <Link
-            to="/dashboard"
+            to={RoutePath.Dashboard}
             className="cursor-pointer text-stone-600 hover:text-primary"
           >
             Dashboard
@@ -180,7 +184,7 @@ const UserAvatar: React.FC = () => {
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link
-            to="/profile"
+            to={RoutePath.UserProfile}
             className="cursor-pointer text-stone-600 hover:text-primary"
           >
             Profile
@@ -188,7 +192,7 @@ const UserAvatar: React.FC = () => {
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link
-            to="/settings"
+            to={RoutePath.Settings}
             className="cursor-pointer text-stone-600 hover:text-primary"
           >
             Settings

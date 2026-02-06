@@ -14,6 +14,7 @@ import { useLogout } from "@/features/auth/hooks/useLogout";
 import { Link } from "react-router";
 import { useCurrentUserProfile } from "@/shared/hooks/useCurrentUserProfile";
 import { InitialLoadScreen } from "@/app/pages/InitialLoadScreen";
+import { RoutePath } from "@/shared/config/routes";
 
 export const TopBar: React.FC = () => {
   const { data: userProfile, isPending: isProfilePending } =
@@ -26,7 +27,7 @@ export const TopBar: React.FC = () => {
   return (
     <div className="h-16 flex items-center justify-between bg-stone-50/80 backdrop-blur-md border-b border-stone-200/60 px-6 md:px-12 sticky top-0 z-50">
       {/* Logo */}
-      <Link to="/" className="h-full flex items-center gap-2.5">
+      <Link to={RoutePath.Home} className="h-full flex items-center gap-2.5">
         <img src="/logo.png" className="h-9 w-9 object-contain" />
         <span className="font-semibold text-lg text-primary">{APP_NAME}</span>
       </Link>
@@ -34,7 +35,7 @@ export const TopBar: React.FC = () => {
       {/* Nav links - hidden on mobile */}
       <nav className="hidden md:flex items-center gap-8">
         <Link
-          to="/"
+          to={RoutePath.Home}
           className="text-sm text-stone-600 hover:text-primary transition-colors"
         >
           Home
@@ -65,7 +66,7 @@ export const TopBar: React.FC = () => {
           <UserAvatar />
         ) : (
           <>
-            <Link to="/login">
+            <Link to={RoutePath.Login}>
               <Button
                 variant="ghost"
                 className="text-stone-600 hover:text-primary hover:bg-stone-100"
@@ -73,7 +74,7 @@ export const TopBar: React.FC = () => {
                 Log In
               </Button>
             </Link>
-            <Link to="/register">
+            <Link to={RoutePath.Register}>
               <Button className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-md">
                 Get Started
               </Button>
@@ -134,7 +135,7 @@ const UserAvatar: React.FC = () => {
         <DropdownMenuItem disabled className="h-px bg-stone-100 p-0" />
         <DropdownMenuItem asChild>
           <Link
-            to="/dashboard"
+            to={RoutePath.Dashboard}
             className="cursor-pointer text-stone-600 hover:text-primary"
           >
             Dashboard
@@ -142,7 +143,7 @@ const UserAvatar: React.FC = () => {
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link
-            to="/profile"
+            to={RoutePath.UserProfile}
             className="cursor-pointer text-stone-600 hover:text-primary"
           >
             Profile
