@@ -19,6 +19,7 @@ import { UserProfilePage } from "@/features/user/pages/UserProfilePage";
 import { ProfileStep } from "@/features/onboarding/pages/onboarding/ProfileStep";
 import { AppRoot } from "./AppRoot";
 import { RoutePath } from "@/shared/config/routes";
+import SocketIoTestClient from "@/shared/components/SocketIoTestClient";
 
 export const queryClient = new QueryClient();
 
@@ -30,7 +31,7 @@ export const router = createBrowserRouter([
     children: [
       {
         path: RoutePath.TestRoute,
-        element: <ProfileStep />,
+        element: <SocketIoTestClient />,
       },
       {
         path: RoutePath.Home,
