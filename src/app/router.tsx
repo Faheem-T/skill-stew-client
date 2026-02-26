@@ -20,6 +20,7 @@ import { ProfileStep } from "@/features/onboarding/pages/onboarding/ProfileStep"
 import { AppRoot } from "./AppRoot";
 import { RoutePath } from "@/shared/config/routes";
 import SocketIoTestClient from "@/shared/components/SocketIoTestClient";
+import { NotificationsPage } from "@/features/notification/pages/NotificationsPage";
 
 export const queryClient = new QueryClient();
 
@@ -64,6 +65,10 @@ export const router = createBrowserRouter([
         element: <ProtectedRoute roles={["ADMIN", "EXPERT", "USER"]} />,
         children: [
           { path: RoutePath.Dashboard, element: <DashboardRoutingPage /> },
+          {
+            path: RoutePath.Notifications,
+            element: <NotificationsPage />,
+          },
         ],
       },
       {

@@ -19,6 +19,8 @@ import { Bell, Search } from "lucide-react";
 import { Input } from "@/shared/components/ui/input";
 import { InitialLoadScreen } from "@/app/pages/InitialLoadScreen";
 import { RoutePath } from "@/shared/config/routes";
+import { useQuery } from "@tanstack/react-query";
+import { getUnreadCountRequest } from "@/features/notification/api/GetUnreadCount";
 
 /**
  * AppNavbar - Navigation bar for authenticated users
@@ -110,13 +112,7 @@ export const AppNavbar: React.FC = () => {
         </div>
 
         {/* Notifications */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="text-stone-600 hover:text-primary"
-        >
-          <Bell className="h-5 w-5" />
-        </Button>
+        <NotificationBell />
 
         {/* User avatar */}
         {userProfile && <UserAvatar />}
@@ -211,5 +207,32 @@ const UserAvatar: React.FC = () => {
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
+  );
+};
+
+const NotificationBell: React.FC = () => {
+  const { data } = useQuery({
+    queryKey: ["notifications-unread-count"],
+    queryFn: getUnreadCountRequest,
+    refetchOnWindowFocus: false,
+  });
+
+  const count = data?.data?.count ?? 0;
+
+  return (
+    <Link to={RoutePath.Notifications}>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="relative text-stone-600 hover:text-primary"
+      >
+        <Bell className="h-5 w-5" />
+        {count > 0 && (
+          <span className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
+            {count > 99 ? "99+" : count}
+          </span>
+        )}
+      </Button>
+    </Link>
   );
 };
