@@ -3,8 +3,11 @@ import type { Socket } from "socket.io-client";
 import { useSocket } from "@/shared/hooks/useSocket";
 import type { Notification } from "@/features/notification/types/types";
 import { NotificationToast } from "@/features/notification/components/NotificationToast";
-import { useQueryClient } from "@tanstack/react-query";
-import type { ApiResponseWithData } from "@/shared/api/baseApi";
+import { useQueryClient, type InfiniteData } from "@tanstack/react-query";
+import type {
+  ApiResponseWithData,
+  PaginatedApiResponse,
+} from "@/shared/api/baseApi";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
 
@@ -56,6 +59,24 @@ export function SocketProvider({ children }: SocketProviderProps) {
           };
         },
       );
+
+      // Prepend the notification to the infinite query cache
+      queryClient.setQueryData<
+        InfiniteData<PaginatedApiResponse<Notification[]>>
+      >(["notifications"], (old) => {
+        if (!old) return old;
+        const [firstPage, ...restPages] = old.pages;
+        return {
+          ...old,
+          pages: [
+            {
+              ...firstPage,
+              data: [notification, ...firstPage.data],
+            },
+            ...restPages,
+          ],
+        };
+      });
     };
 
     socket.on("notification:new", handleNewNotification);
