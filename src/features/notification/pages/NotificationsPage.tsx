@@ -1,9 +1,9 @@
 import { AppNavbar } from "@/shared/components/layout/AppNavbar";
-import { useQuery } from "@tanstack/react-query";
-import { getNotificationsRequest } from "@/features/notification/api/GetNotifications";
 import { Loader2, Bell, BellOff } from "lucide-react";
 import { NotificationType } from "@/features/notification/types/types";
 import type { Notification } from "@/features/notification/types/types";
+import { useNotifications } from "@/features/notification/hooks/useNotifications";
+import { useEffect, useRef } from "react";
 
 /**
  * Returns a short summary string from a notification's data payload.
@@ -23,17 +23,35 @@ function getNotificationSubtext(notification: Notification): string {
 
 export const NotificationsPage = () => {
   const {
-    data: notificationsData,
+    data,
     isLoading,
     error,
-  } = useQuery({
-    queryKey: ["notifications"],
-    queryFn: getNotificationsRequest,
-    retry: false,
-    refetchOnWindowFocus: false,
-  });
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+  } = useNotifications();
 
-  const notifications = notificationsData?.data ?? [];
+  const sentinelRef = useRef<HTMLDivElement>(null);
+
+  // Intersection observer for infinite scroll
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 0.1 },
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  const notifications = data?.pages.flatMap((page) => page.data) ?? [];
 
   return (
     <div className="min-h-screen bg-stone-50">
@@ -105,6 +123,13 @@ export const NotificationsPage = () => {
                 </div>
               </div>
             ))}
+
+            {/* Intersection sentinel + loading spinner */}
+            <div ref={sentinelRef} className="py-4 flex justify-center">
+              {isFetchingNextPage && (
+                <Loader2 className="w-5 h-5 text-primary animate-spin" />
+              )}
+            </div>
           </div>
         )}
       </div>
