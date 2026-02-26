@@ -1,4 +1,12 @@
 import { DefaultAvatarIllustration } from "@/features/onboarding/components/DefaultAvatarIllustration";
+import { sendConnectionRequest } from "@/features/user/api/SendConnectionRequest";
+import type {
+  RecommendedUser,
+} from "@/features/user/api/GetRecommendedUsers";
+import type { ApiResponseWithData } from "@/shared/api/baseApi";
+import type { UserConnectionStatus } from "@/shared/constants/UserConnectionStatus";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Loader2 } from "lucide-react";
 
 interface Skill {
   skillId: string;
@@ -13,18 +21,65 @@ interface PersonCardProps {
   avatarUrl?: string;
   offeredSkills?: Skill[];
   wantedSkills?: Skill[];
-  onConnect?: () => void;
+  connectionStatusToUser: UserConnectionStatus | "NONE";
 }
 
+const statusConfig: Record<
+  UserConnectionStatus,
+  { label: string; className: string }
+> = {
+  PENDING: {
+    label: "Pending",
+    className: "bg-yellow-100 text-yellow-800 border border-yellow-300",
+  },
+  ACCEPTED: {
+    label: "Connected",
+    className: "bg-green-100 text-green-800 border border-green-300",
+  },
+  REJECTED: {
+    label: "Rejected",
+    className: "bg-stone-100 text-stone-500 border border-stone-300",
+  },
+};
+
 export const PersonCard = ({
+  id,
   name,
   username,
   location,
   avatarUrl,
   offeredSkills,
   wantedSkills,
-  onConnect,
+  connectionStatusToUser,
 }: PersonCardProps) => {
+  const queryClient = useQueryClient();
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: sendConnectionRequest,
+    onSuccess: () => {
+      queryClient.setQueryData<ApiResponseWithData<RecommendedUser[]>>(
+        ["recommended-users"],
+        (old) => {
+          if (!old) return old;
+          return {
+            ...old,
+            data: old.data.map((user) =>
+              user.id === id
+                ? { ...user, connectionStatusToUser: "PENDING" as const }
+                : user,
+            ),
+          };
+        },
+      );
+    },
+  });
+
+  const handleConnect = () => {
+    mutate({ userId: id });
+  };
+
+  const showConnectButton = connectionStatusToUser === "NONE";
+
   return (
     <div className="p-4 border border-stone-200 rounded-lg hover:border-primary/50 hover:shadow-md transition-all bg-white">
       <div className="flex items-center justify-between gap-4">
@@ -81,12 +136,22 @@ export const PersonCard = ({
             )}
           </div>
         </div>
-        <button
-          className="px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors shrink-0 whitespace-nowrap"
-          onClick={onConnect}
-        >
-          Connect
-        </button>
+        {showConnectButton ? (
+          <button
+            className="px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors shrink-0 whitespace-nowrap disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
+            onClick={handleConnect}
+            disabled={isPending}
+          >
+            {isPending && <Loader2 className="w-4 h-4 animate-spin" />}
+            {isPending ? "Connecting..." : "Connect"}
+          </button>
+        ) : (
+          <span
+            className={`px-4 py-2 rounded-lg text-sm font-medium shrink-0 ${statusConfig[connectionStatusToUser].className}`}
+          >
+            {statusConfig[connectionStatusToUser].label}
+          </span>
+        )}
       </div>
     </div>
   );
