@@ -1,3 +1,4 @@
+import { useAppStore } from "@/app/store";
 import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
@@ -47,6 +48,9 @@ export default function SocketIoTestClient() {
       path,
       //   transports: ["websocket"],
       autoConnect: false,
+      auth: {
+        token: `Bearer ${useAppStore.getState().accessToken}`,
+      },
     });
 
     socket.on("connect", () => {
