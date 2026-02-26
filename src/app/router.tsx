@@ -21,6 +21,7 @@ import { AppRoot } from "./AppRoot";
 import { RoutePath } from "@/shared/config/routes";
 import SocketIoTestClient from "@/shared/components/SocketIoTestClient";
 import { NotificationsPage } from "@/features/notification/pages/NotificationsPage";
+import { NotFoundPage } from "./pages/NotFoundPage";
 
 export const queryClient = new QueryClient();
 
@@ -98,6 +99,10 @@ export const router = createBrowserRouter([
             ],
           },
         ],
+      },
+      {
+        path: "*",
+        element: <NotFoundPage />,
       },
     ],
   },
