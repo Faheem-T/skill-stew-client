@@ -1,12 +1,15 @@
 import { DefaultAvatarIllustration } from "@/features/onboarding/components/DefaultAvatarIllustration";
 import { sendConnectionRequest } from "@/features/user/api/SendConnectionRequest";
+import type { RecommendedUser } from "@/features/user/api/GetRecommendedUsers";
 import type {
-  RecommendedUser,
-} from "@/features/user/api/GetRecommendedUsers";
-import type { ApiResponseWithData } from "@/shared/api/baseApi";
+  ApiErrorResponseType,
+  ApiResponseWithData,
+  ApiResponseWithMessage,
+} from "@/shared/api/baseApi";
 import type { UserConnectionStatus } from "@/shared/constants/UserConnectionStatus";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
+import toast from "react-hot-toast";
 
 interface Skill {
   skillId: string;
@@ -54,7 +57,11 @@ export const PersonCard = ({
 }: PersonCardProps) => {
   const queryClient = useQueryClient();
 
-  const { mutate, isPending } = useMutation({
+  const { mutate, isPending } = useMutation<
+    ApiResponseWithMessage,
+    ApiErrorResponseType,
+    { userId: string }
+  >({
     mutationFn: sendConnectionRequest,
     onSuccess: () => {
       queryClient.setQueryData<ApiResponseWithData<RecommendedUser[]>>(
@@ -70,6 +77,11 @@ export const PersonCard = ({
             ),
           };
         },
+      );
+    },
+    onError: (error) => {
+      error.response?.data.errors.forEach(({ message }) =>
+        toast.error(message),
       );
     },
   });
