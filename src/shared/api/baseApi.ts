@@ -68,7 +68,5 @@ export type PaginatedApiResponse<T> = {
 
 export type ApiErrorResponseType = AxiosError<{
   success: false;
-  message: string;
-  error: string;
-  errors?: { message: string; field?: string }[];
+  errors: { message: string; field?: string }[];
 }>;
