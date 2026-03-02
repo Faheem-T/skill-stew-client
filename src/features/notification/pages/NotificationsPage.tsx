@@ -1,25 +1,8 @@
 import { AppNavbar } from "@/shared/components/layout/AppNavbar";
 import { Loader2, Bell, BellOff } from "lucide-react";
-import { NotificationType } from "@/features/notification/types/types";
-import type { Notification } from "@/features/notification/types/types";
 import { useNotifications } from "@/features/notification/hooks/useNotifications";
+import { NotificationItem } from "@/features/notification/components/NotificationItem";
 import { useEffect, useRef } from "react";
-
-/**
- * Returns a short summary string from a notification's data payload.
- */
-function getNotificationSubtext(notification: Notification): string {
-  switch (notification.data.type) {
-    case NotificationType.CONNECTION_REQUEST:
-      return `from ${notification.data.senderUsername ?? "a user"}`;
-    case NotificationType.CONNECTION_ACCEPTED:
-      return `${notification.data.accepterUsername ?? "A user"} accepted`;
-    case NotificationType.CONNECTION_REJECTED:
-      return `${notification.data.rejecterUsername ?? "A user"} declined`;
-    default:
-      return "";
-  }
-}
 
 export const NotificationsPage = () => {
   const {
@@ -85,43 +68,10 @@ export const NotificationsPage = () => {
         ) : (
           <div className="space-y-2">
             {notifications.map((notification) => (
-              <div
+              <NotificationItem
                 key={notification.id}
-                className={`p-4 rounded-lg border transition-colors ${
-                  notification.isRead
-                    ? "bg-white border-stone-200"
-                    : "bg-accent/5 border-accent/30"
-                }`}
-              >
-                <div className="flex items-start gap-3">
-                  {/* Unread dot */}
-                  {!notification.isRead && (
-                    <div className="w-2 h-2 rounded-full bg-primary mt-2 shrink-0" />
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <p
-                      className={`text-sm ${notification.isRead ? "text-stone-700" : "text-stone-900 font-semibold"}`}
-                    >
-                      {notification.title}
-                    </p>
-                    <p className="text-sm text-stone-500 mt-0.5">
-                      {notification.message}
-                    </p>
-                    <p className="text-xs text-stone-400 mt-1">
-                      {getNotificationSubtext(notification)} ·{" "}
-                      {new Date(notification.createdAt).toLocaleDateString(
-                        undefined,
-                        {
-                          month: "short",
-                          day: "numeric",
-                          hour: "numeric",
-                          minute: "2-digit",
-                        },
-                      )}
-                    </p>
-                  </div>
-                </div>
-              </div>
+                notification={notification}
+              />
             ))}
 
             {/* Intersection sentinel + loading spinner */}
