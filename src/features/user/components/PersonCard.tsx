@@ -10,6 +10,8 @@ import type { UserConnectionStatus } from "@/shared/constants/UserConnectionStat
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router";
+import { RoutePath } from "@/shared/config/routes";
 
 interface Skill {
   skillId: string;
@@ -55,6 +57,7 @@ export const PersonCard = ({
   wantedSkills,
   connectionStatusToUser,
 }: PersonCardProps) => {
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   const { mutate, isPending } = useMutation<
@@ -86,14 +89,22 @@ export const PersonCard = ({
     },
   });
 
-  const handleConnect = () => {
+  const handleConnect = (e: React.MouseEvent) => {
+    e.stopPropagation();
     mutate({ userId: id });
+  };
+
+  const handleCardClick = () => {
+    navigate(RoutePath.PublicProfile.replace(":id", id));
   };
 
   const showConnectButton = connectionStatusToUser === "NONE";
 
   return (
-    <div className="p-4 border border-stone-200 rounded-lg hover:border-primary/50 hover:shadow-md transition-all bg-white">
+    <div
+      onClick={handleCardClick}
+      className="p-4 border border-stone-200 rounded-lg hover:border-primary/50 hover:shadow-md transition-all bg-white cursor-pointer"
+    >
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-start gap-4 flex-1 min-w-0">
           <div className="w-12 h-12 rounded-full shrink-0 overflow-hidden bg-accent/20 flex items-center justify-center">
