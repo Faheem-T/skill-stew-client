@@ -4,14 +4,22 @@ import {
   getNotificationActorId,
 } from "@/features/notification/types/types";
 import { getNotificationHref } from "@/features/notification/lib/getNotificationHref";
+import { markAsReadRequest } from "@/features/notification/api/MarkAsReadRequest";
 import { useUserAvatar } from "@/features/user/hooks/useUserAvatar";
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
 } from "@/shared/components/ui/avatar";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/shared/components/ui/tooltip";
 import { useNavigate } from "react-router";
-import { UserPlus, UserCheck, UserX } from "lucide-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { UserPlus, UserCheck, UserX, MailOpen } from "lucide-react";
+import type { PaginatedApiResponse } from "@/shared/api/baseApi";
 
 function getNotificationSubtext(notification: Notification): string {
   switch (notification.data.type) {
@@ -45,14 +53,51 @@ interface NotificationItemProps {
 
 export const NotificationItem = ({ notification }: NotificationItemProps) => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const actorId = getNotificationActorId(notification.data);
   const { data: avatarRes } = useUserAvatar(actorId);
   const avatarUrl = avatarRes?.data?.avatarUrl;
   const href = getNotificationHref(notification.data);
   const isClickable = !!href;
 
+  const { mutate: markAsRead } = useMutation({
+    mutationFn: () => markAsReadRequest(notification.id),
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ["notifications"] });
+      const previous = queryClient.getQueryData<{
+        pages: PaginatedApiResponse<Notification[]>[];
+        pageParams: unknown[];
+      }>(["notifications"]);
+
+      queryClient.setQueryData<typeof previous>(["notifications"], (old) => {
+        if (!old) return old;
+        return {
+          ...old,
+          pages: old.pages.map((page) => ({
+            ...page,
+            data: page.data.map((n) =>
+              n.id === notification.id ? { ...n, isRead: true } : n,
+            ),
+          })),
+        };
+      });
+
+      return { previous };
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(["notifications"], context.previous);
+      }
+    },
+  });
+
   const handleClick = () => {
     if (href) navigate(href);
+  };
+
+  const handleMarkAsRead = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    markAsRead();
   };
 
   return (
@@ -100,6 +145,21 @@ export const NotificationItem = ({ notification }: NotificationItemProps) => {
             })}
           </p>
         </div>
+
+        {/* Mark as read button */}
+        {!notification.isRead && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={handleMarkAsRead}
+                className="shrink-0 p-1.5 rounded-md text-stone-400 hover:text-primary hover:bg-stone-100 transition-colors"
+              >
+                <MailOpen className="w-4 h-4" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>Mark as read</TooltipContent>
+          </Tooltip>
+        )}
       </div>
     </div>
   );
