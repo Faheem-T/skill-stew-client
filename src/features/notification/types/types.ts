@@ -43,3 +43,22 @@ export interface Notification {
   isRead: boolean;
   createdAt: string;
 }
+
+/**
+ * Returns the "other user" ID from a notification's data payload.
+ * Useful for fetching avatars or linking to profiles.
+ */
+export function getNotificationActorId(
+  data: NotificationData,
+): string | undefined {
+  switch (data.type) {
+    case NotificationType.CONNECTION_REQUEST:
+      return data.senderId;
+    case NotificationType.CONNECTION_ACCEPTED:
+      return data.accepterId;
+    case NotificationType.CONNECTION_REJECTED:
+      return data.rejecterId;
+    default:
+      return undefined;
+  }
+}
