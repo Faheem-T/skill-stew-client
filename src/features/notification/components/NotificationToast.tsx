@@ -1,24 +1,8 @@
 import type { Notification } from "@/features/notification/types/types";
-import { NotificationType } from "@/features/notification/types/types";
+import { getNotificationHref } from "@/features/notification/lib/getNotificationHref";
 import { RoutePath } from "@/shared/config/routes";
 import toast from "react-hot-toast";
 import { X } from "lucide-react";
-
-/**
- * Derives a navigation path from a notification's data payload.
- */
-function getNotificationHref(notification: Notification): string {
-  switch (notification.data.type) {
-    case NotificationType.CONNECTION_REQUEST:
-      return RoutePath.Notifications;
-    case NotificationType.CONNECTION_ACCEPTED:
-      return RoutePath.Notifications;
-    case NotificationType.CONNECTION_REJECTED:
-      return RoutePath.Notifications;
-    default:
-      return RoutePath.Notifications;
-  }
-}
 
 interface NotificationToastProps {
   notification: Notification;
@@ -31,7 +15,8 @@ export const NotificationToast = ({
   toastId,
   onNavigate,
 }: NotificationToastProps) => {
-  const href = getNotificationHref(notification);
+  const href =
+    getNotificationHref(notification.data) ?? RoutePath.Notifications;
 
   return (
     <div className="pointer-events-auto w-80 rounded-lg border border-stone-200 bg-white shadow-lg overflow-hidden">
@@ -65,5 +50,3 @@ export const NotificationToast = ({
     </div>
   );
 };
-
-export { getNotificationHref };
