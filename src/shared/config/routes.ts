@@ -15,5 +15,6 @@ export const RoutePath = {
   Community: "/community",
   Settings: "/settings",
   Notifications: "/notifications",
+  PublicProfile: "/user/:id",
   TestRoute: "/test",
 } as const;

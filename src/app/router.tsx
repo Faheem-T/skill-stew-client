@@ -16,6 +16,7 @@ import { InitialLoadScreen } from "./pages/InitialLoadScreen";
 import { DashboardRoutingPage } from "./pages/DashboardRoutingPage";
 import { UserDashboard } from "@/features/user/pages/UserDashboard";
 import { UserProfilePage } from "@/features/user/pages/UserProfilePage";
+import { PublicUserProfilePage } from "@/features/user/pages/PublicUserProfilePage";
 import { AppRoot } from "./AppRoot";
 import { RoutePath } from "@/shared/config/routes";
 import SocketIoTestClient from "@/shared/components/SocketIoTestClient";
@@ -37,6 +38,10 @@ export const router = createBrowserRouter([
       {
         path: RoutePath.Home,
         element: <HomePage />,
+      },
+      {
+        path: RoutePath.PublicProfile,
+        element: <PublicUserProfilePage />,
       },
       {
         // Guest only routes
