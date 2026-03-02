@@ -20,9 +20,9 @@ export const ResendButton: React.FC<{ email: string }> = ({ email }) => {
 
     onError(error) {
       if (error.response?.data) {
-        if (error.response.data.message) {
-          toast.error(error.response.data.message);
-        }
+        error.response.data.errors?.forEach(({ message }) => {
+          toast.error(message);
+        });
       }
     },
     onSuccess(data) {

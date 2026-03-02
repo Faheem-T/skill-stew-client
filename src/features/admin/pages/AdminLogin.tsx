@@ -59,9 +59,6 @@ export const AdminLoginPage = () => {
             }
           }
         }
-        if (error.response.data.message) {
-          form.setError("root", { message: error.response.data.message });
-        }
       }
     },
   });

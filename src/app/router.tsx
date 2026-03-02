@@ -16,7 +16,6 @@ import { InitialLoadScreen } from "./pages/InitialLoadScreen";
 import { DashboardRoutingPage } from "./pages/DashboardRoutingPage";
 import { UserDashboard } from "@/features/user/pages/UserDashboard";
 import { UserProfilePage } from "@/features/user/pages/UserProfilePage";
-import { ProfileStep } from "@/features/onboarding/pages/onboarding/ProfileStep";
 import { AppRoot } from "./AppRoot";
 import { RoutePath } from "@/shared/config/routes";
 import SocketIoTestClient from "@/shared/components/SocketIoTestClient";

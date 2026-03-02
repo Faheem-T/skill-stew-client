@@ -73,13 +73,11 @@ export const SetPasswordPage = () => {
     onError(error) {
       if (error.response?.data) {
         if (error.response.data.errors) {
-          for (const { error: message, field } of error.response.data.errors) {
+          for (const { message, field } of error.response.data.errors) {
             if (field)
               form.setError(field as keyof SetPasswordSchemaType, { message });
+            else form.setError("root", { message });
           }
-        }
-        if (error.response.data.message) {
-          toast.error(error.response.data.message);
         }
       }
     },
