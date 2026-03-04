@@ -19,7 +19,10 @@ import {
 import { useNavigate } from "react-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { UserPlus, UserCheck, UserX, MailOpen } from "lucide-react";
-import type { PaginatedApiResponse } from "@/shared/api/baseApi";
+import type {
+  ApiResponseWithData,
+  PaginatedApiResponse,
+} from "@/shared/api/baseApi";
 
 function getNotificationSubtext(notification: Notification): string {
   switch (notification.data.type) {
@@ -64,29 +67,60 @@ export const NotificationItem = ({ notification }: NotificationItemProps) => {
     mutationFn: () => markAsReadRequest(notification.id),
     onMutate: async () => {
       await queryClient.cancelQueries({ queryKey: ["notifications"] });
-      const previous = queryClient.getQueryData<{
+      await queryClient.cancelQueries({
+        queryKey: ["notifications-unread-count"],
+      });
+
+      const previousNotifications = queryClient.getQueryData<{
         pages: PaginatedApiResponse<Notification[]>[];
         pageParams: unknown[];
       }>(["notifications"]);
 
-      queryClient.setQueryData<typeof previous>(["notifications"], (old) => {
-        if (!old) return old;
-        return {
-          ...old,
-          pages: old.pages.map((page) => ({
-            ...page,
-            data: page.data.map((n) =>
-              n.id === notification.id ? { ...n, isRead: true } : n,
-            ),
-          })),
-        };
-      });
+      const previousUnreadCount = queryClient.getQueryData<
+        ApiResponseWithData<{ count: number }>
+      >(["notifications-unread-count"]);
 
-      return { previous };
+      queryClient.setQueryData<typeof previousNotifications>(
+        ["notifications"],
+        (old) => {
+          if (!old) return old;
+          return {
+            ...old,
+            pages: old.pages.map((page) => ({
+              ...page,
+              data: page.data.map((n) =>
+                n.id === notification.id ? { ...n, isRead: true } : n,
+              ),
+            })),
+          };
+        },
+      );
+
+      queryClient.setQueryData<ApiResponseWithData<{ count: number }>>(
+        ["notifications-unread-count"],
+        (old) => {
+          if (!old) return old;
+          return {
+            ...old,
+            data: { count: Math.max(0, old.data.count - 1) },
+          };
+        },
+      );
+
+      return { previousNotifications, previousUnreadCount };
     },
     onError: (_err, _vars, context) => {
-      if (context?.previous) {
-        queryClient.setQueryData(["notifications"], context.previous);
+      if (context?.previousNotifications) {
+        queryClient.setQueryData(
+          ["notifications"],
+          context.previousNotifications,
+        );
+      }
+      if (context?.previousUnreadCount) {
+        queryClient.setQueryData(
+          ["notifications-unread-count"],
+          context.previousUnreadCount,
+        );
       }
     },
   });
