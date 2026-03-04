@@ -1,10 +1,12 @@
 import { api } from "@/shared/api/baseApi";
-import type { ApiResponseWithMessage } from "@/shared/api/baseApi";
+import type { ApiResponseWithData } from "@/shared/api/baseApi";
 
 export const sendConnectionRequest = async ({
   userId,
 }: {
   userId: string;
-}): Promise<ApiResponseWithMessage> => {
+}): Promise<
+  ApiResponseWithData<{ connectionStatus: "PENDING" | "ACCEPTED" }>
+> => {
   return api.post(`connections/${userId}`);
 };

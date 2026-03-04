@@ -36,9 +36,10 @@ import { sendConnectionRequest } from "@/features/user/api/SendConnectionRequest
 import { acceptConnectionRequest } from "@/features/user/api/AcceptConnectionRequest";
 import { rejectConnectionRequest } from "@/features/user/api/RejectConnectionRequest";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import type {
-  ApiErrorResponseType,
-  ApiResponseWithMessage,
+import {
+  type ApiResponseWithData,
+  type ApiErrorResponseType,
+  type ApiResponseWithMessage,
 } from "@/shared/api/baseApi";
 import toast from "react-hot-toast";
 import ISO6391 from "iso-639-1";
@@ -61,7 +62,6 @@ const ConnectButton = ({
 }) => {
   switch (status) {
     case "NONE":
-    case "REJECTED_BY_TARGET_USER":
       return (
         <Button
           onClick={onConnect}
@@ -77,7 +77,7 @@ const ConnectButton = ({
         </Button>
       );
 
-    case "CURRENT_USER_REQUESTING":
+    case "PENDING_SENT":
       return (
         <Button
           variant="outline"
@@ -89,11 +89,11 @@ const ConnectButton = ({
         </Button>
       );
 
-    case "PENDING":
+    case "PENDING_RECEIVED":
       // Handled separately via IncomingRequestBanner
       return null;
 
-    case "ACCEPTED":
+    case "CONNECTED":
       return (
         <Button
           variant="outline"
@@ -102,18 +102,6 @@ const ConnectButton = ({
         >
           <UserCheck className="w-4 h-4" />
           Connected
-        </Button>
-      );
-
-    case "REJECTED":
-      return (
-        <Button
-          variant="outline"
-          disabled
-          className="border-stone-300 bg-stone-50 text-stone-500 rounded-lg px-6 h-10 font-medium cursor-default"
-        >
-          <X className="w-4 h-4" />
-          Declined
         </Button>
       );
 
@@ -202,20 +190,30 @@ export const PublicUserProfilePage = () => {
   const connectionId = connectionRes?.data?.connectionId;
 
   const { mutate: connect, isPending: isConnecting } = useMutation<
-    ApiResponseWithMessage,
+    ApiResponseWithData<{ connectionStatus: "PENDING" | "ACCEPTED" }>,
     ApiErrorResponseType,
     { userId: string }
   >({
     mutationFn: sendConnectionRequest,
-    onSuccess: () => {
-      queryClient.setQueryData(
-        [CONNECTION_STATUS_QUERY_KEY, id],
-        (old: any) => ({
+    onSuccess: (response) => {
+      queryClient.setQueryData<
+        ApiResponseWithData<ConnectionStatusToUserResponse>
+      >([CONNECTION_STATUS_QUERY_KEY, id], (old) => {
+        if (!old) return old;
+        return {
           ...old,
-          data: { ...old?.data, status: "CURRENT_USER_REQUESTING" },
-        }),
-      );
-      toast.success("Connection request sent!");
+          data: {
+            ...old.data,
+            status:
+              response.data.connectionStatus === "PENDING"
+                ? "PENDING_SENT"
+                : "CONNECTED",
+            connectionId: old.data.connectionId!,
+          },
+        };
+      });
+
+      if (response.message) toast.success(response.message);
     },
     onError: (error) => {
       error.response?.data.errors.forEach(({ message }) =>
@@ -235,7 +233,7 @@ export const PublicUserProfilePage = () => {
         [CONNECTION_STATUS_QUERY_KEY, id],
         (old: any) => ({
           ...old,
-          data: { ...old?.data, status: "ACCEPTED" },
+          data: { ...old?.data, status: "CONNECTED" },
         }),
       );
       toast.success("Connection accepted!");
@@ -258,7 +256,7 @@ export const PublicUserProfilePage = () => {
         [CONNECTION_STATUS_QUERY_KEY, id],
         (old: any) => ({
           ...old,
-          data: { ...old?.data, status: "REJECTED" },
+          data: { ...old?.data, status: "NONE" },
         }),
       );
       toast.success("Connection request declined.");
@@ -373,7 +371,7 @@ export const PublicUserProfilePage = () => {
                 {/* Connect Button (auth users only, not shown for PENDING) */}
                 {isAuthenticated &&
                   !isConnectionLoading &&
-                  connectionStatus !== "PENDING" && (
+                  connectionStatus !== "PENDING_RECEIVED" && (
                     <ConnectButton
                       status={connectionStatus}
                       onConnect={handleConnect}
@@ -389,7 +387,7 @@ export const PublicUserProfilePage = () => {
         </div>
 
         {/* Incoming Connection Request Banner */}
-        {isAuthenticated && connectionStatus === "PENDING" && (
+        {isAuthenticated && connectionStatus === "PENDING_RECEIVED" && (
           <div className="mb-8">
             <IncomingRequestBanner
               userName={profile.name || profile.username || "This user"}
@@ -506,7 +504,7 @@ export const PublicUserProfilePage = () => {
             )}
 
             {/* Connection Status Card (for authenticated users) */}
-            {isAuthenticated && connectionStatus === "ACCEPTED" && (
+            {isAuthenticated && connectionStatus === "CONNECTED" && (
               <div className="bg-primary rounded-lg p-6 relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-24 h-24 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
                 <div className="absolute bottom-0 left-0 w-16 h-16 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />

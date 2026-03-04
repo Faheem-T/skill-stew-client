@@ -1,13 +1,10 @@
 import { DefaultAvatarIllustration } from "@/features/onboarding/components/DefaultAvatarIllustration";
 import { sendConnectionRequest } from "@/features/user/api/SendConnectionRequest";
-import type { RecommendedUser } from "@/features/user/api/GetRecommendedUsers";
 import type {
   ApiErrorResponseType,
   ApiResponseWithData,
-  ApiResponseWithMessage,
 } from "@/shared/api/baseApi";
-import type { UserConnectionStatus } from "@/shared/constants/UserConnectionStatus";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
@@ -26,26 +23,7 @@ interface PersonCardProps {
   avatarUrl?: string;
   offeredSkills?: Skill[];
   wantedSkills?: Skill[];
-  connectionStatusToUser: UserConnectionStatus | "NONE";
 }
-
-const statusConfig: Record<
-  UserConnectionStatus,
-  { label: string; className: string }
-> = {
-  PENDING: {
-    label: "Pending",
-    className: "bg-yellow-100 text-yellow-800 border border-yellow-300",
-  },
-  ACCEPTED: {
-    label: "Connected",
-    className: "bg-green-100 text-green-800 border border-green-300",
-  },
-  REJECTED: {
-    label: "Rejected",
-    className: "bg-stone-100 text-stone-500 border border-stone-300",
-  },
-};
 
 export const PersonCard = ({
   id,
@@ -55,33 +33,15 @@ export const PersonCard = ({
   avatarUrl,
   offeredSkills,
   wantedSkills,
-  connectionStatusToUser,
 }: PersonCardProps) => {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
 
-  const { mutate, isPending } = useMutation<
-    ApiResponseWithMessage,
+  const { mutate, isPending, isSuccess } = useMutation<
+    ApiResponseWithData<{ connectionStatus: "PENDING" | "ACCEPTED" }>,
     ApiErrorResponseType,
     { userId: string }
   >({
     mutationFn: sendConnectionRequest,
-    onSuccess: () => {
-      queryClient.setQueryData<ApiResponseWithData<RecommendedUser[]>>(
-        ["recommended-users"],
-        (old) => {
-          if (!old) return old;
-          return {
-            ...old,
-            data: old.data.map((user) =>
-              user.id === id
-                ? { ...user, connectionStatusToUser: "PENDING" as const }
-                : user,
-            ),
-          };
-        },
-      );
-    },
     onError: (error) => {
       error.response?.data.errors.forEach(({ message }) =>
         toast.error(message),
@@ -97,8 +57,6 @@ export const PersonCard = ({
   const handleCardClick = () => {
     navigate(RoutePath.PublicProfile.replace(":id", id));
   };
-
-  const showConnectButton = connectionStatusToUser === "NONE";
 
   return (
     <div
@@ -159,7 +117,11 @@ export const PersonCard = ({
             )}
           </div>
         </div>
-        {showConnectButton ? (
+        {isSuccess ? (
+          <span className="px-4 py-2 rounded-lg text-sm font-medium shrink-0 bg-yellow-100 text-yellow-800 border border-yellow-300">
+            Pending
+          </span>
+        ) : (
           <button
             className="px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors shrink-0 whitespace-nowrap disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
             onClick={handleConnect}
@@ -168,12 +130,6 @@ export const PersonCard = ({
             {isPending && <Loader2 className="w-4 h-4 animate-spin" />}
             {isPending ? "Connecting..." : "Connect"}
           </button>
-        ) : (
-          <span
-            className={`px-4 py-2 rounded-lg text-sm font-medium shrink-0 ${statusConfig[connectionStatusToUser].className}`}
-          >
-            {statusConfig[connectionStatusToUser].label}
-          </span>
         )}
       </div>
     </div>

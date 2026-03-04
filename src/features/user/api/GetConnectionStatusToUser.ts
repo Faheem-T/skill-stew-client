@@ -1,15 +1,12 @@
 import { api } from "@/shared/api/baseApi";
 import type { ApiResponseWithData } from "@/shared/api/baseApi";
-import type { UserConnectionStatus } from "@/shared/constants/UserConnectionStatus";
 
-export interface ConnectionStatusToUserResponse {
-  connectionId: string;
-  status:
-    | UserConnectionStatus
-    | "CURRENT_USER_REQUESTING"
-    | "REJECTED_BY_TARGET_USER"
-    | "NONE";
-}
+export type ConnectionStatusToUserResponse =
+  | {
+      connectionId: string;
+      status: "CONNECTED" | "PENDING_SENT" | "PENDING_RECEIVED";
+    }
+  | { connectionId: null; status: "NONE" };
 
 export const getUserConnectionStatusToUser = async ({
   targetId,

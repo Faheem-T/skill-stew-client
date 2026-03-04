@@ -62,7 +62,6 @@ export const RecommendedUsersStep: React.FC<RecommendedUsersStepProps> = ({
                   avatarUrl={user.avatarUrl}
                   offeredSkills={user.offeredSkills}
                   wantedSkills={user.wantedSkills}
-                  connectionStatusToUser={user.connectionStatusToUser}
                 />
               </motion.div>
             ))}
