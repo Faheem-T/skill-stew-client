@@ -11,6 +11,8 @@ import {
   ArrowLeft,
   ShieldCheck,
   X,
+  Sparkles,
+  BookOpen,
 } from "lucide-react";
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router";
@@ -32,6 +34,7 @@ import {
   useConnectionStatus,
   CONNECTION_STATUS_QUERY_KEY,
 } from "@/features/user/hooks/useConnectionStatus";
+import { useUserSkillProfile } from "../hooks/useUserSkillProfile";
 import { useAppStore } from "@/app/store";
 import { sendConnectionRequest } from "@/features/user/api/SendConnectionRequest";
 import { acceptConnectionRequest } from "@/features/user/api/AcceptConnectionRequest";
@@ -193,6 +196,9 @@ export const PublicUserProfilePage = () => {
     useConnectionStatus(id!, isAuthenticated);
 
   const profile = profileRes?.data;
+  const { data: userSkillProfileRes } = useUserSkillProfile(profile?.userId);
+  const skillProfile = userSkillProfileRes?.data;
+
   const connectionStatus = connectionRes?.data?.status ?? "NONE";
   const connectionId = connectionRes?.data?.connectionId;
 
@@ -469,6 +475,76 @@ export const PublicUserProfilePage = () => {
                 </p>
               </section>
             )}
+
+            {/* Skills I Offer to Teach */}
+            <section className="bg-white rounded-lg border border-stone-200 p-6 shadow-sm">
+              <div className="flex items-center gap-2 mb-4">
+                <Sparkles className="w-5 h-5 text-primary" />
+                <h2 className="text-lg font-semibold text-stone-900">
+                  Skills I Offer to Teach
+                </h2>
+              </div>
+              {skillProfile?.offered && skillProfile.offered.length > 0 ? (
+                <div className="grid sm:grid-cols-2 gap-4">
+                  {skillProfile.offered.map((item) => (
+                    <div
+                      key={item.skill.id}
+                      className="group flex flex-col p-4 bg-stone-50 rounded-lg border border-stone-100 transition-all cursor-default"
+                    >
+                      <div className="flex items-start justify-between mb-2">
+                        <span className="font-semibold text-stone-800">
+                          {item.skill.name}
+                        </span>
+                        <Badge
+                          variant="secondary"
+                          className="bg-primary/10 text-primary"
+                        >
+                          {item.proficiency}
+                        </Badge>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-stone-500">
+                        <span>{item.hoursTaught}h taught</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-stone-500 text-sm">
+                  This user has not listed any teaching skills.
+                </p>
+              )}
+            </section>
+
+            {/* Skills I Want to Learn */}
+            <section className="bg-white rounded-lg border border-stone-200 p-6 shadow-sm">
+              <div className="flex items-center gap-2 mb-4">
+                <BookOpen className="w-5 h-5 text-primary" />
+                <h2 className="text-lg font-semibold text-stone-900">
+                  Skills I Want to Learn
+                </h2>
+              </div>
+              {skillProfile?.wanted && skillProfile.wanted.length > 0 ? (
+                <div className="flex flex-wrap gap-3">
+                  {skillProfile.wanted.map((item) => (
+                    <div
+                      key={item.skill.id}
+                      className="flex items-center gap-2 px-4 py-2 bg-stone-50 rounded-lg border border-stone-100 transition-all cursor-default"
+                    >
+                      <span className="font-medium text-stone-700">
+                        {item.skill.name}
+                      </span>
+                      <span className="text-xs text-stone-400 font-medium">
+                        {item.hoursLearned}h learned
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-stone-500 text-sm">
+                  This user has no listed learning goals.
+                </p>
+              )}
+            </section>
           </div>
 
           {/* Sidebar */}
