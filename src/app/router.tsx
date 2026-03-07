@@ -19,9 +19,9 @@ import { UserProfilePage } from "@/features/user/pages/UserProfilePage";
 import { PublicUserProfilePage } from "@/features/user/pages/PublicUserProfilePage";
 import { AppRoot } from "./AppRoot";
 import { RoutePath } from "@/shared/config/routes";
-import SocketIoTestClient from "@/shared/components/SocketIoTestClient";
 import { NotificationsPage } from "@/features/notification/pages/NotificationsPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
+import { MapBoxAutocomplete } from "@/shared/components/ui/mapbox-autocomplete";
 
 export const queryClient = new QueryClient();
 
@@ -33,7 +33,13 @@ export const router = createBrowserRouter([
     children: [
       {
         path: RoutePath.TestRoute,
-        element: <SocketIoTestClient />,
+        element: (
+          <MapBoxAutocomplete
+            onPlaceSelected={(place) => {
+              console.log(place);
+            }}
+          />
+        ),
       },
       {
         path: RoutePath.Home,

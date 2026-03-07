@@ -7,7 +7,7 @@ export type UpdateProfileBody = {
   avatarKey?: string;
   bannerKey?: string;
   timezone?: string;
-  location?: { placeId: string };
+  location?: { latitude: number; longitude: number; formattedAddress: string };
   about?: string;
   socialLinks?: string[];
   languages?: string[];

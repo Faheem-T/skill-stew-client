@@ -4,7 +4,6 @@ import { api } from "@/shared/api/baseApi";
 export type CurrentUserLocation = {
   latitude: number;
   longitude: number;
-  placeId: string;
   formattedAddress: string;
 };
 

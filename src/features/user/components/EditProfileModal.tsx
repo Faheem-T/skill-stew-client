@@ -31,12 +31,18 @@ const editProfileSchema = z.object({
     ),
   about: z.string().max(500).optional(),
   timezone: z.string().optional(),
-  location: z.object({ placeId: z.string() }).optional(),
+  location: z
+    .object({
+      latitude: z.number(),
+      longitude: z.number(),
+      formattedAddress: z.string(),
+    })
+    .optional(),
   languages: z.array(z.string()),
-  socialLinks: z.array(z.string().url("Must be a valid URL")),
+  socialLinks: z.array(z.url("Must be a valid URL")),
 });
 
-type EditProfileFormValues = z.infer<typeof editProfileSchema>;
+export type EditProfileFormValues = z.infer<typeof editProfileSchema>;
 
 interface EditProfileModalProps {
   open: boolean;
@@ -63,9 +69,7 @@ export const EditProfileModal = ({
       phoneNumber: profile.phoneNumber || "",
       about: profile.about || "",
       timezone: profile.timezone || "",
-      location: profile.location
-        ? { placeId: profile.location.placeId }
-        : undefined,
+      location: profile.location ?? undefined,
       languages: profile.languages || [],
       socialLinks: profile.socialLinks || [],
     },
@@ -79,9 +83,7 @@ export const EditProfileModal = ({
         phoneNumber: profile.phoneNumber || "",
         about: profile.about || "",
         timezone: profile.timezone || "",
-        location: profile.location
-          ? { placeId: profile.location.placeId }
-          : undefined,
+        location: profile.location ?? undefined,
         languages: profile.languages || [],
         socialLinks: profile.socialLinks || [],
       });

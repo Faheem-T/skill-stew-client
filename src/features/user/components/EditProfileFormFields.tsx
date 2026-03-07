@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import {
   FormField,
@@ -12,14 +12,18 @@ import { Input } from "@/shared/components/ui/input";
 import { Textarea } from "@/shared/components/ui/textarea";
 import { MultiSelect } from "@/shared/components/ui/multi-select";
 import type { MultiSelectOption } from "@/shared/components/ui/multi-select";
-import { GoogleMapsAutocomplete } from "@/shared/components/ui/google-autocomplete";
 import TimezoneSelect from "react-timezone-select";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import { Button } from "@/shared/components/ui/button";
 import { Plus, X, PencilIcon, XIcon } from "lucide-react";
 import ISO6391 from "iso-639-1";
-import type { CurrentUserProfile } from "@/shared/api/currentUserProfile";
+import type {
+  CurrentUserLocation,
+  CurrentUserProfile,
+} from "@/shared/api/currentUserProfile";
+import { MapBoxAutocomplete } from "@/shared/components/ui/mapbox-autocomplete";
+import type { EditProfileFormValues } from "./EditProfileModal";
 
 // Create languages array once outside the component
 const languages: MultiSelectOption[] = ISO6391.getAllCodes().map((code) => ({
@@ -34,12 +38,11 @@ interface EditProfileFormFieldsProps {
 export const EditProfileFormFields = ({
   profile,
 }: EditProfileFormFieldsProps) => {
-  const { control, watch, setValue } = useFormContext();
+  const { control, watch, setValue } = useFormContext<EditProfileFormValues>();
   const [editingLocation, setEditingLocation] = useState(false);
   const [newLocationName, setNewLocationName] = useState<string | null>(null);
 
   const socialLinks = watch("socialLinks") || [];
-  const currentLocation = watch("location");
 
   const addSocialLink = () => {
     setValue("socialLinks", [...socialLinks, ""]);
@@ -122,7 +125,7 @@ export const EditProfileFormFields = ({
             <FormControl>
               <div className="timezone-select">
                 <TimezoneSelect
-                  value={field.value}
+                  value={field.value ?? ""}
                   onChange={(tz) => field.onChange(tz.value)}
                 />
               </div>
@@ -135,11 +138,11 @@ export const EditProfileFormFields = ({
       <FormField
         control={control}
         name="location"
-        render={({}) => (
+        render={({ field }) => (
           <FormItem>
             <FormLabel>Location</FormLabel>
             <FormControl>
-              {(currentLocation?.placeId ||
+              {(field.value?.formattedAddress ||
                 profile.location?.formattedAddress) &&
               !editingLocation ? (
                 <div className="flex items-center gap-2 py-2 px-3 bg-stone-50 rounded text-sm border border-stone-200">
@@ -166,14 +169,17 @@ export const EditProfileFormFields = ({
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
-                  <GoogleMapsAutocomplete
-                    onPlaceSelected={(place) => {
-                      setValue("location", { placeId: place.id });
-                      setNewLocationName(place.name || "New location selected");
+                  <MapBoxAutocomplete
+                    onPlaceSelected={(location) => {
+                      console.log(location);
+                      setValue("location", location);
+                      setNewLocationName(
+                        location.formattedAddress || "New location selected",
+                      );
                       setEditingLocation(false);
                     }}
                   />
-                  {(currentLocation?.placeId ||
+                  {(field.value?.formattedAddress ||
                     profile.location?.formattedAddress) && (
                     <Button
                       type="button"
