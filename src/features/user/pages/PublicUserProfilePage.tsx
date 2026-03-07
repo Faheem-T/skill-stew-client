@@ -12,6 +12,7 @@ import {
   ShieldCheck,
   X,
 } from "lucide-react";
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import { Button } from "@/shared/components/ui/button";
 import { Badge } from "@/shared/components/ui/badge";
@@ -44,6 +45,12 @@ import {
 import toast from "react-hot-toast";
 import ISO6391 from "iso-639-1";
 import type { ConnectionStatusToUserResponse } from "@/features/user/api/GetConnectionStatusToUser";
+import {
+  useConnectedUsersCount,
+  CONNECTED_USERS_COUNT_QUERY_KEY,
+} from "@/features/user/hooks/useConnectedUsersCount";
+import { CONNECTED_USERS_QUERY_KEY } from "@/features/user/hooks/useConnectedUsers";
+import { ConnectedUsersModal } from "@/features/user/components/ConnectedUsersModal";
 
 const getLanguageName = (code: string): string => {
   return ISO6391.getName(code) || code;
@@ -189,6 +196,12 @@ export const PublicUserProfilePage = () => {
   const connectionStatus = connectionRes?.data?.status ?? "NONE";
   const connectionId = connectionRes?.data?.connectionId;
 
+  const [isConnectionsModalOpen, setIsConnectionsModalOpen] = useState(false);
+  const { data: connectionsCountData } = useConnectedUsersCount(
+    profile?.userId,
+  );
+  const connectionsCount = connectionsCountData?.data.count || 0;
+
   const { mutate: connect, isPending: isConnecting } = useMutation<
     ApiResponseWithData<{ connectionStatus: "PENDING" | "ACCEPTED" }>,
     ApiErrorResponseType,
@@ -213,6 +226,13 @@ export const PublicUserProfilePage = () => {
         };
       });
 
+      queryClient.invalidateQueries({
+        queryKey: [CONNECTED_USERS_COUNT_QUERY_KEY, id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [CONNECTED_USERS_QUERY_KEY, id],
+      });
+
       if (response.message) toast.success(response.message);
     },
     onError: (error) => {
@@ -229,13 +249,21 @@ export const PublicUserProfilePage = () => {
   >({
     mutationFn: acceptConnectionRequest,
     onSuccess: () => {
-      queryClient.setQueryData(
-        [CONNECTION_STATUS_QUERY_KEY, id],
-        (old: any) => ({
+      queryClient.setQueryData<
+        ApiResponseWithData<ConnectionStatusToUserResponse>
+      >([CONNECTION_STATUS_QUERY_KEY, id], (old) => {
+        if (!old) return old;
+        return {
           ...old,
-          data: { ...old?.data, status: "CONNECTED" },
-        }),
-      );
+          data: { ...old.data, status: "CONNECTED" },
+        };
+      });
+      queryClient.invalidateQueries({
+        queryKey: [CONNECTED_USERS_COUNT_QUERY_KEY, id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [CONNECTED_USERS_QUERY_KEY, id],
+      });
       toast.success("Connection accepted!");
     },
     onError: (error) => {
@@ -252,13 +280,21 @@ export const PublicUserProfilePage = () => {
   >({
     mutationFn: rejectConnectionRequest,
     onSuccess: () => {
-      queryClient.setQueryData(
-        [CONNECTION_STATUS_QUERY_KEY, id],
-        (old: any) => ({
+      queryClient.setQueryData<
+        ApiResponseWithData<ConnectionStatusToUserResponse>
+      >([CONNECTION_STATUS_QUERY_KEY, id], (old) => {
+        if (!old) return old;
+        return {
           ...old,
-          data: { ...old?.data, status: "NONE" },
-        }),
-      );
+          data: { ...old.data, status: "NONE" },
+        };
+      });
+      queryClient.invalidateQueries({
+        queryKey: [CONNECTED_USERS_COUNT_QUERY_KEY, id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [CONNECTED_USERS_QUERY_KEY, id],
+      });
       toast.success("Connection request declined.");
     },
     onError: (error) => {
@@ -365,6 +401,17 @@ export const PublicUserProfilePage = () => {
                   </div>
                   {profile.username && profile.name && (
                     <p className="text-stone-500">@{profile.username}</p>
+                  )}
+                  {profile.userId && (
+                    <button
+                      onClick={() => setIsConnectionsModalOpen(true)}
+                      className="mt-1 flex items-center gap-1 text-sm text-stone-600 hover:text-primary transition-colors cursor-pointer"
+                    >
+                      <span className="font-semibold text-stone-900">
+                        {connectionsCount}
+                      </span>{" "}
+                      connections
+                    </button>
                   )}
                 </div>
 
@@ -524,6 +571,14 @@ export const PublicUserProfilePage = () => {
           </div>
         </div>
       </div>
+
+      {profile?.userId && (
+        <ConnectedUsersModal
+          userId={profile.userId}
+          open={isConnectionsModalOpen}
+          onOpenChange={setIsConnectionsModalOpen}
+        />
+      )}
     </div>
   );
 };

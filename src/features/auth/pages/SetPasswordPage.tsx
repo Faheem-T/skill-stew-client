@@ -23,7 +23,7 @@ import { Button } from "@/shared/components/ui/button";
 import { Carousel } from "@/shared/components/ui/Carousel";
 import { RoutePath } from "@/shared/config/routes";
 
-export const setPasswordSchema = z
+const setPasswordSchema = z
   .object({
     password: z
       .string()

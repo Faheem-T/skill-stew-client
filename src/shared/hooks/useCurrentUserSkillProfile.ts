@@ -49,7 +49,9 @@ export function useUpdateUserSkillProfile() {
 
   return useMutation({
     mutationFn: async (data: UpdateUserSkillProfileRequestData) => {
-      return await updateUserSkillProfileRequest(data as any);
+      return await updateUserSkillProfileRequest(
+        data as Parameters<typeof updateUserSkillProfileRequest>[0],
+      );
     },
     onSuccess: () => {
       queryClient.invalidateQueries({

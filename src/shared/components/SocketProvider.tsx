@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useEffect, type ReactNode } from "react";
 import type { Socket } from "socket.io-client";
 import { useSocket } from "@/shared/hooks/useSocket";
@@ -87,6 +88,8 @@ export function SocketProvider({ children }: SocketProviderProps) {
   }, [socketRef, queryClient, navigate]);
 
   return (
-    <SocketContext.Provider value={socketRef}>{children}</SocketContext.Provider>
+    <SocketContext.Provider value={socketRef}>
+      {children}
+    </SocketContext.Provider>
   );
 }

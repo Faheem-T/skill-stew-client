@@ -21,7 +21,7 @@ export const BlockUserButton: React.FC<{
     ApiResponseWithMessage,
     ApiErrorResponseType,
     { id: string; newBlockStatus: boolean },
-    any
+    { previousUserData: { pages: PaginatedApiResponse<User[]>[] } | undefined }
   >({
     mutationFn: ({ id, newBlockStatus }) =>
       updateUserBlockStatus(id, newBlockStatus),

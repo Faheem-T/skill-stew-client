@@ -1,17 +1,10 @@
+import type { SkillProficiencies } from "../constants/SkillProficiencies";
 import { api, type ApiResponseWithData } from "./baseApi";
-
-const skillProficiencies = [
-  "Beginner",
-  "Advanced Beginner",
-  "Intermediate",
-  "Proficient",
-  "Expert",
-] as const;
 
 interface CurrentUserSkillProfile {
   offered: {
     skill: { id: string; name: string };
-    proficiency: typeof skillProficiencies;
+    proficiency: SkillProficiencies;
     hoursTaught: number;
   }[];
   wanted: { skill: { id: string; name: string }; hoursLearned: number }[];

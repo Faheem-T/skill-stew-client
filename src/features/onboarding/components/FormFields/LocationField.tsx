@@ -25,7 +25,7 @@ export const LocationField = ({ location }: LocationFieldProps) => {
     <FormField
       control={control}
       name="location"
-      render={({}) => (
+      render={() => (
         <FormItem>
           <FormLabel>Location</FormLabel>
           <FormControl>

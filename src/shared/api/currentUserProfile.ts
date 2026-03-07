@@ -9,6 +9,7 @@ export type CurrentUserLocation = {
 
 export type CurrentUserProfile =
   | {
+      id: string;
       email: string;
       role: "USER";
       name?: string;
@@ -24,10 +25,12 @@ export type CurrentUserProfile =
       isOnboardingComplete: boolean;
     }
   | {
+      id: string;
       role: "EXPERT";
       email: string;
     }
   | {
+      id: string;
       role: "ADMIN";
       email: string;
       username?: string;

@@ -25,6 +25,8 @@ import {
 import ISO6391 from "iso-639-1";
 import { EditProfileModal } from "../components/EditProfileModal";
 import { EditUsernameModal } from "../components/EditUsernameModal";
+import { useConnectedUsersCount } from "@/features/user/hooks/useConnectedUsersCount";
+import { ConnectedUsersModal } from "@/features/user/components/ConnectedUsersModal";
 
 // Helper to pluralize words
 const pluralize = (count: number, singular: string, plural: string) =>
@@ -41,6 +43,10 @@ export const UserProfilePage = () => {
 
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
   const [isEditUsernameOpen, setIsEditUsernameOpen] = useState(false);
+  const [isConnectionsModalOpen, setIsConnectionsModalOpen] = useState(false);
+
+  const { data: connectionsCountData } = useConnectedUsersCount(profile?.id);
+  const connectionsCount = connectionsCountData?.data.count || 0;
 
   if (isProfileLoading || isSkillProfileLoading) {
     return (
@@ -99,6 +105,17 @@ export const UserProfilePage = () => {
                   </h1>
                   {profile?.username && profile?.name && (
                     <p className="text-stone-500">@{profile.username}</p>
+                  )}
+                  {profile?.id && (
+                    <button
+                      onClick={() => setIsConnectionsModalOpen(true)}
+                      className="mt-1 flex items-center gap-1 text-sm text-stone-600 hover:text-primary transition-colors cursor-pointer"
+                    >
+                      <span className="font-semibold text-stone-900">
+                        {connectionsCount}
+                      </span>{" "}
+                      connections
+                    </button>
                   )}
                 </div>
                 <div className="flex gap-2">
@@ -374,6 +391,14 @@ export const UserProfilePage = () => {
           />
         </>
       )}
+
+      {profile?.id && (
+        <ConnectedUsersModal
+          userId={profile.id}
+          open={isConnectionsModalOpen}
+          onOpenChange={setIsConnectionsModalOpen}
+        />
+      )}
     </div>
   );
 };
@@ -390,7 +415,7 @@ const InfoItem = ({
   if (!value) return null;
   return (
     <div className="flex items-start gap-3">
-      <div className="w-8 h-8 rounded-lg bg-stone-100 flex items-center justify-center text-stone-500 flex-shrink-0">
+      <div className="w-8 h-8 rounded-lg bg-stone-100 flex items-center justify-center text-stone-500 shrink-0">
         {icon}
       </div>
       <div>

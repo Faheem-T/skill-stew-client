@@ -74,14 +74,17 @@ const chartConfig = {
     color: "#10b981",
     icon: Users,
   },
-} satisfies Record<string, { label: string; color: string; icon: any }>;
+} satisfies Record<
+  string,
+  { label: string; color: string; icon: React.ElementType }
+>;
 
 // Component
 const RevenueChart = () => {
   return (
     <Card className="w-full py-0">
-      <CardHeader className="flex flex-col items-stretch border-b !p-0 sm:flex-row">
-        <div className="flex flex-1 flex-col justify-center gap-1 px-6 pt-4 pb-3 sm:!py-0">
+      <CardHeader className="flex flex-col items-stretch border-b p-0! sm:flex-row">
+        <div className="flex flex-1 flex-col justify-center gap-1 px-6 pt-4 pb-3 sm:py-0!">
           <CardTitle className="flex items-center gap-2">
             <DollarSign className="text-foreground" />
             Revenue & Users Growth
@@ -110,7 +113,7 @@ const RevenueChart = () => {
         </div>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="h-[300px] w-full">
+        <ChartContainer config={chartConfig} className="h-75 w-full">
           <AreaChart accessibilityLayer data={RevenueData}>
             <CartesianGrid vertical={false} />
             <XAxis

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useFormContext } from "react-hook-form";
 import {
   FormField,
@@ -18,10 +18,7 @@ import "react-phone-number-input/style.css";
 import { Button } from "@/shared/components/ui/button";
 import { Plus, X, PencilIcon, XIcon } from "lucide-react";
 import ISO6391 from "iso-639-1";
-import type {
-  CurrentUserLocation,
-  CurrentUserProfile,
-} from "@/shared/api/currentUserProfile";
+import type { CurrentUserProfile } from "@/shared/api/currentUserProfile";
 import { MapBoxAutocomplete } from "@/shared/components/ui/mapbox-autocomplete";
 import type { EditProfileFormValues } from "./EditProfileModal";
 

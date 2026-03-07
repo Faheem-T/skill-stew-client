@@ -69,7 +69,7 @@ import {
   TooltipTrigger,
 } from "@/shared/components/ui/tooltip";
 
-export const SubscriptionManagement: React.FC<{}> = () => {
+export const SubscriptionManagement: React.FC = () => {
   const [modalOpen, setModalOpen] = React.useState<boolean>(false);
   return (
     <div>
@@ -325,12 +325,15 @@ const PlanFormDialog: React.FC<{
     z.infer<typeof createSubscriptionPlanSchema>
   >({
     mutationFn: createPlan,
-    onError(error, variables, _context) {
+    onError(error) {
       if (error.response?.data) {
         if (error.response.data.errors) {
           for (const { message, field } of error.response.data.errors) {
             if (field)
-              form.setError(field as keyof typeof variables, { message });
+              form.setError(
+                field as keyof z.infer<typeof createSubscriptionPlanSchema>,
+                { message },
+              );
             else form.setError("root", { message });
           }
         }
@@ -575,7 +578,7 @@ const PlanFormDialog: React.FC<{
                     control={form.control}
                     name={`features.${index}.value`}
                     render={({ field }) => (
-                      <FormItem className="grow-1">
+                      <FormItem className="grow">
                         <FormControl>
                           <Input {...field} />
                         </FormControl>

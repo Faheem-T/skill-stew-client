@@ -31,7 +31,9 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
   const [offeredSkills, setOfferedSkills] = useState<SkillWithProficiency[]>(
     [],
   );
-  const [wantedSkills, setWantedSkills] = useState<any[]>([]);
+  const [wantedSkills, setWantedSkills] = useState<
+    SkillWithProficiency["skill"][]
+  >([]);
 
   const totalSteps = 5;
   const stepTitles: Record<number, string> = {
@@ -108,7 +110,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
               transition={{ type: "spring", stiffness: 100, damping: 15 }}
               className="mb-6"
             >
-              <div className="relative w-24 h-24 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center shadow-lg">
+              <div className="relative w-24 h-24 bg-linear-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center shadow-lg">
                 <CheckCircle2 className="w-12 h-12 text-white" />
               </div>
             </motion.div>
@@ -151,7 +153,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
   };
 
   return (
-    <div className="w-full h-full bg-gradient-to-br from-slate-50 via-slate-50 to-slate-100 flex flex-col overflow-hidden">
+    <div className="w-full h-full bg-linear-to-br from-slate-50 via-slate-50 to-slate-100 flex flex-col overflow-hidden">
       {/* Background decoration */}
       <div className="absolute top-0 left-0 w-72 h-72 bg-primary/20 rounded-full mix-blend-multiply filter blur-3xl opacity-20 -z-10 animate-pulse" />
       <div className="absolute bottom-0 right-0 w-72 h-72 bg-accent/30 rounded-full mix-blend-multiply filter blur-3xl opacity-20 -z-10 animate-pulse" />

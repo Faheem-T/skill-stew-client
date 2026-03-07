@@ -14,7 +14,7 @@ export const AppRoot: React.FC = () => {
     if (userProfile?.role === "USER" && !userProfile.isOnboardingComplete) {
       setIsOnboardingModalOpen(true);
     }
-  }, [userProfile?.role]);
+  }, [userProfile, setIsOnboardingModalOpen]);
 
   if (isLoading) {
     return <InitialLoadScreen />;
@@ -37,4 +37,3 @@ export const AppRoot: React.FC = () => {
 
   return content;
 };
-

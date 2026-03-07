@@ -56,7 +56,7 @@ export const OfferedSkillsStep: React.FC<OfferedSkillsStepProps> = ({
       }));
       onUpdate(currentOfferedSkills);
     }
-  }, [skillProfileData]);
+  }, [skillProfileData, onUpdate]);
 
   // Search for skills when debounced search changes
   useEffect(() => {

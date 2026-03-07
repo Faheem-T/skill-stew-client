@@ -88,7 +88,7 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({
     // triggerring validation on form hydration as
     // isValid was being stuck on false
     form.trigger();
-  }, [profile, setValue]);
+  }, [profile, setValue, form]);
 
   // Avatar upload hook
   const avatar = useImageFileUpload("avatar");
