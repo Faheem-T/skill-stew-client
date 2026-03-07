@@ -261,7 +261,11 @@ export const PublicUserProfilePage = () => {
         if (!old) return old;
         return {
           ...old,
-          data: { ...old.data, status: "CONNECTED" },
+          data: {
+            ...old.data,
+            status: "CONNECTED",
+            connectionId: connectionId!,
+          },
         };
       });
       queryClient.invalidateQueries({
@@ -292,7 +296,7 @@ export const PublicUserProfilePage = () => {
         if (!old) return old;
         return {
           ...old,
-          data: { ...old.data, status: "NONE" },
+          data: { ...old.data, status: "NONE", connectionId: null },
         };
       });
       queryClient.invalidateQueries({
