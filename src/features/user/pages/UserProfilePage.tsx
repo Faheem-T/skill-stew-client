@@ -88,8 +88,8 @@ export const UserProfilePage = () => {
           </div>
 
           {/* Avatar and Basic Info */}
-          <div className="flex flex-col md:flex-row md:items-end gap-4 md:gap-6 -mt-16 md:-mt-12 px-4 md:px-8">
-            <Avatar className="w-28 h-28 md:w-32 md:h-32 border-4 border-stone-50 shadow-lg">
+          <div className="relative z-10 flex flex-col md:flex-row gap-4 md:gap-6 px-4 md:px-8">
+            <Avatar className="w-28 h-28 md:w-32 md:h-32 border-4 border-stone-50 shadow-lg -mt-16 md:-mt-12 shrink-0">
               <AvatarImage src={profile?.avatarUrl} className="object-cover" />
               <AvatarFallback className="bg-accent/30 text-primary text-3xl font-semibold">
                 {profile?.name?.charAt(0) ||
