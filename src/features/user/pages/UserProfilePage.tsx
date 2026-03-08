@@ -45,7 +45,8 @@ export const UserProfilePage = () => {
   const [isEditUsernameOpen, setIsEditUsernameOpen] = useState(false);
   const [isConnectionsModalOpen, setIsConnectionsModalOpen] = useState(false);
 
-  const { data: connectionsCountData } = useConnectedUsersCount(profile?.id);
+  const { data: connectionsCountData, isLoading: isConnectionsLoading } =
+    useConnectedUsersCount(profile?.id);
   const connectionsCount = connectionsCountData?.data.count || 0;
 
   if (isProfileLoading || isSkillProfileLoading) {
@@ -106,16 +107,20 @@ export const UserProfilePage = () => {
                   {profile?.username && profile?.name && (
                     <p className="text-stone-500">@{profile.username}</p>
                   )}
-                  {profile?.id && (
-                    <button
-                      onClick={() => setIsConnectionsModalOpen(true)}
-                      className="mt-1 flex items-center gap-1 text-sm text-stone-600 hover:text-primary transition-colors cursor-pointer"
-                    >
-                      <span className="font-semibold text-stone-900">
-                        {connectionsCount}
-                      </span>{" "}
-                      connections
-                    </button>
+                  {isConnectionsLoading ? (
+                    <div className="h-4 w-24 bg-stone-200 animate-pulse rounded mt-2" />
+                  ) : (
+                    connectionsCount >= 0 && (
+                      <button
+                        onClick={() => setIsConnectionsModalOpen(true)}
+                        className="mt-1 flex items-center gap-1 text-sm text-stone-600 hover:text-primary transition-colors cursor-pointer"
+                      >
+                        <span className="font-semibold text-stone-900">
+                          {connectionsCount}
+                        </span>{" "}
+                        connections
+                      </button>
+                    )
                   )}
                 </div>
                 <div className="flex gap-2">
