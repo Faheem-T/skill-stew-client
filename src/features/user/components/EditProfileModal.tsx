@@ -21,6 +21,9 @@ import { X, Upload } from "lucide-react";
 import { useImageFileUpload } from "@/shared/hooks/useImageFileUpload";
 import { useUploadToS3 } from "@/shared/hooks/useUploadToS3";
 
+const toSocialLinkFields = (socialLinks?: string[]) =>
+  socialLinks?.map((link) => ({ value: link })) ?? [];
+
 const editProfileSchema = z.object({
   name: z.string().min(1, "Name is required").max(100),
   phoneNumber: z
@@ -46,7 +49,11 @@ const editProfileSchema = z.object({
     })
     .optional(),
   languages: z.array(z.string()),
-  socialLinks: z.array(z.url("Must be a valid URL")),
+  socialLinks: z.array(
+    z.object({
+      value: z.url("Must be a valid URL"),
+    }),
+  ),
 });
 
 export type EditProfileFormValues = z.infer<typeof editProfileSchema>;
@@ -78,7 +85,7 @@ export const EditProfileModal = ({
       timezone: profile.timezone || "",
       location: profile.location ?? undefined,
       languages: profile.languages || [],
-      socialLinks: profile.socialLinks || [],
+      socialLinks: toSocialLinkFields(profile.socialLinks),
     },
   });
 
@@ -92,7 +99,7 @@ export const EditProfileModal = ({
         timezone: profile.timezone || "",
         location: profile.location ?? undefined,
         languages: profile.languages || [],
-        socialLinks: profile.socialLinks || [],
+        socialLinks: toSocialLinkFields(profile.socialLinks),
       });
     }
   }, [open, profile, form]);
@@ -118,7 +125,7 @@ export const EditProfileModal = ({
           timezone: values.timezone,
           location: values.location,
           languages: values.languages,
-          socialLinks: values.socialLinks,
+          socialLinks: values.socialLinks.map(({ value }) => value),
           ...(avatarKey && { avatarKey }),
           ...(bannerKey && { bannerKey }),
         },

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useFormContext } from "react-hook-form";
+import { useFieldArray, useFormContext } from "react-hook-form";
 import {
   FormField,
   FormItem,
@@ -38,26 +38,16 @@ export const EditProfileFormFields = ({
   const { control, watch, setValue } = useFormContext<EditProfileFormValues>();
   const [editingLocation, setEditingLocation] = useState(false);
   const [newLocationName, setNewLocationName] = useState<string | null>(null);
+  const {
+    fields: socialLinkFields,
+    append,
+    remove,
+  } = useFieldArray({
+    control,
+    name: "socialLinks",
+  });
 
   const about = watch("about") || "";
-  const socialLinks = watch("socialLinks") || [];
-
-  const addSocialLink = () => {
-    setValue("socialLinks", [...socialLinks, ""]);
-  };
-
-  const removeSocialLink = (index: number) => {
-    setValue(
-      "socialLinks",
-      socialLinks.filter((_: string, i: number) => i !== index),
-    );
-  };
-
-  const updateSocialLink = (index: number, value: string) => {
-    const updated = [...socialLinks];
-    updated[index] = value;
-    setValue("socialLinks", updated);
-  };
 
   return (
     <div className="space-y-4">
@@ -235,30 +225,41 @@ export const EditProfileFormFields = ({
           Add links to your social media profiles or personal website
         </FormDescription>
         <div className="space-y-2">
-          {socialLinks.map((link: string, index: number) => (
-            <div key={index} className="flex gap-2">
-              <Input
-                value={link}
-                onChange={(e) => updateSocialLink(index, e.target.value)}
-                placeholder="https://example.com"
-                className="flex-1"
-              />
-              <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                onClick={() => removeSocialLink(index)}
-              >
-                <X className="w-4 h-4" />
-              </Button>
-            </div>
+          {socialLinkFields.map((item, index) => (
+            <FormField
+              key={item.id}
+              control={control}
+              name={`socialLinks.${index}.value`}
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex gap-2">
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder="https://example.com"
+                        className="flex-1"
+                      />
+                    </FormControl>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={() => remove(index)}
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           ))}
         </div>
         <Button
           type="button"
           variant="outline"
           size="sm"
-          onClick={addSocialLink}
+          onClick={() => append({ value: "" })}
           className="w-full"
         >
           <Plus className="w-4 h-4 mr-2" />
