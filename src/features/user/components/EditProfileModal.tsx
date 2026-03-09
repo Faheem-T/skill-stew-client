@@ -16,6 +16,7 @@ import { useUpdateProfile } from "../hooks/useUpdateProfile";
 import { ProfileAvatar } from "@/features/onboarding/components/ProfileAvatar";
 import type { CurrentUserProfile } from "@/shared/api/currentUserProfile";
 import { EditProfileFormFields } from "./EditProfileFormFields";
+import { ABOUT_MAX_LENGTH } from "./EditProfileForm.constants";
 import { X, Upload } from "lucide-react";
 import { useImageFileUpload } from "@/shared/hooks/useImageFileUpload";
 import { useUploadToS3 } from "@/shared/hooks/useUploadToS3";
@@ -29,7 +30,13 @@ const editProfileSchema = z.object({
       (val) => !val || isValidPhoneNumber(val),
       "Please enter a valid phone number",
     ),
-  about: z.string().max(500).optional(),
+  about: z
+    .string()
+    .max(
+      ABOUT_MAX_LENGTH,
+      `The about section has to be less than ${ABOUT_MAX_LENGTH} characters`,
+    )
+    .optional(),
   timezone: z.string().optional(),
   location: z
     .object({

@@ -21,13 +21,13 @@ import ISO6391 from "iso-639-1";
 import type { CurrentUserProfile } from "@/shared/api/currentUserProfile";
 import { MapBoxAutocomplete } from "@/shared/components/ui/mapbox-autocomplete";
 import type { EditProfileFormValues } from "./EditProfileModal";
+import { ABOUT_MAX_LENGTH } from "./EditProfileForm.constants";
 
 // Create languages array once outside the component
 const languages: MultiSelectOption[] = ISO6391.getAllCodes().map((code) => ({
   value: code,
   label: ISO6391.getName(code),
 }));
-
 interface EditProfileFormFieldsProps {
   profile: CurrentUserProfile & { role: "USER" };
 }
@@ -39,6 +39,7 @@ export const EditProfileFormFields = ({
   const [editingLocation, setEditingLocation] = useState(false);
   const [newLocationName, setNewLocationName] = useState<string | null>(null);
 
+  const about = watch("about") || "";
   const socialLinks = watch("socialLinks") || [];
 
   const addSocialLink = () => {
@@ -107,7 +108,12 @@ export const EditProfileFormFields = ({
                 {...field}
               />
             </FormControl>
-            <FormDescription>Maximum 500 characters</FormDescription>
+            <FormDescription className="flex justify-between gap-2">
+              <span>Tell people a bit about yourself.</span>
+              <span>
+                {about.length}/{ABOUT_MAX_LENGTH}
+              </span>
+            </FormDescription>
             <FormMessage />
           </FormItem>
         )}
