@@ -1,6 +1,6 @@
 import { Avatar } from "@/shared/components/ui/avatar";
 import { APP_NAME } from "@/shared/config/constants";
-import { useAppStore } from "@/app/store";
+
 import { AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import {
   DropdownMenu,

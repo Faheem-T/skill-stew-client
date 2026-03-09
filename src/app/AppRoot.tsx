@@ -4,6 +4,7 @@ import { InitialLoadScreen } from "./pages/InitialLoadScreen";
 import { OnboardingModal } from "@/features/onboarding/components/OnboardingModal";
 import { useEffect } from "react";
 import { useAppStore } from "./store";
+import { SocketProvider } from "@/shared/components/SocketProvider";
 
 export const AppRoot: React.FC = () => {
   const { data: userProfile, isLoading } = useCurrentUserProfile();
@@ -13,13 +14,13 @@ export const AppRoot: React.FC = () => {
     if (userProfile?.role === "USER" && !userProfile.isOnboardingComplete) {
       setIsOnboardingModalOpen(true);
     }
-  }, [userProfile?.role]);
+  }, [userProfile, setIsOnboardingModalOpen]);
 
   if (isLoading) {
     return <InitialLoadScreen />;
   }
 
-  return (
+  const content = (
     <>
       <Outlet />
       <OnboardingModal
@@ -28,4 +29,11 @@ export const AppRoot: React.FC = () => {
       />
     </>
   );
+
+  // Only connect to WebSocket when the user is logged in
+  if (userProfile) {
+    return <SocketProvider>{content}</SocketProvider>;
+  }
+
+  return content;
 };

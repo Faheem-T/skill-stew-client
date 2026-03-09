@@ -20,7 +20,7 @@ import { useUploadToS3 } from "@/shared/hooks/useUploadToS3";
 import { RoutePath } from "@/shared/config/routes";
 
 // Combine schemas for the form
-const combinedSchema = usernameSchema.merge(profileSchema);
+const combinedSchema = usernameSchema.extend(profileSchema.shape);
 type CombinedFormValues = z.infer<typeof combinedSchema>;
 
 interface ProfileStepProps {
@@ -49,6 +49,10 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({
   const { setValue, formState } = form;
   const { isDirty, isValid } = formState;
 
+  useEffect(() => {
+    console.log(isValid);
+  }, [isValid]);
+
   // Prefill form with existing profile data
   const { data: profile } = useUserProfile();
   useEffect(() => {
@@ -70,14 +74,21 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({
         shouldTouch: false,
       });
     }
-    if (profile.location && profile.location.placeId) {
+    if (profile.location) {
       setValue(
         "location",
-        { placeId: profile.location.placeId },
+        {
+          formattedAddress: profile.location.formattedAddress,
+          latitude: profile.location.latitude,
+          longitude: profile.location.longitude,
+        },
         { shouldDirty: false, shouldTouch: false },
       );
     }
-  }, [profile, setValue]);
+    // triggerring validation on form hydration as
+    // isValid was being stuck on false
+    form.trigger();
+  }, [profile, setValue, form]);
 
   // Avatar upload hook
   const avatar = useImageFileUpload("avatar");

@@ -21,7 +21,7 @@ export const BlockUserButton: React.FC<{
     ApiResponseWithMessage,
     ApiErrorResponseType,
     { id: string; newBlockStatus: boolean },
-    any
+    { previousUserData: { pages: PaginatedApiResponse<User[]>[] } | undefined }
   >({
     mutationFn: ({ id, newBlockStatus }) =>
       updateUserBlockStatus(id, newBlockStatus),
@@ -34,7 +34,7 @@ export const BlockUserButton: React.FC<{
           draft.pages.forEach(({ data }) =>
             data.forEach((user) => {
               if (user.id === userId) {
-                user.is_blocked = !currentlyBlocked;
+                user.isBlocked = !currentlyBlocked;
               }
             }),
           );
@@ -55,7 +55,10 @@ export const BlockUserButton: React.FC<{
           toast.success(data.message);
         },
         onError(err) {
-          toast.error(err.message);
+          if (err.response)
+            err.response.data.errors?.forEach(({ message }) => {
+              toast.error(message);
+            });
         },
       },
     );

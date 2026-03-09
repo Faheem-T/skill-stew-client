@@ -85,7 +85,7 @@ const UserRow = ({
   user: User;
   filters: UserQueryFilters;
 }) => {
-  const { id, username, email, role, isBlocked, isVerified } = user;
+  const { id, username, email, isBlocked, isVerified } = user;
   return (
     <TableRow>
       <TableCell>

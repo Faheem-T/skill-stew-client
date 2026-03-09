@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useFormContext } from "react-hook-form";
+import { useFieldArray, useFormContext } from "react-hook-form";
 import {
   FormField,
   FormItem,
@@ -12,7 +12,6 @@ import { Input } from "@/shared/components/ui/input";
 import { Textarea } from "@/shared/components/ui/textarea";
 import { MultiSelect } from "@/shared/components/ui/multi-select";
 import type { MultiSelectOption } from "@/shared/components/ui/multi-select";
-import { GoogleMapsAutocomplete } from "@/shared/components/ui/google-autocomplete";
 import TimezoneSelect from "react-timezone-select";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
@@ -20,13 +19,15 @@ import { Button } from "@/shared/components/ui/button";
 import { Plus, X, PencilIcon, XIcon } from "lucide-react";
 import ISO6391 from "iso-639-1";
 import type { CurrentUserProfile } from "@/shared/api/currentUserProfile";
+import { MapBoxAutocomplete } from "@/shared/components/ui/mapbox-autocomplete";
+import type { EditProfileFormValues } from "./EditProfileModal";
+import { ABOUT_MAX_LENGTH } from "./EditProfileForm.constants";
 
 // Create languages array once outside the component
 const languages: MultiSelectOption[] = ISO6391.getAllCodes().map((code) => ({
   value: code,
   label: ISO6391.getName(code),
 }));
-
 interface EditProfileFormFieldsProps {
   profile: CurrentUserProfile & { role: "USER" };
 }
@@ -34,29 +35,19 @@ interface EditProfileFormFieldsProps {
 export const EditProfileFormFields = ({
   profile,
 }: EditProfileFormFieldsProps) => {
-  const { control, watch, setValue } = useFormContext();
+  const { control, watch, setValue } = useFormContext<EditProfileFormValues>();
   const [editingLocation, setEditingLocation] = useState(false);
   const [newLocationName, setNewLocationName] = useState<string | null>(null);
+  const {
+    fields: socialLinkFields,
+    append,
+    remove,
+  } = useFieldArray({
+    control,
+    name: "socialLinks",
+  });
 
-  const socialLinks = watch("socialLinks") || [];
-  const currentLocation = watch("location");
-
-  const addSocialLink = () => {
-    setValue("socialLinks", [...socialLinks, ""]);
-  };
-
-  const removeSocialLink = (index: number) => {
-    setValue(
-      "socialLinks",
-      socialLinks.filter((_: string, i: number) => i !== index),
-    );
-  };
-
-  const updateSocialLink = (index: number, value: string) => {
-    const updated = [...socialLinks];
-    updated[index] = value;
-    setValue("socialLinks", updated);
-  };
+  const about = watch("about") || "";
 
   return (
     <div className="space-y-4">
@@ -107,7 +98,12 @@ export const EditProfileFormFields = ({
                 {...field}
               />
             </FormControl>
-            <FormDescription>Maximum 500 characters</FormDescription>
+            <FormDescription className="flex justify-between gap-2">
+              <span>Tell people a bit about yourself.</span>
+              <span>
+                {about.length}/{ABOUT_MAX_LENGTH}
+              </span>
+            </FormDescription>
             <FormMessage />
           </FormItem>
         )}
@@ -122,7 +118,7 @@ export const EditProfileFormFields = ({
             <FormControl>
               <div className="timezone-select">
                 <TimezoneSelect
-                  value={field.value}
+                  value={field.value ?? ""}
                   onChange={(tz) => field.onChange(tz.value)}
                 />
               </div>
@@ -135,11 +131,11 @@ export const EditProfileFormFields = ({
       <FormField
         control={control}
         name="location"
-        render={({}) => (
+        render={({ field }) => (
           <FormItem>
             <FormLabel>Location</FormLabel>
             <FormControl>
-              {(currentLocation?.placeId ||
+              {(field.value?.formattedAddress ||
                 profile.location?.formattedAddress) &&
               !editingLocation ? (
                 <div className="flex items-center gap-2 py-2 px-3 bg-stone-50 rounded text-sm border border-stone-200">
@@ -166,14 +162,17 @@ export const EditProfileFormFields = ({
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
-                  <GoogleMapsAutocomplete
-                    onPlaceSelected={(place) => {
-                      setValue("location", { placeId: place.id });
-                      setNewLocationName(place.name || "New location selected");
+                  <MapBoxAutocomplete
+                    onPlaceSelected={(location) => {
+                      console.log(location);
+                      setValue("location", location);
+                      setNewLocationName(
+                        location.formattedAddress || "New location selected",
+                      );
                       setEditingLocation(false);
                     }}
                   />
-                  {(currentLocation?.placeId ||
+                  {(field.value?.formattedAddress ||
                     profile.location?.formattedAddress) && (
                     <Button
                       type="button"
@@ -226,30 +225,41 @@ export const EditProfileFormFields = ({
           Add links to your social media profiles or personal website
         </FormDescription>
         <div className="space-y-2">
-          {socialLinks.map((link: string, index: number) => (
-            <div key={index} className="flex gap-2">
-              <Input
-                value={link}
-                onChange={(e) => updateSocialLink(index, e.target.value)}
-                placeholder="https://example.com"
-                className="flex-1"
-              />
-              <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                onClick={() => removeSocialLink(index)}
-              >
-                <X className="w-4 h-4" />
-              </Button>
-            </div>
+          {socialLinkFields.map((item, index) => (
+            <FormField
+              key={item.id}
+              control={control}
+              name={`socialLinks.${index}.value`}
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex gap-2">
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder="https://example.com"
+                        className="flex-1"
+                      />
+                    </FormControl>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={() => remove(index)}
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           ))}
         </div>
         <Button
           type="button"
           variant="outline"
           size="sm"
-          onClick={addSocialLink}
+          onClick={() => append({ value: "" })}
           className="w-full"
         >
           <Plus className="w-4 h-4 mr-2" />

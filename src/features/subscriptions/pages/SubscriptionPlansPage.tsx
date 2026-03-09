@@ -80,56 +80,18 @@ export const SubscriptionPlansSection: React.FC = () => {
   );
 };
 
-const BillingToggle: React.FC = () => {
-  const [pricingMode, setPricingMode] = React.useState<"monthly" | "yearly">(
-    "monthly",
-  );
-  return (
-    <Card className="p-0 w-full flex justify-center items-center max-w-sm">
-      <CardContent className="flex w-full gap-4 justify-center items-center border p-1 text-foreground rounded-lg bg-card">
-        <div
-          className={cn(
-            "w-1/2 border rounded-lg text-center text-muted-foreground",
-            pricingMode === "monthly"
-              ? "text-foreground font-bold bg-accent"
-              : "hover:opacity-70 hover:cursor-pointer",
-          )}
-          onClick={() => {
-            setPricingMode("monthly");
-          }}
-        >
-          Monthly
-        </div>
-        <div
-          className={cn(
-            "w-1/2 border rounded-lg text-center text-muted-foreground",
-            pricingMode === "yearly"
-              ? "text-foreground font-bold bg-accent"
-              : "hover:opacity-70 hover:cursor-pointer",
-          )}
-          onClick={() => {
-            setPricingMode("yearly");
-          }}
-        >
-          Yearly
-        </div>
-      </CardContent>
-    </Card>
-  );
-};
-
 const SubscriptionPlanCard: React.FC<{
   plan: SubscriptionPlan;
   pricingMode: "monthly" | "yearly";
 }> = ({ plan, pricingMode }) => {
-  const { id, name, price, freeWorkshopHours, description, features } = plan;
+  const { name, price, freeWorkshopHours, description } = plan;
   const { currency } = price;
   const priceWithSymbol = new Intl.NumberFormat("en-IN", {
     style: "currency",
     currency,
   }).format(price[pricingMode]);
   return (
-    <Card className="w-[350px]">
+    <Card className="w-87.5">
       <CardHeader>
         <CardTitle>{name}</CardTitle>
         <CardTitle>

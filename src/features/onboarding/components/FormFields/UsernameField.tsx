@@ -13,8 +13,8 @@ import { z } from "zod";
 import { usernameSchema, profileSchema } from "../../schemas";
 
 // Define the combined form values type
-const combinedSchema = usernameSchema.merge(profileSchema);
-type CombinedFormValues = z.infer<typeof combinedSchema>;
+type CombinedFormValues = z.infer<typeof usernameSchema> &
+  z.infer<typeof profileSchema>;
 
 interface UsernameFieldProps {
   currentUsername?: string;

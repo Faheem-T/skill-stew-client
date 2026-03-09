@@ -21,7 +21,13 @@ export const usernameSchema = z.object({
 
 export const profileSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters").optional(),
-  location: z.object({ placeId: z.string() }).optional(),
+  location: z
+    .object({
+      latitude: z.number(),
+      longitude: z.number(),
+      formattedAddress: z.string(),
+    })
+    .optional(),
   languages: z.array(z.string()).optional(),
 });
 

@@ -16,9 +16,13 @@ import { useUpdateProfile } from "../hooks/useUpdateProfile";
 import { ProfileAvatar } from "@/features/onboarding/components/ProfileAvatar";
 import type { CurrentUserProfile } from "@/shared/api/currentUserProfile";
 import { EditProfileFormFields } from "./EditProfileFormFields";
+import { ABOUT_MAX_LENGTH } from "./EditProfileForm.constants";
 import { X, Upload } from "lucide-react";
 import { useImageFileUpload } from "@/shared/hooks/useImageFileUpload";
 import { useUploadToS3 } from "@/shared/hooks/useUploadToS3";
+
+const toSocialLinkFields = (socialLinks?: string[]) =>
+  socialLinks?.map((link) => ({ value: link })) ?? [];
 
 const editProfileSchema = z.object({
   name: z.string().min(1, "Name is required").max(100),
@@ -29,14 +33,30 @@ const editProfileSchema = z.object({
       (val) => !val || isValidPhoneNumber(val),
       "Please enter a valid phone number",
     ),
-  about: z.string().max(500).optional(),
+  about: z
+    .string()
+    .max(
+      ABOUT_MAX_LENGTH,
+      `The about section has to be less than ${ABOUT_MAX_LENGTH} characters`,
+    )
+    .optional(),
   timezone: z.string().optional(),
-  location: z.object({ placeId: z.string() }).optional(),
+  location: z
+    .object({
+      latitude: z.number(),
+      longitude: z.number(),
+      formattedAddress: z.string(),
+    })
+    .optional(),
   languages: z.array(z.string()),
-  socialLinks: z.array(z.string().url("Must be a valid URL")),
+  socialLinks: z.array(
+    z.object({
+      value: z.url("Must be a valid URL"),
+    }),
+  ),
 });
 
-type EditProfileFormValues = z.infer<typeof editProfileSchema>;
+export type EditProfileFormValues = z.infer<typeof editProfileSchema>;
 
 interface EditProfileModalProps {
   open: boolean;
@@ -63,11 +83,9 @@ export const EditProfileModal = ({
       phoneNumber: profile.phoneNumber || "",
       about: profile.about || "",
       timezone: profile.timezone || "",
-      location: profile.location
-        ? { placeId: profile.location.placeId }
-        : undefined,
+      location: profile.location ?? undefined,
       languages: profile.languages || [],
-      socialLinks: profile.socialLinks || [],
+      socialLinks: toSocialLinkFields(profile.socialLinks),
     },
   });
 
@@ -79,11 +97,9 @@ export const EditProfileModal = ({
         phoneNumber: profile.phoneNumber || "",
         about: profile.about || "",
         timezone: profile.timezone || "",
-        location: profile.location
-          ? { placeId: profile.location.placeId }
-          : undefined,
+        location: profile.location ?? undefined,
         languages: profile.languages || [],
-        socialLinks: profile.socialLinks || [],
+        socialLinks: toSocialLinkFields(profile.socialLinks),
       });
     }
   }, [open, profile, form]);
@@ -109,7 +125,7 @@ export const EditProfileModal = ({
           timezone: values.timezone,
           location: values.location,
           languages: values.languages,
-          socialLinks: values.socialLinks,
+          socialLinks: values.socialLinks.map(({ value }) => value),
           ...(avatarKey && { avatarKey }),
           ...(bannerKey && { bannerKey }),
         },
@@ -134,7 +150,7 @@ export const EditProfileModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-6xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-stone-900">
             Edit Profile

@@ -14,5 +14,7 @@ export const RoutePath = {
   Exchanges: "/exchanges",
   Community: "/community",
   Settings: "/settings",
+  Notifications: "/notifications",
+  PublicProfile: "/user/:id",
   TestRoute: "/test",
 } as const;

@@ -69,7 +69,7 @@ import {
   TooltipTrigger,
 } from "@/shared/components/ui/tooltip";
 
-export const SubscriptionManagement: React.FC<{}> = () => {
+export const SubscriptionManagement: React.FC = () => {
   const [modalOpen, setModalOpen] = React.useState<boolean>(false);
   return (
     <div>
@@ -254,7 +254,9 @@ const PlanDeletionAlertDialog: React.FC<{
       queryClient.setQueryData(["subscription-plans"], context?.previousPlans);
 
       if (error.response) {
-        toast.error(error.response.data.message);
+        error.response.data.errors?.forEach(({ message }) => {
+          toast.error(message);
+        });
       }
     },
     onSuccess(data) {
@@ -323,16 +325,17 @@ const PlanFormDialog: React.FC<{
     z.infer<typeof createSubscriptionPlanSchema>
   >({
     mutationFn: createPlan,
-    onError(error, variables, _context) {
+    onError(error) {
       if (error.response?.data) {
         if (error.response.data.errors) {
-          for (const { error: message, field } of error.response.data.errors) {
+          for (const { message, field } of error.response.data.errors) {
             if (field)
-              form.setError(field as keyof typeof variables, { message });
+              form.setError(
+                field as keyof z.infer<typeof createSubscriptionPlanSchema>,
+                { message },
+              );
+            else form.setError("root", { message });
           }
-        }
-        if (error.response.data.message) {
-          form.setError("root", { message: error.response.data.message });
         }
       }
     },
@@ -383,13 +386,11 @@ const PlanFormDialog: React.FC<{
       // Setting RHF field errors
       if (error.response?.data) {
         if (error.response.data.errors) {
-          for (const { error: message, field } of error.response.data.errors) {
+          for (const { message, field } of error.response.data.errors) {
             if (field)
               form.setError(field as keyof typeof variables.data, { message });
+            else form.setError("root", { message });
           }
-        }
-        if (error.response.data.message) {
-          form.setError("root", { message: error.response.data.message });
         }
       }
     },
@@ -577,7 +578,7 @@ const PlanFormDialog: React.FC<{
                     control={form.control}
                     name={`features.${index}.value`}
                     render={({ field }) => (
-                      <FormItem className="grow-1">
+                      <FormItem className="grow">
                         <FormControl>
                           <Input {...field} />
                         </FormControl>

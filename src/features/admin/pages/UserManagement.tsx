@@ -7,7 +7,7 @@ import { UserTable } from "../components/UserManagement/UserTable";
 export const UserManagement = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const [isVerified, setIsVerified] = useState(
+  const [isVerified] = useState(
     searchParams.get("isVerified") == "true" ||
       searchParams.get("isVerified") == "false"
       ? Boolean(searchParams.get("isVerified"))

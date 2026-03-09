@@ -6,12 +6,12 @@ import {
   FormItem,
   FormLabel,
 } from "@/shared/components/ui/form";
-import { GoogleMapsAutocomplete } from "@/shared/components/ui/google-autocomplete";
 import { Button } from "@/shared/components/ui/button";
 import { PencilIcon, XIcon } from "lucide-react";
 import { useFormContext } from "react-hook-form";
 import type { FormValues } from "../../schemas";
 import type { UserProfile } from "@/shared/hooks/useUserProfile";
+import { MapBoxAutocomplete } from "@/shared/components/ui/mapbox-autocomplete";
 
 interface LocationFieldProps {
   location: UserProfile["location"] | undefined;
@@ -25,7 +25,7 @@ export const LocationField = ({ location }: LocationFieldProps) => {
     <FormField
       control={control}
       name="location"
-      render={({}) => (
+      render={() => (
         <FormItem>
           <FormLabel>Location</FormLabel>
           <FormControl>
@@ -44,9 +44,9 @@ export const LocationField = ({ location }: LocationFieldProps) => {
               </div>
             ) : (
               <div className="flex items-center gap-2">
-                <GoogleMapsAutocomplete
+                <MapBoxAutocomplete
                   onPlaceSelected={(place) => {
-                    setValue("location", { placeId: place.id });
+                    setValue("location", place);
                     setEditingLocation(false);
                   }}
                 />

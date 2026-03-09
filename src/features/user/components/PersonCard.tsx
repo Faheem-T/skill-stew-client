@@ -1,4 +1,14 @@
 import { DefaultAvatarIllustration } from "@/features/onboarding/components/DefaultAvatarIllustration";
+import { sendConnectionRequest } from "@/features/user/api/SendConnectionRequest";
+import type {
+  ApiErrorResponseType,
+  ApiResponseWithData,
+} from "@/shared/api/baseApi";
+import { useMutation } from "@tanstack/react-query";
+import { Loader2 } from "lucide-react";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router";
+import { RoutePath } from "@/shared/config/routes";
 
 interface Skill {
   skillId: string;
@@ -13,20 +23,46 @@ interface PersonCardProps {
   avatarUrl?: string;
   offeredSkills?: Skill[];
   wantedSkills?: Skill[];
-  onConnect?: () => void;
 }
 
 export const PersonCard = ({
+  id,
   name,
   username,
   location,
   avatarUrl,
   offeredSkills,
   wantedSkills,
-  onConnect,
 }: PersonCardProps) => {
+  const navigate = useNavigate();
+
+  const { mutate, isPending, isSuccess } = useMutation<
+    ApiResponseWithData<{ connectionStatus: "PENDING" | "ACCEPTED" }>,
+    ApiErrorResponseType,
+    { userId: string }
+  >({
+    mutationFn: sendConnectionRequest,
+    onError: (error) => {
+      error.response?.data.errors.forEach(({ message }) =>
+        toast.error(message),
+      );
+    },
+  });
+
+  const handleConnect = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    mutate({ userId: id });
+  };
+
+  const handleCardClick = () => {
+    navigate(RoutePath.PublicProfile.replace(":id", id));
+  };
+
   return (
-    <div className="p-4 border border-stone-200 rounded-lg hover:border-primary/50 hover:shadow-md transition-all bg-white">
+    <div
+      onClick={handleCardClick}
+      className="p-4 border border-stone-200 rounded-lg hover:border-primary/50 hover:shadow-md transition-all bg-white cursor-pointer"
+    >
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-start gap-4 flex-1 min-w-0">
           <div className="w-12 h-12 rounded-full shrink-0 overflow-hidden bg-accent/20 flex items-center justify-center">
@@ -81,12 +117,20 @@ export const PersonCard = ({
             )}
           </div>
         </div>
-        <button
-          className="px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors shrink-0 whitespace-nowrap"
-          onClick={onConnect}
-        >
-          Connect
-        </button>
+        {isSuccess ? (
+          <span className="px-4 py-2 rounded-lg text-sm font-medium shrink-0 bg-yellow-100 text-yellow-800 border border-yellow-300">
+            Pending
+          </span>
+        ) : (
+          <button
+            className="px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors shrink-0 whitespace-nowrap disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
+            onClick={handleConnect}
+            disabled={isPending}
+          >
+            {isPending && <Loader2 className="w-4 h-4 animate-spin" />}
+            {isPending ? "Connecting..." : "Connect"}
+          </button>
+        )}
       </div>
     </div>
   );

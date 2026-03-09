@@ -14,7 +14,10 @@ import { Button } from "@/shared/components/ui/button";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { ApiErrorResponseType } from "@/shared/api/baseApi";
 import { useNavigate } from "react-router";
-import { adminLoginRequest } from "@/features/admin/api/auth/AdminLoginRequest";
+import {
+  adminLoginRequest,
+  adminLoginSchema,
+} from "@/features/admin/api/auth/AdminLoginRequest";
 import { useAppStore } from "@/app/store";
 import { PasswordInput } from "@/shared/components/ui/password-input";
 import { loginRequest } from "@/features/auth/api/LoginRequest";
@@ -22,11 +25,6 @@ import { APP_NAME } from "@/shared/config/constants";
 import { Shield } from "lucide-react";
 import { CURRENT_USER_PROFILE_QUERY_KEY } from "@/shared/hooks/useCurrentUserProfile";
 import { RoutePath } from "@/shared/config/routes";
-
-export const adminLoginSchema = z.object({
-  email: z.string(),
-  password: z.string(),
-});
 
 export const AdminLoginPage = () => {
   const navigate = useNavigate();
@@ -48,19 +46,18 @@ export const AdminLoginPage = () => {
     z.infer<typeof adminLoginSchema>
   >({
     mutationFn: loginRequest,
-    onError(error, variables, _context) {
+    onError(error) {
       if (error.response?.data) {
         if (error.response.data.errors) {
           for (const { field, message } of error.response.data.errors) {
             if (field) {
-              form.setError(field as keyof typeof variables, { message });
+              form.setError(field as keyof z.infer<typeof adminLoginSchema>, {
+                message,
+              });
             } else {
               form.setError("root", { message });
             }
           }
-        }
-        if (error.response.data.message) {
-          form.setError("root", { message: error.response.data.message });
         }
       }
     },

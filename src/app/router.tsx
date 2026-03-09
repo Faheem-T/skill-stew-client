@@ -16,9 +16,12 @@ import { InitialLoadScreen } from "./pages/InitialLoadScreen";
 import { DashboardRoutingPage } from "./pages/DashboardRoutingPage";
 import { UserDashboard } from "@/features/user/pages/UserDashboard";
 import { UserProfilePage } from "@/features/user/pages/UserProfilePage";
-import { ProfileStep } from "@/features/onboarding/pages/onboarding/ProfileStep";
+import { PublicUserProfilePage } from "@/features/user/pages/PublicUserProfilePage";
 import { AppRoot } from "./AppRoot";
 import { RoutePath } from "@/shared/config/routes";
+import { NotificationsPage } from "@/features/notification/pages/NotificationsPage";
+import { NotFoundPage } from "./pages/NotFoundPage";
+import { MapBoxAutocomplete } from "@/shared/components/ui/mapbox-autocomplete";
 
 export const queryClient = new QueryClient();
 
@@ -30,11 +33,21 @@ export const router = createBrowserRouter([
     children: [
       {
         path: RoutePath.TestRoute,
-        element: <ProfileStep />,
+        element: (
+          <MapBoxAutocomplete
+            onPlaceSelected={(place) => {
+              console.log(place);
+            }}
+          />
+        ),
       },
       {
         path: RoutePath.Home,
         element: <HomePage />,
+      },
+      {
+        path: RoutePath.PublicProfile,
+        element: <PublicUserProfilePage />,
       },
       {
         // Guest only routes
@@ -63,6 +76,10 @@ export const router = createBrowserRouter([
         element: <ProtectedRoute roles={["ADMIN", "EXPERT", "USER"]} />,
         children: [
           { path: RoutePath.Dashboard, element: <DashboardRoutingPage /> },
+          {
+            path: RoutePath.Notifications,
+            element: <NotificationsPage />,
+          },
         ],
       },
       {
@@ -92,6 +109,10 @@ export const router = createBrowserRouter([
             ],
           },
         ],
+      },
+      {
+        path: "*",
+        element: <NotFoundPage />,
       },
     ],
   },

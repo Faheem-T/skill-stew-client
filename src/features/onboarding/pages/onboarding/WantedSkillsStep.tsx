@@ -85,7 +85,7 @@ export const WantedSkillsStep: React.FC<WantedSkillsStepProps> = ({
       }));
       form.setValue("wanted", formWantedSkills);
     }
-  }, [skillProfileData]);
+  }, [skillProfileData, onUpdate, form]);
 
   // Search for wanted skills when debounced search changes
   useEffect(() => {
@@ -249,7 +249,7 @@ export const WantedSkillsStep: React.FC<WantedSkillsStepProps> = ({
 
             {/* Info box */}
             <div className="flex gap-3 p-4 bg-accent/10 border border-accent/30 rounded-lg">
-              <Lightbulb className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+              <Lightbulb className="w-5 h-5 text-primary shrink-0 mt-0.5" />
               <div className="text-sm text-primary/80">
                 <p className="font-medium">Pro tip:</p>
                 <p>

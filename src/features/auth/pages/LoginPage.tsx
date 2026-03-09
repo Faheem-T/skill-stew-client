@@ -12,7 +12,8 @@ import {
 import { Input } from "@/shared/components/ui/input";
 import { Button } from "@/shared/components/ui/button";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { loginRequest } from "@/features/auth/api/LoginRequest";
+import { useEffect } from "react";
+import { loginSchema, loginRequest } from "@/features/auth/api/LoginRequest";
 import type { ApiErrorResponseType } from "@/shared/api/baseApi";
 import { useNavigate } from "react-router";
 import { useAppStore } from "@/app/store";
@@ -26,24 +27,12 @@ import useCurrentUserProfile, {
 import { InitialLoadScreen } from "@/app/pages/InitialLoadScreen";
 import { RoutePath } from "@/shared/config/routes";
 
-export const loginSchema = z.object({
-  email: z.string().email("Please enter a valid email address."),
-  password: z.string(),
-});
-
 export const LoginPage = () => {
   const navigate = useNavigate();
   const setAccessToken = useAppStore((state) => state.setAccessToken);
   const queryClient = useQueryClient();
 
   const { data: userProfile, isLoading } = useCurrentUserProfile();
-  if (isLoading) {
-    return <InitialLoadScreen />;
-  }
-
-  if (userProfile) {
-    navigate(RoutePath.Home, { replace: true });
-  }
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -59,19 +48,18 @@ export const LoginPage = () => {
     z.infer<typeof loginSchema>
   >({
     mutationFn: loginRequest,
-    onError(error, variables) {
+    onError(error) {
       if (error.response?.data) {
         if (error.response.data.errors) {
           for (const { message, field } of error.response.data.errors) {
             if (field) {
-              form.setError(field as keyof typeof variables, { message });
+              form.setError(field as keyof z.infer<typeof loginSchema>, {
+                message,
+              });
             } else {
               form.setError("root", { message });
             }
           }
-        }
-        if (error.response.data.message) {
-          form.setError("root", { message: error.response.data.message });
         }
       }
     },
@@ -86,6 +74,16 @@ export const LoginPage = () => {
 
   async function onSubmit(values: z.infer<typeof loginSchema>) {
     mutate(values);
+  }
+
+  useEffect(() => {
+    if (userProfile) {
+      navigate(RoutePath.Home, { replace: true });
+    }
+  }, [userProfile, navigate]);
+
+  if (isLoading) {
+    return <InitialLoadScreen />;
   }
 
   return (

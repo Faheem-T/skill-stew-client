@@ -3,6 +3,7 @@ import type {
   UseFormSetError,
   UseFormClearErrors,
   FieldErrors,
+  FieldValues,
 } from "react-hook-form";
 import { useDebounce } from "@/shared/hooks/useDebounce";
 import { useCheckUsernameAvailability } from "@/shared/hooks/useCheckUsernameAvailability";
@@ -10,8 +11,8 @@ import { useCheckUsernameAvailability } from "@/shared/hooks/useCheckUsernameAva
 interface UseUsernameValidationOptions {
   username: string | undefined;
   currentUsername: string | undefined;
-  setError: UseFormSetError<any>;
-  clearErrors: UseFormClearErrors<any>;
+  setError: UseFormSetError<FieldValues>;
+  clearErrors: UseFormClearErrors<FieldValues>;
   errors: FieldErrors;
   isDirty?: boolean;
 }

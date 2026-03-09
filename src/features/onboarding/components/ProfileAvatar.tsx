@@ -1,8 +1,4 @@
-import {
-  Avatar,
-  AvatarImage,
-  AvatarFallback,
-} from "@/shared/components/ui/avatar";
+import { Avatar, AvatarImage } from "@/shared/components/ui/avatar";
 import { Button } from "@/shared/components/ui/button";
 import type { UserProfile } from "@/shared/hooks/useUserProfile";
 import type { ChangeEvent } from "react";
@@ -62,7 +58,7 @@ export const ProfileAvatar = ({
               <DefaultAvatarIllustration />
             </div>
           )}
-          
+
           {/* Upload icon overlay - appears on hover */}
           <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
             <div className="flex flex-col items-center gap-1">

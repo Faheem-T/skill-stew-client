@@ -32,7 +32,7 @@ api.interceptors.response.use(
           const { data } = await refreshRequest();
           useAppStore.getState().setAccessToken(data.accessToken);
           return api.request(error.config);
-        } catch (_err) {
+        } catch {
           return Promise.reject(error);
         }
       }
@@ -44,7 +44,7 @@ api.interceptors.response.use(
 export type ApiResponseType = {
   success: true;
   message?: string;
-  data?: any;
+  data?: unknown;
 };
 
 export type ApiResponseWithMessage = {
@@ -68,7 +68,5 @@ export type PaginatedApiResponse<T> = {
 
 export type ApiErrorResponseType = AxiosError<{
   success: false;
-  message: string;
-  error: string;
-  errors?: { message: string; field?: string }[];
+  errors: { message: string; field?: string }[];
 }>;

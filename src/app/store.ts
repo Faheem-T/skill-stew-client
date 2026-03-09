@@ -10,10 +10,10 @@ interface AuthSlice {
 const createAuthSlice: StateCreator<AuthSlice, [], [], AuthSlice> = (set) => ({
   accessToken: null,
   setAccessToken: (token: string) =>
-    set((_state) => ({
+    set(() => ({
       accessToken: token,
     })),
-  logout: () => set((_state) => ({ accessToken: null })),
+  logout: () => set(() => ({ accessToken: null })),
 });
 
 interface OnboardingSlice {
@@ -29,7 +29,7 @@ const createOnboardingSlice: StateCreator<
 > = (set) => ({
   isOnboardingModalOpen: false,
   setIsOnboardingModalOpen: (open: boolean) =>
-    set((_state) => ({ isOnboardingModalOpen: open })),
+    set(() => ({ isOnboardingModalOpen: open })),
 });
 
 export const useAppStore = create<AuthSlice & OnboardingSlice>()(

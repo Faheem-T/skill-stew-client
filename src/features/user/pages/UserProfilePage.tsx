@@ -25,6 +25,8 @@ import {
 import ISO6391 from "iso-639-1";
 import { EditProfileModal } from "../components/EditProfileModal";
 import { EditUsernameModal } from "../components/EditUsernameModal";
+import { useConnectedUsersCount } from "@/features/user/hooks/useConnectedUsersCount";
+import { ConnectedUsersModal } from "@/features/user/components/ConnectedUsersModal";
 
 // Helper to pluralize words
 const pluralize = (count: number, singular: string, plural: string) =>
@@ -41,6 +43,11 @@ export const UserProfilePage = () => {
 
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
   const [isEditUsernameOpen, setIsEditUsernameOpen] = useState(false);
+  const [isConnectionsModalOpen, setIsConnectionsModalOpen] = useState(false);
+
+  const { data: connectionsCountData, isLoading: isConnectionsLoading } =
+    useConnectedUsersCount(profile?.id);
+  const connectionsCount = connectionsCountData?.data.count || 0;
 
   if (isProfileLoading || isSkillProfileLoading) {
     return (
@@ -81,8 +88,8 @@ export const UserProfilePage = () => {
           </div>
 
           {/* Avatar and Basic Info */}
-          <div className="flex flex-col md:flex-row md:items-end gap-4 md:gap-6 -mt-16 md:-mt-12 px-4 md:px-8">
-            <Avatar className="w-28 h-28 md:w-32 md:h-32 border-4 border-stone-50 shadow-lg">
+          <div className="relative z-10 flex flex-col md:flex-row gap-4 md:gap-6 px-4 md:px-8">
+            <Avatar className="w-28 h-28 md:w-32 md:h-32 border-4 border-stone-50 shadow-lg -mt-16 md:-mt-12 shrink-0">
               <AvatarImage src={profile?.avatarUrl} className="object-cover" />
               <AvatarFallback className="bg-accent/30 text-primary text-3xl font-semibold">
                 {profile?.name?.charAt(0) ||
@@ -99,6 +106,21 @@ export const UserProfilePage = () => {
                   </h1>
                   {profile?.username && profile?.name && (
                     <p className="text-stone-500">@{profile.username}</p>
+                  )}
+                  {isConnectionsLoading ? (
+                    <div className="h-4 w-24 bg-stone-200 animate-pulse rounded mt-2" />
+                  ) : (
+                    connectionsCount >= 0 && (
+                      <button
+                        onClick={() => setIsConnectionsModalOpen(true)}
+                        className="mt-1 flex items-center gap-1 text-sm text-stone-600 hover:text-primary transition-colors cursor-pointer"
+                      >
+                        <span className="font-semibold text-stone-900">
+                          {connectionsCount}
+                        </span>{" "}
+                        connections
+                      </button>
+                    )
                   )}
                 </div>
                 <div className="flex gap-2">
@@ -133,7 +155,7 @@ export const UserProfilePage = () => {
                 <h2 className="text-lg font-semibold text-stone-900 mb-4">
                   About
                 </h2>
-                <p className="text-stone-600 leading-relaxed">
+                <p className="text-stone-600 leading-relaxed whitespace-pre-line">
                   {profile.about}
                 </p>
               </section>
@@ -374,6 +396,14 @@ export const UserProfilePage = () => {
           />
         </>
       )}
+
+      {profile?.id && (
+        <ConnectedUsersModal
+          userId={profile.id}
+          open={isConnectionsModalOpen}
+          onOpenChange={setIsConnectionsModalOpen}
+        />
+      )}
     </div>
   );
 };
@@ -390,7 +420,7 @@ const InfoItem = ({
   if (!value) return null;
   return (
     <div className="flex items-start gap-3">
-      <div className="w-8 h-8 rounded-lg bg-stone-100 flex items-center justify-center text-stone-500 flex-shrink-0">
+      <div className="w-8 h-8 rounded-lg bg-stone-100 flex items-center justify-center text-stone-500 shrink-0">
         {icon}
       </div>
       <div>

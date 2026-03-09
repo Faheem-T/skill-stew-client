@@ -203,7 +203,16 @@ export const UserDashboard = () => {
               ) : (
                 <div className="space-y-4">
                   {recommendedUsers.map((user) => (
-                    <PersonCard key={user.id} {...user} />
+                    <PersonCard
+                      key={user.id}
+                      id={user.id}
+                      name={user.name}
+                      username={user.username}
+                      location={user.location}
+                      avatarUrl={user.avatarUrl}
+                      offeredSkills={user.offeredSkills}
+                      wantedSkills={user.wantedSkills}
+                    />
                   ))}
                 </div>
               )}

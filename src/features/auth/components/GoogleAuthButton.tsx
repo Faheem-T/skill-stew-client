@@ -15,13 +15,13 @@ if (!CLIENT_ID) {
 
 declare global {
   interface Window {
-    googleAuthCallback: (user: any) => void;
+    googleAuthCallback: (user: { credential: string }) => void;
     google?: {
       accounts?: {
         id?: {
           initialize: (options: {
             client_id: string;
-            callback: (payload: any) => void;
+            callback: (payload: { credential: string }) => void;
           }) => void;
           renderButton: (
             container: HTMLElement,
@@ -42,7 +42,7 @@ export const GoogleLoginButton = () => {
   const inFlightRef = useRef(false);
 
   useEffect(() => {
-    const handleCredential = async (payload: any) => {
+    const handleCredential = async (payload: { credential: string }) => {
       if (inFlightRef.current) return;
       inFlightRef.current = true;
       try {

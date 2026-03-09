@@ -4,12 +4,12 @@ import { api } from "@/shared/api/baseApi";
 export type CurrentUserLocation = {
   latitude: number;
   longitude: number;
-  placeId: string;
   formattedAddress: string;
 };
 
 export type CurrentUserProfile =
   | {
+      id: string;
       email: string;
       role: "USER";
       name?: string;
@@ -25,10 +25,12 @@ export type CurrentUserProfile =
       isOnboardingComplete: boolean;
     }
   | {
+      id: string;
       role: "EXPERT";
       email: string;
     }
   | {
+      id: string;
       role: "ADMIN";
       email: string;
       username?: string;
