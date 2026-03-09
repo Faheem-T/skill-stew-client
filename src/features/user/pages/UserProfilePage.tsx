@@ -155,7 +155,7 @@ export const UserProfilePage = () => {
                 <h2 className="text-lg font-semibold text-stone-900 mb-4">
                   About
                 </h2>
-                <p className="text-stone-600 leading-relaxed">
+                <p className="text-stone-600 leading-relaxed whitespace-pre-line">
                   {profile.about}
                 </p>
               </section>
