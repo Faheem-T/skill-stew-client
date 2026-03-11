@@ -43,6 +43,14 @@ export const Footer: React.FC = () => {
                 </Link>
               </li>
               <li>
+                <Link
+                  to={RoutePath.ExpertApplication}
+                  className="text-stone-300 hover:text-white transition-colors"
+                >
+                  Become an Expert
+                </Link>
+              </li>
+              <li>
                 <a
                   href="#features"
                   className="text-stone-300 hover:text-white transition-colors"

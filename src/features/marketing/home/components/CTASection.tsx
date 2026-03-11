@@ -57,6 +57,7 @@ export const CTASection: React.FC = () => {
           <Button
             size="lg"
             className="mt-6 md:mt-0 bg-accent text-primary hover:bg-accent/90 rounded-lg px-6 h-11 font-medium"
+            onClick={() => navigate(RoutePath.ExpertApplication)}
           >
             Apply to become an Expert
           </Button>

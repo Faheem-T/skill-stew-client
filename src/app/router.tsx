@@ -21,7 +21,7 @@ import { AppRoot } from "./AppRoot";
 import { RoutePath } from "@/shared/config/routes";
 import { NotificationsPage } from "@/features/notification/pages/NotificationsPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
-import { MapBoxAutocomplete } from "@/shared/components/ui/mapbox-autocomplete";
+import { ExpertApplicationPage } from "@/features/expert/pages/ExpertApplicationPage";
 
 export const queryClient = new QueryClient();
 
@@ -33,13 +33,7 @@ export const router = createBrowserRouter([
     children: [
       {
         path: RoutePath.TestRoute,
-        element: (
-          <MapBoxAutocomplete
-            onPlaceSelected={(place) => {
-              console.log(place);
-            }}
-          />
-        ),
+        element: <ExpertApplicationPage />,
       },
       {
         path: RoutePath.Home,
@@ -60,6 +54,10 @@ export const router = createBrowserRouter([
           {
             path: RoutePath.Register,
             element: <RegisterPage />,
+          },
+          {
+            path: RoutePath.ExpertApplication,
+            element: <ExpertApplicationPage />,
           },
           {
             path: RoutePath.SetPassword,
