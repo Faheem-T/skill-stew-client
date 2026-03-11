@@ -105,43 +105,41 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
         return (
           <div className="flex flex-col items-center justify-center py-16 px-8">
             <motion.div
-              initial={{ scale: 0, rotate: -180 }}
-              animate={{ scale: 1, rotate: 0 }}
-              transition={{ type: "spring", stiffness: 100, damping: 15 }}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
               className="mb-6"
             >
-              <div className="relative w-24 h-24 bg-linear-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center shadow-lg">
-                <CheckCircle2 className="w-12 h-12 text-white" />
+              <div className="flex items-center justify-center w-20 h-20 rounded-full bg-green-50 border border-green-100/50">
+                <CheckCircle2 className="w-10 h-10 text-green-600" strokeWidth={1.5} />
               </div>
             </motion.div>
 
             <motion.h2
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="text-3xl font-bold text-slate-900 text-center mb-2"
+              transition={{ delay: 0.1, duration: 0.4, ease: "easeOut" }}
+              className="text-2xl font-bold text-slate-900 text-center mb-3"
             >
-              Profile Complete!
+              Profile Complete
             </motion.h2>
 
             <motion.p
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="text-slate-600 text-center mb-8 max-w-sm"
+              transition={{ delay: 0.2, duration: 0.4, ease: "easeOut" }}
+              className="text-slate-600 text-center mb-8 max-w-sm leading-relaxed"
             >
               Your profile is all set. You're ready to start exchanging skills
-              with our community!
+              with our community.
             </motion.p>
 
             <motion.button
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              transition={{ delay: 0.3, duration: 0.4, ease: "easeOut" }}
               onClick={onComplete}
-              className="px-8 py-3 bg-primary text-white rounded-lg font-semibold shadow-lg hover:bg-primary/90 hover:shadow-xl transition-shadow"
+              className="px-8 py-2.5 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors shadow-sm"
             >
               Get Started
             </motion.button>
