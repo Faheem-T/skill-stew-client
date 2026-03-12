@@ -62,7 +62,6 @@ export const ExpertApplicationDetailsPage = () => {
   }
 
   const application = data.data;
-  console.log(application);
 
   return (
     <div>
