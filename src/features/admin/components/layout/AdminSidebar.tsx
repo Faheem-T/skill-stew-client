@@ -1,4 +1,9 @@
-import { CircleDollarSignIcon, LayoutDashboardIcon, User } from "lucide-react";
+import {
+  CircleDollarSignIcon,
+  LayoutDashboardIcon,
+  ShieldCheck,
+  User,
+} from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -32,6 +37,11 @@ const items = [
     title: "Subscription Plans",
     url: RoutePath.AdminSubscriptions,
     icon: CircleDollarSignIcon,
+  },
+  {
+    title: "Expert Applications",
+    url: RoutePath.AdminExpertApplications,
+    icon: ShieldCheck,
   },
 ];
 

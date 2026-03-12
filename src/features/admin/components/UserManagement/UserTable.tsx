@@ -1,6 +1,7 @@
 import { useUsers } from "@/features/admin/hooks/useUsers";
 import { Avatar, AvatarFallback } from "@/shared/components/ui/avatar";
 import { Button } from "@/shared/components/ui/button";
+import { FetchingState } from "@/shared/components/ui/fetching-state";
 import {
   Table,
   TableBody,
@@ -31,7 +32,7 @@ export const UserTable: React.FC<{
   } = useUsers(filters);
 
   if (isPending) {
-    return <div>Loading...</div>;
+    return <FetchingState label="Loading users" />;
   }
   if (isError || !data) {
     return <div>Error!</div>;

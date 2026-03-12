@@ -1,0 +1,21 @@
+import { api, type PaginatedApiResponse } from "@/shared/api/baseApi";
+import type { ExpertApplicationQueryFilters } from "@/features/admin/types/ExpertApplicationQueryFilters";
+import type { ExpertApplicationListItem } from "../../types/ExpertApplication";
+
+export const getExpertApplications = async ({
+  cursor,
+  limit,
+  filters,
+}: {
+  cursor?: string;
+  limit: number;
+  filters?: ExpertApplicationQueryFilters;
+}): Promise<PaginatedApiResponse<ExpertApplicationListItem[]>> => {
+  const params = new URLSearchParams();
+
+  if (cursor) params.append("cursor", cursor);
+  params.append("limit", limit.toString());
+  if (filters?.status) params.append("filters[status]", filters.status);
+
+  return api.get(`/experts/applications?${params.toString()}`);
+};

@@ -47,6 +47,7 @@ import {
   FormMessage,
 } from "@/shared/components/ui/form";
 import { Input } from "@/shared/components/ui/input";
+import { FetchingState } from "@/shared/components/ui/fetching-state";
 import toast from "react-hot-toast";
 import { Switch } from "@/shared/components/ui/switch";
 import { produce } from "immer";
@@ -103,7 +104,7 @@ const SubscriptionPlansTable: React.FC = () => {
   });
 
   if (isFetching || isLoading) {
-    return <div>Loading...</div>;
+    return <FetchingState label="Loading subscription plans" />;
   }
 
   if (isError) {
