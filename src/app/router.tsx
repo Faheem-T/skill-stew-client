@@ -9,7 +9,6 @@ import { AdminDashboard } from "@/features/admin/pages/AdminDashboard";
 import { ProtectedRoute } from "./routes/ProtectedRoute";
 import { AdminSidebarProvider } from "@/features/admin/components/layout/AdminSidebarProvider";
 import { UserManagement } from "@/features/admin/pages/UserManagement";
-import { SubscriptionManagement } from "@/features/admin/pages/SubscriptionManagement";
 import { ExpertApplicationsPage } from "@/features/admin/pages/ExpertApplicationsPage";
 import { ExpertApplicationDetailsPage } from "@/features/admin/pages/ExpertApplicationDetailsPage";
 import { initialLoader } from "./loaders/initialLoader";
@@ -101,10 +100,6 @@ export const router = createBrowserRouter([
               {
                 path: RoutePath.AdminUsers,
                 element: <UserManagement />,
-              },
-              {
-                path: RoutePath.AdminSubscriptions,
-                element: <SubscriptionManagement />,
               },
               {
                 path: RoutePath.AdminExpertApplications,

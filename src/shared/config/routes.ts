@@ -10,7 +10,6 @@ export const RoutePath = {
   UserProfile: "/profile",
   AdminDashboard: "/dashboard/admin",
   AdminUsers: "/admin/users",
-  AdminSubscriptions: "/admin/subscriptions",
   AdminExpertApplications: "/admin/expert-applications",
   AdminExpertApplicationDetail: "/admin/expert-applications/:id",
   Workshops: "/workshops",
