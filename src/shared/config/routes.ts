@@ -2,6 +2,8 @@ export const RoutePath = {
   Home: "/",
   Login: "/login",
   Register: "/register",
+  ExpertRegister: "/experts/register",
+  ExpertRegisterVerifyEmail: "/experts/register/verify-email",
   ExpertApplication: "/experts/apply",
   SetPassword: "/set-password",
   AdminLogin: "/admin/login",

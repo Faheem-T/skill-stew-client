@@ -2,6 +2,8 @@ import { createBrowserRouter } from "react-router";
 import { QueryClient } from "@tanstack/react-query";
 import { LoginPage } from "@/features/auth/pages/LoginPage";
 import { RegisterPage } from "@/features/auth/pages/register/RegisterPage";
+import { ExpertRegisterPage } from "@/features/auth/pages/register/ExpertRegisterPage";
+import { ExpertRegisterVerifyEmailPage } from "@/features/auth/pages/register/ExpertRegisterVerifyEmailPage";
 import { SetPasswordPage } from "@/features/auth/pages/SetPasswordPage";
 import { HomePage } from "@/features/marketing/home/pages/HomePage";
 import { AdminLoginPage } from "@/features/admin/pages/AdminLogin";
@@ -55,6 +57,14 @@ export const router = createBrowserRouter([
           {
             path: RoutePath.Register,
             element: <RegisterPage />,
+          },
+          {
+            path: RoutePath.ExpertRegister,
+            element: <ExpertRegisterPage />,
+          },
+          {
+            path: RoutePath.ExpertRegisterVerifyEmail,
+            element: <ExpertRegisterVerifyEmailPage />,
           },
           {
             path: RoutePath.ExpertApplication,
