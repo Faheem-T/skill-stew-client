@@ -7,6 +7,7 @@ import {
   Camera,
   CheckCircle2,
   Clock,
+  LogOut,
   Mic,
   Sparkles,
   Wifi,
@@ -43,6 +44,7 @@ import {
 } from "@/shared/components/ui/form";
 import { Input } from "@/shared/components/ui/input";
 import { Textarea } from "@/shared/components/ui/textarea";
+import { useLogout } from "@/features/auth/hooks/useLogout";
 import { APP_NAME } from "@/shared/config/constants";
 import { RoutePath } from "@/shared/config/routes";
 import { CURRENT_USER_PROFILE_QUERY_KEY } from "@/shared/hooks/useCurrentUserProfile";
@@ -89,29 +91,39 @@ const readinessItems = [
 
 // ─── Left Panel (shared across all states) ───
 
-const LeftPanel = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => (
-  <section className="relative overflow-hidden rounded-4xl bg-primary px-6 py-8 text-white shadow-2xl lg:px-10 lg:py-10">
-    <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.16),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(245,158,11,0.24),transparent_30%),linear-gradient(160deg,rgba(255,255,255,0.04),rgba(0,0,0,0.12))]" />
-    <div className="absolute -right-18 -top-12 h-44 w-44 rounded-full border border-white/12 bg-white/8 blur-2xl" />
-    <div className="absolute -bottom-20 -left-8 h-52 w-52 rounded-full bg-accent/18 blur-3xl" />
-    <div className="relative flex h-full flex-col">
-      <div className="flex items-center justify-between">
-        <Link
-          to={RoutePath.Home}
-          className="flex items-center gap-3 text-sm font-medium text-white/90"
-        >
-          <img src="/logo.png" className="h-10 w-10 object-contain" />
-          <span>{APP_NAME}</span>
-        </Link>
+const LeftPanel = ({ children }: { children: React.ReactNode }) => {
+  const { mutate: logout, isPending: isLoggingOut } = useLogout();
+
+  return (
+    <section className="relative overflow-hidden rounded-4xl bg-primary px-6 py-8 text-white shadow-2xl lg:px-10 lg:py-10">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.16),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(245,158,11,0.24),transparent_30%),linear-gradient(160deg,rgba(255,255,255,0.04),rgba(0,0,0,0.12))]" />
+      <div className="absolute -right-18 -top-12 h-44 w-44 rounded-full border border-white/12 bg-white/8 blur-2xl" />
+      <div className="absolute -bottom-20 -left-8 h-52 w-52 rounded-full bg-accent/18 blur-3xl" />
+      <div className="relative flex h-full flex-col">
+        <div className="flex items-center justify-between">
+          <Link
+            to={RoutePath.Home}
+            className="flex items-center gap-3 text-sm font-medium text-white/90"
+          >
+            <img src="/logo.png" className="h-10 w-10 object-contain" />
+            <span>{APP_NAME}</span>
+          </Link>
+
+          <button
+            type="button"
+            onClick={() => logout()}
+            disabled={isLoggingOut}
+            className="flex items-center gap-2 text-sm text-white/70 transition hover:text-white disabled:opacity-50"
+          >
+            <LogOut className="h-4 w-4" />
+            {isLoggingOut ? "Signing out..." : "Sign out"}
+          </button>
+        </div>
+        {children}
       </div>
-      {children}
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 // ─── VERIFICATION_PENDING state ───
 
@@ -203,7 +215,11 @@ const PendingView = () => (
             </div>
 
             <div className="border-t border-slate-200 pt-6">
-              <Button asChild variant="outline" className="h-11 rounded-full px-6">
+              <Button
+                asChild
+                variant="outline"
+                className="h-11 rounded-full px-6"
+              >
                 <Link to={RoutePath.Home}>Back to home</Link>
               </Button>
             </div>
@@ -268,7 +284,8 @@ const RejectedView = () => (
                 </li>
                 <li className="flex items-start gap-3">
                   <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 text-slate-400" />
-                  Refine your workshop pitch with a clearer audience and outcome.
+                  Refine your workshop pitch with a clearer audience and
+                  outcome.
                 </li>
                 <li className="flex items-start gap-3">
                   <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 text-slate-400" />
@@ -279,7 +296,11 @@ const RejectedView = () => (
             </div>
 
             <div className="border-t border-slate-200 pt-6">
-              <Button asChild variant="outline" className="h-11 rounded-full px-6">
+              <Button
+                asChild
+                variant="outline"
+                className="h-11 rounded-full px-6"
+              >
                 <Link to={RoutePath.Home}>Back to home</Link>
               </Button>
             </div>
@@ -383,9 +404,9 @@ const ApplicationForm = ({ expertId }: { expertId: string }) => {
             </h1>
 
             <p className="mt-5 max-w-lg text-base leading-7 text-white/72 lg:text-lg">
-              Share your expertise, your proof of work, and the session you
-              want to run. We review applications manually and follow up if
-              the fit is right.
+              Share your expertise, your proof of work, and the session you want
+              to run. We review applications manually and follow up if the fit
+              is right.
             </p>
           </div>
 
@@ -394,8 +415,7 @@ const ApplicationForm = ({ expertId }: { expertId: string }) => {
               <BadgeCheck className="h-5 w-5 text-accent" />
               <p className="mt-3 text-sm font-medium">Proof-first review</p>
               <p className="mt-1 text-sm leading-6 text-white/70">
-                Portfolio links and real-world work matter more than
-                buzzwords.
+                Portfolio links and real-world work matter more than buzzwords.
               </p>
             </div>
 
