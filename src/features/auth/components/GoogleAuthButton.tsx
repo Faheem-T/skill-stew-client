@@ -32,7 +32,11 @@ declare global {
     };
   }
 }
-export const GoogleLoginButton = () => {
+export const GoogleLoginButton = ({
+  expectedRole,
+}: {
+  expectedRole: "USER" | "EXPERT_APPLICANT";
+}) => {
   const googleAuthFn = googleAuth;
   const setAccessToken = useAppStore((state) => state.setAccessToken);
   const navigate = useNavigate();
@@ -46,7 +50,10 @@ export const GoogleLoginButton = () => {
       if (inFlightRef.current) return;
       inFlightRef.current = true;
       try {
-        const { data } = await googleAuthFn(payload.credential);
+        const { data } = await googleAuthFn({
+          credential: payload.credential,
+          requestedRole: expectedRole,
+        });
         const { accessToken } = data;
         setAccessToken(accessToken);
         queryClient.invalidateQueries({

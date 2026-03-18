@@ -204,7 +204,7 @@ export const LoginPage = () => {
                 </div>
 
                 <div className="flex items-center justify-center">
-                  <GoogleLoginButton />
+                  <GoogleLoginButton expectedRole="USER" />
                 </div>
               </form>
             </Form>

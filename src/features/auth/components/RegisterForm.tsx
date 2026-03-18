@@ -184,7 +184,7 @@ export const RegisterForm = () => {
           </div>
 
           <div className="flex items-center justify-center">
-            <GoogleLoginButton />
+            <GoogleLoginButton expectedRole="USER" />
           </div>
         </form>
       </Form>

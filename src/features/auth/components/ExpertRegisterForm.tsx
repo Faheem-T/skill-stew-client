@@ -191,7 +191,7 @@ export const ExpertRegisterForm = () => {
           </div>
 
           <div className="flex justify-center rounded-xl border border-dashed border-stone-200 bg-white px-4 py-4">
-            <GoogleLoginButton />
+            <GoogleLoginButton expectedRole="EXPERT_APPLICANT" />
           </div>
         </form>
       </Form>
