@@ -116,8 +116,6 @@ const ExpertApplicationRow = ({
     <TableRow>
       <TableCell className="align-top whitespace-normal">
         <div className="font-medium">{application.fullName}</div>
-        <div className="text-muted-foreground">{application.email}</div>
-        <div className="text-muted-foreground">{application.phone}</div>
       </TableCell>
       <TableCell>
         <ExpertApplicationStatusBadge status={application.status} />

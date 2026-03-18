@@ -15,7 +15,6 @@ export type ExpertApplicationListItem = {
   reviewedAt?: string;
   reviewedByAdminId?: string;
   fullName: string;
-  email: string;
   phone: string;
   socialLinks: string[];
   yearsExperience: number;
