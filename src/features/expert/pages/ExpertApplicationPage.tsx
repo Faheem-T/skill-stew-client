@@ -1,14 +1,16 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   ArrowRight,
   BadgeCheck,
   BriefcaseBusiness,
   Camera,
   CheckCircle2,
+  Clock,
   Mic,
   Sparkles,
   Wifi,
+  XCircle,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -43,12 +45,13 @@ import { Input } from "@/shared/components/ui/input";
 import { Textarea } from "@/shared/components/ui/textarea";
 import { APP_NAME } from "@/shared/config/constants";
 import { RoutePath } from "@/shared/config/routes";
+import { CURRENT_USER_PROFILE_QUERY_KEY } from "@/shared/hooks/useCurrentUserProfile";
+import useCurrentUserProfile from "@/shared/hooks/useCurrentUserProfile";
 
 const defaultValues: SubmitExpertApplicationFormInput = {
   fullName: "",
-  email: "",
   phone: "",
-  linkedinUrl: "",
+  socialLinksInput: "",
   yearsExperience: 0,
   evidenceLinksInput: "",
   hasTeachingExperience: false,
@@ -84,7 +87,214 @@ const readinessItems = [
   },
 ] as const;
 
-export const ExpertApplicationPage = () => {
+// ─── Left Panel (shared across all states) ───
+
+const LeftPanel = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => (
+  <section className="relative overflow-hidden rounded-4xl bg-primary px-6 py-8 text-white shadow-2xl lg:px-10 lg:py-10">
+    <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.16),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(245,158,11,0.24),transparent_30%),linear-gradient(160deg,rgba(255,255,255,0.04),rgba(0,0,0,0.12))]" />
+    <div className="absolute -right-18 -top-12 h-44 w-44 rounded-full border border-white/12 bg-white/8 blur-2xl" />
+    <div className="absolute -bottom-20 -left-8 h-52 w-52 rounded-full bg-accent/18 blur-3xl" />
+    <div className="relative flex h-full flex-col">
+      <div className="flex items-center justify-between">
+        <Link
+          to={RoutePath.Home}
+          className="flex items-center gap-3 text-sm font-medium text-white/90"
+        >
+          <img src="/logo.png" className="h-10 w-10 object-contain" />
+          <span>{APP_NAME}</span>
+        </Link>
+      </div>
+      {children}
+    </div>
+  </section>
+);
+
+// ─── VERIFICATION_PENDING state ───
+
+const PendingView = () => (
+  <div className="min-h-screen bg-[linear-gradient(180deg,#f6f7fb_0%,#eef3f8_46%,#ffffff_100%)]">
+    <div className="mx-auto grid min-h-screen max-w-7xl gap-10 px-6 py-8 lg:grid-cols-[0.9fr_1.1fr] lg:px-10 lg:py-12">
+      <LeftPanel>
+        <div className="mt-10 max-w-xl">
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.24em] text-white/75">
+            <Clock className="h-3.5 w-3.5" />
+            Under review
+          </div>
+
+          <h1 className="mt-6 text-4xl font-semibold tracking-tight text-balance lg:text-5xl">
+            Your application is being reviewed.
+          </h1>
+
+          <p className="mt-5 max-w-lg text-base leading-7 text-white/72 lg:text-lg">
+            We received everything we need. Our team reviews applications
+            manually and will follow up once a decision has been made.
+          </p>
+        </div>
+
+        <div className="mt-10 grid gap-4 sm:grid-cols-3">
+          <div className="rounded-2xl border border-white/12 bg-white/10 p-4 backdrop-blur">
+            <CheckCircle2 className="h-5 w-5 text-accent" />
+            <p className="mt-3 text-sm font-medium">Application received</p>
+            <p className="mt-1 text-sm leading-6 text-white/70">
+              Your details and proof of work have been submitted.
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-white/12 bg-white/10 p-4 backdrop-blur">
+            <Clock className="h-5 w-5 text-accent" />
+            <p className="mt-3 text-sm font-medium">Manual review</p>
+            <p className="mt-1 text-sm leading-6 text-white/70">
+              A team member will evaluate your expertise and workshop pitch.
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-white/12 bg-white/10 p-4 backdrop-blur">
+            <BadgeCheck className="h-5 w-5 text-accent" />
+            <p className="mt-3 text-sm font-medium">Decision incoming</p>
+            <p className="mt-1 text-sm leading-6 text-white/70">
+              You will be notified once your application has been reviewed.
+            </p>
+          </div>
+        </div>
+      </LeftPanel>
+
+      <section className="flex items-center justify-center">
+        <Card className="w-full max-w-3xl border-white/70 bg-white/88 py-0 shadow-[0_30px_90px_rgba(15,23,42,0.12)] backdrop-blur">
+          <CardHeader className="border-b border-slate-200/70 px-6 py-6 sm:px-8">
+            <CardTitle className="text-2xl text-slate-950">
+              Application submitted
+            </CardTitle>
+            <CardDescription className="max-w-2xl text-sm leading-6 text-slate-600">
+              Thanks for taking the time to apply. Here is what happens next.
+            </CardDescription>
+          </CardHeader>
+
+          <CardContent className="space-y-6 px-6 py-6 sm:px-8">
+            <Alert className="border-amber-200 bg-amber-50">
+              <Clock className="h-4 w-4 text-amber-600" />
+              <AlertDescription className="text-amber-900">
+                Your application is currently under review. We will reach out
+                using the email on your account once a decision has been made.
+              </AlertDescription>
+            </Alert>
+
+            <div className="space-y-4">
+              <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">
+                What to expect
+              </h3>
+              <ul className="space-y-3 text-sm leading-6 text-slate-600">
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" />
+                  Applications are reviewed in the order they are received.
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" />
+                  Strong evidence and a clear workshop pitch speed things up.
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" />
+                  You will receive an email notification with the result.
+                </li>
+              </ul>
+            </div>
+
+            <div className="border-t border-slate-200 pt-6">
+              <Button asChild variant="outline" className="h-11 rounded-full px-6">
+                <Link to={RoutePath.Home}>Back to home</Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </section>
+    </div>
+  </div>
+);
+
+// ─── REJECTED state ───
+
+const RejectedView = () => (
+  <div className="min-h-screen bg-[linear-gradient(180deg,#f6f7fb_0%,#eef3f8_46%,#ffffff_100%)]">
+    <div className="mx-auto grid min-h-screen max-w-7xl gap-10 px-6 py-8 lg:grid-cols-[0.9fr_1.1fr] lg:px-10 lg:py-12">
+      <LeftPanel>
+        <div className="mt-10 max-w-xl">
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.24em] text-white/75">
+            <XCircle className="h-3.5 w-3.5" />
+            Application update
+          </div>
+
+          <h1 className="mt-6 text-4xl font-semibold tracking-tight text-balance lg:text-5xl">
+            Your application was not approved.
+          </h1>
+
+          <p className="mt-5 max-w-lg text-base leading-7 text-white/72 lg:text-lg">
+            We appreciate the time you spent applying. Unfortunately, your
+            application did not meet our current requirements.
+          </p>
+        </div>
+      </LeftPanel>
+
+      <section className="flex items-center justify-center">
+        <Card className="w-full max-w-3xl border-white/70 bg-white/88 py-0 shadow-[0_30px_90px_rgba(15,23,42,0.12)] backdrop-blur">
+          <CardHeader className="border-b border-slate-200/70 px-6 py-6 sm:px-8">
+            <CardTitle className="text-2xl text-slate-950">
+              Application not approved
+            </CardTitle>
+            <CardDescription className="max-w-2xl text-sm leading-6 text-slate-600">
+              Here is some guidance on what you can do next.
+            </CardDescription>
+          </CardHeader>
+
+          <CardContent className="space-y-6 px-6 py-6 sm:px-8">
+            <Alert className="border-red-200 bg-red-50">
+              <XCircle className="h-4 w-4 text-red-600" />
+              <AlertDescription className="text-red-700">
+                After reviewing your submission, we were unable to approve your
+                expert application at this time.
+              </AlertDescription>
+            </Alert>
+
+            <div className="space-y-4">
+              <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">
+                Possible next steps
+              </h3>
+              <ul className="space-y-3 text-sm leading-6 text-slate-600">
+                <li className="flex items-start gap-3">
+                  <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 text-slate-400" />
+                  Strengthen your evidence links with more proof of work.
+                </li>
+                <li className="flex items-start gap-3">
+                  <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 text-slate-400" />
+                  Refine your workshop pitch with a clearer audience and outcome.
+                </li>
+                <li className="flex items-start gap-3">
+                  <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 text-slate-400" />
+                  If you believe this was a mistake, contact support for further
+                  clarification.
+                </li>
+              </ul>
+            </div>
+
+            <div className="border-t border-slate-200 pt-6">
+              <Button asChild variant="outline" className="h-11 rounded-full px-6">
+                <Link to={RoutePath.Home}>Back to home</Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </section>
+    </div>
+  </div>
+);
+
+// ─── NOT_DONE state (the form) ───
+
+const ApplicationForm = ({ expertId }: { expertId: string }) => {
+  const queryClient = useQueryClient();
+
   const form = useForm<
     SubmitExpertApplicationFormInput,
     undefined,
@@ -96,13 +306,15 @@ export const ExpertApplicationPage = () => {
 
   const hasTeachingExperience = form.watch("hasTeachingExperience");
 
-  const { mutate, isPending, isSuccess } = useMutation<
+  const { mutate, isPending } = useMutation<
     Awaited<ReturnType<typeof submitExpertApplication>>,
     ApiErrorResponseType,
     SubmitExpertApplicationFormValues
   >({
     mutationFn: async (values) =>
-      submitExpertApplication(toSubmitExpertApplicationPayload(values)),
+      submitExpertApplication(
+        toSubmitExpertApplicationPayload(values, expertId),
+      ),
     onError(error) {
       const errors = error.response?.data?.errors;
 
@@ -116,6 +328,7 @@ export const ExpertApplicationPage = () => {
           field &&
           field in form.getValues() &&
           field !== "evidenceLinks" &&
+          field !== "socialLinks" &&
           field !== "teachingExperienceDesc"
         ) {
           form.setError(field as keyof SubmitExpertApplicationFormInput, {
@@ -129,6 +342,11 @@ export const ExpertApplicationPage = () => {
           continue;
         }
 
+        if (field === "socialLinks") {
+          form.setError("socialLinksInput", { message });
+          continue;
+        }
+
         if (field === "teachingExperienceDesc") {
           form.setError("teachingExperienceDesc", { message });
           continue;
@@ -139,7 +357,9 @@ export const ExpertApplicationPage = () => {
     },
     onSuccess(response) {
       toast.success(response.message || "Application submitted successfully.");
-      form.reset(defaultValues);
+      queryClient.invalidateQueries({
+        queryKey: CURRENT_USER_PROFILE_QUERY_KEY,
+      });
     },
   });
 
@@ -151,73 +371,51 @@ export const ExpertApplicationPage = () => {
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,#f6f7fb_0%,#eef3f8_46%,#ffffff_100%)]">
       <div className="mx-auto grid min-h-screen max-w-7xl gap-10 px-6 py-8 lg:grid-cols-[0.9fr_1.1fr] lg:px-10 lg:py-12">
-        <section className="relative overflow-hidden rounded-4xl bg-primary px-6 py-8 text-white shadow-2xl lg:px-10 lg:py-10">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.16),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(245,158,11,0.24),transparent_30%),linear-gradient(160deg,rgba(255,255,255,0.04),rgba(0,0,0,0.12))]" />
-          <div className="absolute right-[-4.5rem] top-[-3rem] h-44 w-44 rounded-full border border-white/12 bg-white/8 blur-2xl" />
-          <div className="absolute bottom-[-5rem] left-[-2rem] h-52 w-52 rounded-full bg-accent/18 blur-3xl" />
-          <div className="relative flex h-full flex-col">
-            <div className="flex items-center justify-between">
-              <Link
-                to={RoutePath.Home}
-                className="flex items-center gap-3 text-sm font-medium text-white/90"
-              >
-                <img src="/logo.png" className="h-10 w-10 object-contain" />
-                <span>{APP_NAME}</span>
-              </Link>
-
-              <Link
-                to={RoutePath.Login}
-                className="text-sm text-white/70 transition hover:text-white"
-              >
-                Sign in
-              </Link>
+        <LeftPanel>
+          <div className="mt-10 max-w-xl">
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.24em] text-white/75">
+              <Sparkles className="h-3.5 w-3.5" />
+              Expert application
             </div>
 
-            <div className="mt-10 max-w-xl">
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.24em] text-white/75">
-                <Sparkles className="h-3.5 w-3.5" />
-                Expert application
-              </div>
+            <h1 className="mt-6 text-4xl font-semibold tracking-tight text-balance lg:text-5xl">
+              Pitch a workshop people will actually want to attend.
+            </h1>
 
-              <h1 className="mt-6 text-4xl font-semibold tracking-tight text-balance lg:text-5xl">
-                Pitch a workshop people will actually want to attend.
-              </h1>
+            <p className="mt-5 max-w-lg text-base leading-7 text-white/72 lg:text-lg">
+              Share your expertise, your proof of work, and the session you
+              want to run. We review applications manually and follow up if
+              the fit is right.
+            </p>
+          </div>
 
-              <p className="mt-5 max-w-lg text-base leading-7 text-white/72 lg:text-lg">
-                Share your expertise, your proof of work, and the session you
-                want to run. We review applications manually and follow up if
-                the fit is right.
+          <div className="mt-10 grid gap-4 sm:grid-cols-3">
+            <div className="rounded-2xl border border-white/12 bg-white/10 p-4 backdrop-blur">
+              <BadgeCheck className="h-5 w-5 text-accent" />
+              <p className="mt-3 text-sm font-medium">Proof-first review</p>
+              <p className="mt-1 text-sm leading-6 text-white/70">
+                Portfolio links and real-world work matter more than
+                buzzwords.
               </p>
             </div>
 
-            <div className="mt-10 grid gap-4 sm:grid-cols-3">
-              <div className="rounded-2xl border border-white/12 bg-white/10 p-4 backdrop-blur">
-                <BadgeCheck className="h-5 w-5 text-accent" />
-                <p className="mt-3 text-sm font-medium">Proof-first review</p>
-                <p className="mt-1 text-sm leading-6 text-white/70">
-                  Portfolio links and real-world work matter more than
-                  buzzwords.
-                </p>
-              </div>
+            <div className="rounded-2xl border border-white/12 bg-white/10 p-4 backdrop-blur">
+              <BriefcaseBusiness className="h-5 w-5 text-accent" />
+              <p className="mt-3 text-sm font-medium">Workshop focused</p>
+              <p className="mt-1 text-sm leading-6 text-white/70">
+                We want practical sessions with a clear audience and outcome.
+              </p>
+            </div>
 
-              <div className="rounded-2xl border border-white/12 bg-white/10 p-4 backdrop-blur">
-                <BriefcaseBusiness className="h-5 w-5 text-accent" />
-                <p className="mt-3 text-sm font-medium">Workshop focused</p>
-                <p className="mt-1 text-sm leading-6 text-white/70">
-                  We want practical sessions with a clear audience and outcome.
-                </p>
-              </div>
-
-              <div className="rounded-2xl border border-white/12 bg-white/10 p-4 backdrop-blur">
-                <CheckCircle2 className="h-5 w-5 text-accent" />
-                <p className="mt-3 text-sm font-medium">Fast next steps</p>
-                <p className="mt-1 text-sm leading-6 text-white/70">
-                  Strong applications are easy to review and easier to approve.
-                </p>
-              </div>
+            <div className="rounded-2xl border border-white/12 bg-white/10 p-4 backdrop-blur">
+              <CheckCircle2 className="h-5 w-5 text-accent" />
+              <p className="mt-3 text-sm font-medium">Fast next steps</p>
+              <p className="mt-1 text-sm leading-6 text-white/70">
+                Strong applications are easy to review and easier to approve.
+              </p>
             </div>
           </div>
-        </section>
+        </LeftPanel>
 
         <section className="flex items-start justify-center">
           <Card className="w-full max-w-3xl border-white/70 bg-white/88 py-0 shadow-[0_30px_90px_rgba(15,23,42,0.12)] backdrop-blur">
@@ -237,16 +435,6 @@ export const ExpertApplicationPage = () => {
                   onSubmit={form.handleSubmit(onSubmit)}
                   className="space-y-8"
                 >
-                  {isSuccess && (
-                    <Alert className="border-emerald-200 bg-emerald-50">
-                      <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-                      <AlertDescription className="text-emerald-900">
-                        Your application has been submitted. We will review it
-                        and reach out using the email you provided.
-                      </AlertDescription>
-                    </Alert>
-                  )}
-
                   {form.formState.errors.root && (
                     <Alert className="border-red-200 bg-red-50">
                       <AlertDescription className="text-red-700">
@@ -286,25 +474,6 @@ export const ExpertApplicationPage = () => {
 
                       <FormField
                         control={form.control}
-                        name="email"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Email</FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                type="email"
-                                placeholder="you@example.com"
-                                className="h-11 border-slate-200 bg-white"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
                         name="phone"
                         render={({ field }) => (
                           <FormItem>
@@ -320,25 +489,32 @@ export const ExpertApplicationPage = () => {
                           </FormItem>
                         )}
                       />
-
-                      <FormField
-                        control={form.control}
-                        name="linkedinUrl"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>LinkedIn URL</FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                placeholder="https://linkedin.com/in/your-profile"
-                                className="h-11 border-slate-200 bg-white"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
                     </div>
+
+                    <FormField
+                      control={form.control}
+                      name="socialLinksInput"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Social links</FormLabel>
+                          <FormControl>
+                            <Textarea
+                              {...field}
+                              rows={3}
+                              placeholder={
+                                "https://linkedin.com/in/your-profile\nhttps://github.com/your-username"
+                              }
+                              className="resize-y border-slate-200 bg-white"
+                            />
+                          </FormControl>
+                          <p className="text-sm text-slate-500">
+                            Add one URL per line. LinkedIn, GitHub, Twitter, or
+                            personal website all work.
+                          </p>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
 
                   <div className="space-y-5">
@@ -680,4 +856,24 @@ export const ExpertApplicationPage = () => {
       </div>
     </div>
   );
+};
+
+// ─── Page entry point ───
+
+export const ExpertApplicationPage = () => {
+  const { data: userProfile } = useCurrentUserProfile();
+
+  if (!userProfile || userProfile.role !== "EXPERT_APPLICANT") {
+    return null;
+  }
+
+  switch (userProfile.applicationStatus) {
+    case "VERIFICATION_PENDING":
+      return <PendingView />;
+    case "REJECTED":
+      return <RejectedView />;
+    case "NOT_DONE":
+    default:
+      return <ApplicationForm expertId={userProfile.id} />;
+  }
 };

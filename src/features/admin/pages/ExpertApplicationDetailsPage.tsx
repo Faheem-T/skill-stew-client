@@ -120,20 +120,26 @@ export const ExpertApplicationDetailsPage = () => {
             { label: "Phone", value: application.phone },
           ]}
         >
-          <Field
-            label="LinkedIn"
-            value={application.linkedinUrl ? application.linkedinUrl : "N/A"}
-          />
-          {application.linkedinUrl && (
-            <a
-              href={application.linkedinUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="text-sm text-primary underline-offset-4 hover:underline"
-            >
-              Open LinkedIn profile
-            </a>
-          )}
+          <div className="space-y-2">
+            <div className="text-sm font-medium">Social links</div>
+            {application.socialLinks.length > 0 ? (
+              <div className="flex flex-col gap-2">
+                {application.socialLinks.map((link) => (
+                  <a
+                    key={link}
+                    href={link}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-sm text-primary underline-offset-4 hover:underline break-all"
+                  >
+                    {link}
+                  </a>
+                ))}
+              </div>
+            ) : (
+              <div className="text-sm text-muted-foreground">N/A</div>
+            )}
+          </div>
         </DetailSection>
 
         <DetailSection

@@ -35,6 +35,12 @@ export type CurrentUserProfile =
       email: string;
       username?: string;
       avatarUrl?: string;
+    }
+  | {
+      id: string;
+      role: "EXPERT_APPLICANT";
+      email: string;
+      applicationStatus: "NOT_DONE" | "VERIFICATION_PENDING" | "REJECTED";
     };
 
 export async function getCurrentUserProfile(): Promise<

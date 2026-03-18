@@ -1,4 +1,4 @@
-import { ArrowRight, BadgeCheck, BriefcaseBusiness, Mail } from "lucide-react";
+import { BadgeCheck, BriefcaseBusiness, Mail } from "lucide-react";
 import { useNavigate } from "react-router";
 import { ExpertRegisterForm } from "@/features/auth/components/ExpertRegisterForm";
 import { APP_NAME } from "@/shared/config/constants";
@@ -88,19 +88,8 @@ export const ExpertRegisterPage = () => {
               </p>
             </div>
 
-            <ExpertRegisterForm />
 
-            <div className="mt-6 flex items-center justify-between gap-3 rounded-2xl border border-stone-200 bg-white px-5 py-4 text-sm text-stone-600">
-              <p>Need to become an expert after creating your account?</p>
-              <button
-                type="button"
-                onClick={() => navigate(RoutePath.ExpertApplication)}
-                className="inline-flex items-center gap-2 font-semibold text-primary hover:underline"
-              >
-                View expert flow
-                <ArrowRight className="h-4 w-4" />
-              </button>
-            </div>
+            <ExpertRegisterForm />
           </div>
         </section>
       </div>

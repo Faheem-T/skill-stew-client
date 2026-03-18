@@ -129,14 +129,12 @@ const ExpertApplicationRow = ({
       </TableCell>
       <TableCell className="max-w-72 whitespace-normal">
         <div className="font-medium">{application.proposedTitle}</div>
-        <a
-          href={application.linkedinUrl}
-          target="_blank"
-          rel="noreferrer"
-          className="text-primary underline-offset-4 hover:underline"
-        >
-          LinkedIn
-        </a>
+        {application.socialLinks.length > 0 && (
+          <div className="text-muted-foreground">
+            {application.socialLinks.length} social{" "}
+            {application.socialLinks.length === 1 ? "link" : "links"}
+          </div>
+        )}
       </TableCell>
       <TableCell>
         <Button asChild variant="outline" size="sm">

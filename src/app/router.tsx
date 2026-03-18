@@ -34,10 +34,7 @@ export const router = createBrowserRouter([
     loader: initialLoader,
     element: <AppRoot />,
     children: [
-      {
-        path: RoutePath.TestRoute,
-        element: <ExpertApplicationPage />,
-      },
+
       {
         path: RoutePath.Home,
         element: <HomePage />,
@@ -67,10 +64,6 @@ export const router = createBrowserRouter([
             element: <ExpertRegisterVerifyEmailPage />,
           },
           {
-            path: RoutePath.ExpertApplication,
-            element: <ExpertApplicationPage />,
-          },
-          {
             path: RoutePath.SetPassword,
             element: <SetPasswordPage />,
           },
@@ -81,8 +74,22 @@ export const router = createBrowserRouter([
         ],
       },
       {
+        // EXPERT_APPLICANT only routes
+        element: <ProtectedRoute roles={["EXPERT_APPLICANT"]} />,
+        children: [
+          {
+            path: RoutePath.ExpertApplication,
+            element: <ExpertApplicationPage />,
+          },
+        ],
+      },
+      {
         // Authenticated users only routes
-        element: <ProtectedRoute roles={["ADMIN", "EXPERT", "USER"]} />,
+        element: (
+          <ProtectedRoute
+            roles={["ADMIN", "EXPERT", "USER", "EXPERT_APPLICANT"]}
+          />
+        ),
         children: [
           { path: RoutePath.Dashboard, element: <DashboardRoutingPage /> },
           {

@@ -9,6 +9,7 @@ export type ExpertApplicationStatus =
 
 export type ExpertApplicationListItem = {
   id: string;
+  expertId: string;
   status: ExpertApplicationStatus;
   submittedAt: string;
   reviewedAt?: string;
@@ -16,7 +17,7 @@ export type ExpertApplicationListItem = {
   fullName: string;
   email: string;
   phone: string;
-  linkedinUrl: string;
+  socialLinks: string[];
   yearsExperience: number;
   hasTeachingExperience: boolean;
   proposedTitle: string;
@@ -24,6 +25,7 @@ export type ExpertApplicationListItem = {
 
 export type ExpertApplicationDetails = {
   id: string;
+  expertId: string;
   status: ExpertApplicationStatus;
   submittedAt: string;
   reviewedAt?: string;
@@ -32,7 +34,7 @@ export type ExpertApplicationDetails = {
   fullName: string;
   email: string;
   phone: string;
-  linkedinUrl: string;
+  socialLinks: string[];
   yearsExperience: number;
   evidenceLinks: string[];
   hasTeachingExperience: boolean;

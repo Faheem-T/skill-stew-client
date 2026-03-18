@@ -6,9 +6,10 @@ import type { ApiResponseWithMessage } from "@/shared/api/baseApi";
 export const submitExpertApplicationSchema = z
   .object({
     fullName: z.string().min(1, "Full name is required"),
-    email: z.email("Enter a valid email address"),
     phone: z.string().min(1, "Phone number is required"),
-    linkedinUrl: z.url("Must be a valid URL"),
+    socialLinksInput: z
+      .string()
+      .min(1, "At least one social link is required"),
     yearsExperience: z.coerce
       .number()
       .int("Years of experience must be a whole number")
@@ -36,6 +37,28 @@ export const submitExpertApplicationSchema = z
     }),
   })
   .superRefine((values, ctx) => {
+    const socialLinks = parseSocialLinks(values.socialLinksInput);
+
+    if (socialLinks.length === 0) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["socialLinksInput"],
+        message: "At least one social link is required",
+      });
+    }
+
+    for (const [index, link] of socialLinks.entries()) {
+      const parsed = z.url().safeParse(link);
+      if (!parsed.success) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["socialLinksInput"],
+          message: `Social link ${index + 1} must be a valid URL`,
+        });
+        break;
+      }
+    }
+
     const evidenceLinks = parseEvidenceLinks(values.evidenceLinksInput);
 
     if (evidenceLinks.length === 0) {
@@ -80,24 +103,30 @@ export type SubmitExpertApplicationFormValues = z.output<
 
 export type SubmitExpertApplicationPayload = Omit<
   SubmitExpertApplicationFormValues,
-  "evidenceLinksInput"
+  "evidenceLinksInput" | "socialLinksInput"
 > & {
+  expertId: string;
+  socialLinks: string[];
   evidenceLinks: string[];
 };
 
-export const parseEvidenceLinks = (value: string) =>
+const parseLinks = (value: string) =>
   value
     .split(/\r?\n|,/)
     .map((link) => link.trim())
     .filter(Boolean);
 
+export const parseEvidenceLinks = parseLinks;
+export const parseSocialLinks = parseLinks;
+
 export const toSubmitExpertApplicationPayload = (
   values: SubmitExpertApplicationFormValues,
+  expertId: string,
 ): SubmitExpertApplicationPayload => ({
+  expertId,
   fullName: values.fullName.trim(),
-  email: values.email.trim(),
   phone: values.phone.trim(),
-  linkedinUrl: values.linkedinUrl.trim(),
+  socialLinks: parseSocialLinks(values.socialLinksInput),
   yearsExperience: values.yearsExperience,
   evidenceLinks: parseEvidenceLinks(values.evidenceLinksInput),
   hasTeachingExperience: values.hasTeachingExperience,
