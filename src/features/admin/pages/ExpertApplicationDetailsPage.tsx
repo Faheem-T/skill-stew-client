@@ -2,7 +2,7 @@ import type React from "react";
 import { useExpertApplicationDetails } from "@/features/admin/hooks/useExpertApplicationDetails";
 import { AdminTopBar } from "@/features/admin/components/layout/AdminTopbar";
 import { ExpertApplicationStatusBadge } from "@/features/admin/components/ExpertApplications/ExpertApplicationStatusBadge";
-import { PlaceholderReviewActions } from "@/features/admin/components/ExpertApplications/PlaceholderReviewActions";
+import { ReviewActions } from "@/features/admin/components/ExpertApplications/ReviewActions";
 import {
   Card,
   CardContent,
@@ -92,7 +92,9 @@ export const ExpertApplicationDetailsPage = () => {
                 </CardDescription>
                 <ExpertApplicationStatusBadge status={application.status} />
               </div>
-              <PlaceholderReviewActions />
+              {application.status === "pending" && (
+                <ReviewActions applicationId={application.id} />
+              )}
             </div>
           </CardHeader>
           <CardContent className="grid gap-4 py-6 md:grid-cols-2">
