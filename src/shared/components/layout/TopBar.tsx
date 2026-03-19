@@ -62,7 +62,7 @@ export const TopBar: React.FC = () => {
 
       {/* Actions */}
       <div className="flex items-center gap-3">
-        {userProfile?.role === "USER" ? (
+        {userProfile ? (
           <UserAvatar />
         ) : (
           <>
