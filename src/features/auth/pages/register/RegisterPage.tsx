@@ -45,6 +45,17 @@ export const RegisterPage = () => {
             </span>
           </div>
 
+          {/* Expert register link - desktop */}
+          <div className="hidden sm:block text-center mb-4 text-sm text-slate-600">
+            Want to teach?{" "}
+            <span
+              className="font-semibold text-primary hover:underline cursor-pointer"
+              onClick={() => navigate(RoutePath.ExpertRegister)}
+            >
+              Register as an Expert
+            </span>
+          </div>
+
           {/* Mobile logo */}
           <div className="lg:hidden flex items-center justify-center gap-3 mb-8">
             <img src="/logo.png" className="h-10 w-10 object-contain" />
