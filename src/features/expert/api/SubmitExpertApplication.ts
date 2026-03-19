@@ -7,9 +7,7 @@ export const submitExpertApplicationSchema = z
   .object({
     fullName: z.string().min(1, "Full name is required"),
     phone: z.string().min(1, "Phone number is required"),
-    socialLinksInput: z
-      .string()
-      .min(1, "At least one social link is required"),
+    socialLinksInput: z.string().min(1, "At least one social link is required"),
     yearsExperience: z.coerce
       .number()
       .int("Years of experience must be a whole number")
@@ -144,5 +142,5 @@ export const toSubmitExpertApplicationPayload = (
 export const submitExpertApplication = async (
   body: SubmitExpertApplicationPayload,
 ): Promise<ApiResponseWithMessage> => {
-  return api.post("/experts/apply", body);
+  return api.post("/expert-applications/apply", body);
 };

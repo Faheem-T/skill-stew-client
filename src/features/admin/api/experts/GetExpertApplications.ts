@@ -11,7 +11,7 @@ export const getExpertApplications = async ({
   limit: number;
   filters?: ExpertApplicationQueryFilters;
 }): Promise<PaginatedApiResponse<ExpertApplicationListItem[]>> => {
-  return api.get("/experts/applications", {
+  return api.get("/expert-applications", {
     params: { cursor, limit, status: filters?.status },
   });
 };

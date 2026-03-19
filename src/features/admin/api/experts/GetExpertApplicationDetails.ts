@@ -4,5 +4,5 @@ import type { ExpertApplicationDetails } from "@/features/admin/types/ExpertAppl
 export const getExpertApplicationDetails = async (
   id: string,
 ): Promise<ApiResponseWithData<ExpertApplicationDetails>> => {
-  return api.get(`/experts/applications/${id}`);
+  return api.get(`/expert-applications/${id}`);
 };
