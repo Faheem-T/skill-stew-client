@@ -10,10 +10,19 @@ The frontend client for **SkillStew**, a platform for discovering and attending 
 
 This client interfaces with the [skill-stew-api](https://github.com/Faheem-T/skill-stew-api) backend, which powers the microservices architecture. This repository is built with a modern React stack and organized using feature-sliced design principles.
 
+## Design System
+
+The frontend design system lives in [docs/design-system.md](docs/design-system.md) and is the single source of truth for UI decisions.
+
+- All colors must come from CSS variables defined in `src/index.css`
+- The app ships with light and dark themes via a persisted theme preference
+- Typography is constrained to `Playfair Display` for marketing display headings, `DM Sans` for UI/body copy, and `JetBrains Mono` for technical metadata
+- UI must follow the three-zone model from the design system: Marketing, App Interior, and Live Streaming
+
 ## Tech Stack
 
 - **Framework**: React 19 + Vite
-- **Styling**: Tailwind CSS v4 + Shadcn UI (Radix UI Primitives) + Lucide Icons
+- **Styling**: Tailwind CSS v4 + Radix UI Primitives + Lucide Icons + token-driven design system
 - **State Management**:
   - Zustand (Global Application State)
   - TanStack React Query v5 (Data Fetching & Server State)
@@ -40,6 +49,12 @@ src/
 
 ## Core Concepts & Patterns
 
+### Product Flows
+
+- Learners sign up, complete onboarding, and join workshop-based experiences.
+- Experts have a dedicated registration path, submit an application, and wait for manual review before moving into the expert dashboard.
+- Admins can review expert applications, approve or reject them, and inspect application details from the admin area.
+
 ### API Communication & Authentication
 
 All external HTTP requests are handled by Axios instances configured in the `shared/api/` folder. Interceptors are heavily utilized to:
@@ -62,6 +77,10 @@ Forms universally follow a standard pattern:
 ### Real-Time Features
 
 Real-time connection requests and notifications are pushed from the backend via WebSockets. The `socket.io-client` connects using the JWT access token and listens to the user's specific room channel.
+
+### Theme System
+
+The app supports light and dark themes through token swaps in `src/index.css`, with the active preference persisted in local storage.
 
 ## Setup & Development
 
@@ -106,7 +125,6 @@ Type-check the TypeScript code and generate a static production bundle:
 ```bash
 npm run build
 ```
-
 ## Code Quality
 
 The repository strictly enforces code quality through automated tools:

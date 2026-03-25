@@ -1,6 +1,7 @@
 import { useUsers } from "@/features/admin/hooks/useUsers";
 import { Avatar, AvatarFallback } from "@/shared/components/ui/avatar";
 import { Button } from "@/shared/components/ui/button";
+import { FetchingState } from "@/shared/components/ui/fetching-state";
 import {
   Table,
   TableBody,
@@ -31,20 +32,28 @@ export const UserTable: React.FC<{
   } = useUsers(filters);
 
   if (isPending) {
-    return <div>Loading...</div>;
+    return <FetchingState label="Loading users" />;
   }
   if (isError || !data) {
-    return <div>Error!</div>;
+    return (
+      <div className="bg-card border-border rounded-lg border p-6 text-sm text-muted-foreground">
+        Could not load users.
+      </div>
+    );
   }
 
   const users = data.pages.flatMap((page) => page.data);
-
-  const UserRows = users.map((user) => (
-    <UserRow user={user} filters={filters} />
-  ));
+  if (users.length === 0) {
+    return (
+      <div className="bg-card border-border rounded-lg border p-6 text-sm text-muted-foreground">
+        No users found for the current search.
+      </div>
+    );
+  }
 
   return (
-    <Table className="w-full">
+    <div className="bg-card border-border overflow-hidden rounded-lg border">
+      <Table className="w-full">
       <TableCaption>A list of users using your platform</TableCaption>
       <TableHeader>
         <TableRow>
@@ -55,11 +64,15 @@ export const UserTable: React.FC<{
           <TableHead>Actions</TableHead>
         </TableRow>
       </TableHeader>
-      <TableBody>{...UserRows}</TableBody>
+      <TableBody>
+        {users.map((user) => (
+          <UserRow key={user.id} user={user} filters={filters} />
+        ))}
+      </TableBody>
       {hasNextPage && (
         <TableFooter>
           <TableRow>
-            <TableCell>
+            <TableCell colSpan={5}>
               <div className="flex justify-center items-center w-full">
                 <Button
                   variant="outline"
@@ -74,7 +87,8 @@ export const UserTable: React.FC<{
           </TableRow>
         </TableFooter>
       )}
-    </Table>
+      </Table>
+    </div>
   );
 };
 
@@ -97,7 +111,7 @@ const UserRow = ({
         {username ?? "Not set"}
       </TableCell>
       <TableCell>{email}</TableCell>
-      <TableCell>{isVerified ? "true" : "false"}</TableCell>
+      <TableCell>{isVerified ? "Yes" : "No"}</TableCell>
 
       <TableCell>
         <BlockUserButton

@@ -8,8 +8,12 @@ import { useMutation } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Button } from "@/shared/components/ui/button";
+import { cn } from "@/shared/lib/utils";
 
-export const ResendButton: React.FC<{ email: string }> = ({ email }) => {
+export const ResendButton: React.FC<{
+  email: string;
+  className?: string;
+}> = ({ email, className }) => {
   const { isPending, mutate } = useMutation<
     ApiResponseType,
     ApiErrorResponseType
@@ -59,7 +63,7 @@ export const ResendButton: React.FC<{ email: string }> = ({ email }) => {
     <Button
       disabled={isPending || timeLeft > 0}
       onClick={onSubmit}
-      className="relative"
+      className={cn("relative", className)}
     >
       Resend Email {timeLeft > 0 && `(${timeLeft})`}
       <span

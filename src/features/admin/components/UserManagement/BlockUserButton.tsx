@@ -66,7 +66,7 @@ export const BlockUserButton: React.FC<{
 
   return (
     <Button
-      variant={currentlyBlocked ? "default" : "destructive"}
+      variant={currentlyBlocked ? "secondary" : "destructive"}
       type="button"
       disabled={isPending}
       onClick={handleClick}

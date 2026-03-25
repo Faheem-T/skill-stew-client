@@ -1,4 +1,5 @@
 import { AdminTopBar } from "@/features/admin/components/layout/AdminTopbar";
+import type React from "react";
 import {
   Card,
   CardContent,
@@ -11,7 +12,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/shared/components/ui/chart";
-import { DollarSign, Users } from "lucide-react";
+import { DollarSign, Users, ChartColumnIncreasing } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { useAdminProfile } from "@/shared/hooks/useAdminProfile";
 import { InitialLoadScreen } from "@/app/pages/InitialLoadScreen";
@@ -24,9 +25,34 @@ export const AdminDashboard = () => {
   }
 
   return (
-    <div className="">
-      <AdminTopBar mainText={`Welcome back ${userProfile?.username}!`} />
-      <div className="flex gap-4">
+    <div className="bg-background min-h-screen">
+      <AdminTopBar
+        mainText={`Welcome back ${userProfile?.username}!`}
+        subText="Track platform health, revenue growth, and participation trends."
+      />
+      <div className="mx-auto max-w-[1200px] px-4 py-6 md:px-8">
+        <div className="mb-6 grid gap-4 md:grid-cols-3">
+          <SummaryCard
+            label="Monthly revenue"
+            value="$1.9M"
+            description="Latest sample month"
+            icon={<DollarSign className="h-5 w-5" strokeWidth={1.5} />}
+          />
+          <SummaryCard
+            label="Active users"
+            value="7,200"
+            description="Latest sample month"
+            icon={<Users className="h-5 w-5" strokeWidth={1.5} />}
+          />
+          <SummaryCard
+            label="Growth signal"
+            value="+18%"
+            description="Quarter over quarter"
+            icon={
+              <ChartColumnIncreasing className="h-5 w-5" strokeWidth={1.5} />
+            }
+          />
+        </div>
         <RevenueChart />
       </div>
     </div>
@@ -66,12 +92,12 @@ const RevenueData = [
 const chartConfig = {
   revenue: {
     label: "Revenue",
-    color: "#2563eb",
+    color: "var(--color-primary)",
     icon: DollarSign,
   },
   users: {
     label: "Users",
-    color: "#10b981",
+    color: "var(--color-success)",
     icon: Users,
   },
 } satisfies Record<
@@ -83,22 +109,22 @@ const chartConfig = {
 const RevenueChart = () => {
   return (
     <Card className="w-full py-0">
-      <CardHeader className="flex flex-col items-stretch border-b p-0! sm:flex-row">
+      <CardHeader className="border-border flex flex-col items-stretch border-b p-0! sm:flex-row">
         <div className="flex flex-1 flex-col justify-center gap-1 px-6 pt-4 pb-3 sm:py-0!">
           <CardTitle className="flex items-center gap-2">
-            <DollarSign className="text-foreground" />
+            <DollarSign className="text-foreground" strokeWidth={1.5} />
             Revenue & Users Growth
           </CardTitle>
           <CardDescription>
             Revenue and active users over the last 25 months
           </CardDescription>
         </div>
-        <div className="grid grid-cols-2 divide-x border-t sm:border-t-0 sm:flex sm:gap-6">
+        <div className="border-border grid grid-cols-2 divide-x border-t sm:border-t-0 sm:flex sm:gap-6">
           <div className="flex flex-col px-6 py-4 sm:px-8 sm:py-6">
             <span className="text-muted-foreground text-xs">
               {chartConfig["revenue"].label}
             </span>
-            <span className="text-lg leading-none font-bold sm:text-3xl">
+            <span className="text-lg leading-none font-semibold sm:text-3xl">
               $1,900,000
             </span>
           </div>
@@ -106,7 +132,7 @@ const RevenueChart = () => {
             <span className="text-muted-foreground text-xs">
               {chartConfig["users"].label}
             </span>
-            <span className="text-lg leading-none font-bold sm:text-3xl">
+            <span className="text-lg leading-none font-semibold sm:text-3xl">
               7,200
             </span>
           </div>
@@ -133,16 +159,47 @@ const RevenueChart = () => {
               dataKey="revenue"
               stroke={chartConfig.revenue.color}
               fill={chartConfig.revenue.color}
+              fillOpacity={0.18}
               type="natural"
             />
             <Area
               dataKey="users"
               stroke={chartConfig.users.color}
               fill={chartConfig.users.color}
+              fillOpacity={0.16}
               type="natural"
             />
           </AreaChart>
         </ChartContainer>
+      </CardContent>
+    </Card>
+  );
+};
+
+const SummaryCard = ({
+  label,
+  value,
+  description,
+  icon,
+}: {
+  label: string;
+  value: string;
+  description: string;
+  icon: React.ReactNode;
+}) => {
+  return (
+    <Card className="py-0">
+      <CardContent className="flex items-start justify-between gap-4 px-6 py-5">
+        <div>
+          <p className="text-muted-foreground text-[11px] font-medium uppercase tracking-[0.08em]">
+            {label}
+          </p>
+          <p className="mt-3 text-2xl font-semibold text-foreground">{value}</p>
+          <p className="text-muted-foreground mt-1 text-sm">{description}</p>
+        </div>
+        <div className="bg-secondary text-primary flex h-10 w-10 items-center justify-center rounded-lg">
+          {icon}
+        </div>
       </CardContent>
     </Card>
   );

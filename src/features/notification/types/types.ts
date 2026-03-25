@@ -2,6 +2,9 @@ export const NotificationType = {
   CONNECTION_REQUEST: "CONNECTION_REQUEST",
   CONNECTION_ACCEPTED: "CONNECTION_ACCEPTED",
   CONNECTION_REJECTED: "CONNECTION_REJECTED",
+  EXPERT_APPLICATION_SUBMITTED: "EXPERT_APPLICATION_SUBMITTED",
+  EXPERT_APPLICATION_APPROVED: "EXPERT_APPLICATION_APPROVED",
+  EXPERT_APPLICATION_REJECTED: "EXPERT_APPLICATION_REJECTED",
 } as const;
 
 export type NotificationType =
@@ -28,10 +31,32 @@ export interface ConnectionRejectedData {
   connectionId: string;
 }
 
+export interface ExpertApplicationSubmittedData {
+  type: typeof NotificationType.EXPERT_APPLICATION_SUBMITTED;
+  applicationId: string;
+  expertId: string;
+  expertUsername?: string;
+  submittedAt: string;
+}
+
+export interface ExpertApplicationApprovedData {
+  type: typeof NotificationType.EXPERT_APPLICATION_APPROVED;
+  approvedAt: string;
+}
+
+export interface ExpertApplicationRejectedData {
+  type: typeof NotificationType.EXPERT_APPLICATION_REJECTED;
+  rejectedAt: string;
+  rejectionReason?: string;
+}
+
 export type NotificationData =
   | ConnectionRequestData
   | ConnectionAcceptedData
-  | ConnectionRejectedData;
+  | ConnectionRejectedData
+  | ExpertApplicationSubmittedData
+  | ExpertApplicationApprovedData
+  | ExpertApplicationRejectedData;
 
 export interface Notification {
   id: string;

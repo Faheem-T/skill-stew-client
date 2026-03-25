@@ -1,4 +1,7 @@
-import { getNotificationActorId } from "@/features/notification/types/types";
+import {
+  getNotificationActorId,
+  NotificationType,
+} from "@/features/notification/types/types";
 import type { NotificationData } from "@/features/notification/types/types";
 import { RoutePath } from "@/shared/config/routes";
 
@@ -18,11 +21,20 @@ export function getNotificationHref(data: NotificationData): string | null {
     }
   }
 
-  // ── Add new notification type handlers here ──
-  // Example:
-  // if (data.type === NotificationType.WORKSHOP_REMINDER) {
-  //   return `/workshops/${data.workshopId}`;
-  // }
+  if (data.type === NotificationType.EXPERT_APPLICATION_SUBMITTED) {
+    return RoutePath.AdminExpertApplicationDetail.replace(
+      ":id",
+      data.applicationId,
+    );
+  }
+
+  if (data.type === NotificationType.EXPERT_APPLICATION_REJECTED) {
+    return RoutePath.ExpertApplication;
+  }
+
+  if (data.type === NotificationType.EXPERT_APPLICATION_APPROVED) {
+    return RoutePath.Dashboard;
+  }
 
   return null;
 }

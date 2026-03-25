@@ -2,6 +2,8 @@ import { createBrowserRouter } from "react-router";
 import { QueryClient } from "@tanstack/react-query";
 import { LoginPage } from "@/features/auth/pages/LoginPage";
 import { RegisterPage } from "@/features/auth/pages/register/RegisterPage";
+import { ExpertRegisterPage } from "@/features/auth/pages/register/ExpertRegisterPage";
+import { ExpertRegisterVerifyEmailPage } from "@/features/auth/pages/register/ExpertRegisterVerifyEmailPage";
 import { SetPasswordPage } from "@/features/auth/pages/SetPasswordPage";
 import { HomePage } from "@/features/marketing/home/pages/HomePage";
 import { AdminLoginPage } from "@/features/admin/pages/AdminLogin";
@@ -9,7 +11,8 @@ import { AdminDashboard } from "@/features/admin/pages/AdminDashboard";
 import { ProtectedRoute } from "./routes/ProtectedRoute";
 import { AdminSidebarProvider } from "@/features/admin/components/layout/AdminSidebarProvider";
 import { UserManagement } from "@/features/admin/pages/UserManagement";
-import { SubscriptionManagement } from "@/features/admin/pages/SubscriptionManagement";
+import { ExpertApplicationsPage } from "@/features/admin/pages/ExpertApplicationsPage";
+import { ExpertApplicationDetailsPage } from "@/features/admin/pages/ExpertApplicationDetailsPage";
 import { initialLoader } from "./loaders/initialLoader";
 import { GuestRoute } from "./routes/GuestRoute";
 import { InitialLoadScreen } from "./pages/InitialLoadScreen";
@@ -21,7 +24,8 @@ import { AppRoot } from "./AppRoot";
 import { RoutePath } from "@/shared/config/routes";
 import { NotificationsPage } from "@/features/notification/pages/NotificationsPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
-import { MapBoxAutocomplete } from "@/shared/components/ui/mapbox-autocomplete";
+import { ExpertApplicationPage } from "@/features/expert/pages/ExpertApplicationPage";
+import { ExpertDashboardPage } from "@/features/expert/pages/ExpertDashboardPage";
 
 export const queryClient = new QueryClient();
 
@@ -31,16 +35,7 @@ export const router = createBrowserRouter([
     loader: initialLoader,
     element: <AppRoot />,
     children: [
-      {
-        path: RoutePath.TestRoute,
-        element: (
-          <MapBoxAutocomplete
-            onPlaceSelected={(place) => {
-              console.log(place);
-            }}
-          />
-        ),
-      },
+
       {
         path: RoutePath.Home,
         element: <HomePage />,
@@ -62,6 +57,14 @@ export const router = createBrowserRouter([
             element: <RegisterPage />,
           },
           {
+            path: RoutePath.ExpertRegister,
+            element: <ExpertRegisterPage />,
+          },
+          {
+            path: RoutePath.ExpertRegisterVerifyEmail,
+            element: <ExpertRegisterVerifyEmailPage />,
+          },
+          {
             path: RoutePath.SetPassword,
             element: <SetPasswordPage />,
           },
@@ -72,8 +75,22 @@ export const router = createBrowserRouter([
         ],
       },
       {
+        // EXPERT_APPLICANT only routes
+        element: <ProtectedRoute roles={["EXPERT_APPLICANT"]} />,
+        children: [
+          {
+            path: RoutePath.ExpertApplication,
+            element: <ExpertApplicationPage />,
+          },
+        ],
+      },
+      {
         // Authenticated users only routes
-        element: <ProtectedRoute roles={["ADMIN", "EXPERT", "USER"]} />,
+        element: (
+          <ProtectedRoute
+            roles={["ADMIN", "EXPERT", "USER", "EXPERT_APPLICANT"]}
+          />
+        ),
         children: [
           { path: RoutePath.Dashboard, element: <DashboardRoutingPage /> },
           {
@@ -91,6 +108,16 @@ export const router = createBrowserRouter([
         ],
       },
       {
+        // EXPERT only routes
+        element: <ProtectedRoute roles={["EXPERT"]} />,
+        children: [
+          {
+            path: RoutePath.ExpertDashboard,
+            element: <ExpertDashboardPage />,
+          },
+        ],
+      },
+      {
         // ADMIN only routes
         element: <ProtectedRoute roles={["ADMIN"]} />,
         children: [
@@ -103,8 +130,12 @@ export const router = createBrowserRouter([
                 element: <UserManagement />,
               },
               {
-                path: RoutePath.AdminSubscriptions,
-                element: <SubscriptionManagement />,
+                path: RoutePath.AdminExpertApplications,
+                element: <ExpertApplicationsPage />,
+              },
+              {
+                path: RoutePath.AdminExpertApplicationDetail,
+                element: <ExpertApplicationDetailsPage />,
               },
             ],
           },

@@ -97,12 +97,17 @@ export const RegisterForm = () => {
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-xl p-8 border border-slate-200">
-      <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-slate-900">
+    <div className="bg-card border-border rounded-lg border p-8">
+      <div className="mb-8 text-left">
+        <p className="text-muted-foreground text-[11px] font-medium uppercase tracking-[0.08em]">
+          Learner account
+        </p>
+        <h2 className="mt-3 text-2xl font-semibold text-foreground">
           Create your account
         </h2>
-        <p className="text-slate-500 mt-2">Enter your details to get started</p>
+        <p className="text-muted-foreground mt-2">
+          Enter your details to get started.
+        </p>
       </div>
 
       <Form {...form}>
@@ -112,13 +117,9 @@ export const RegisterForm = () => {
             control={control}
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-slate-700">Email</FormLabel>
+                <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input
-                    {...field}
-                    placeholder="you@example.com"
-                    className="h-11 border-slate-200 focus:border-primary focus:ring-primary/20"
-                  />
+                  <Input {...field} placeholder="you@example.com" className="h-11" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -130,12 +131,12 @@ export const RegisterForm = () => {
             control={control}
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-slate-700">Password</FormLabel>
+                <FormLabel>Password</FormLabel>
                 <FormControl>
                   <PasswordInput
                     {...field}
                     placeholder="Create a strong password"
-                    className="h-11 border-slate-200 focus:border-primary focus:ring-primary/20"
+                    className="h-11"
                   />
                 </FormControl>
                 <FormMessage />
@@ -148,15 +149,13 @@ export const RegisterForm = () => {
             control={control}
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-slate-700">
-                  Confirm Password
-                </FormLabel>
+                <FormLabel>Confirm Password</FormLabel>
                 <FormControl>
                   <PasswordInput
                     {...field}
                     placeholder="Confirm your password"
                     autoComplete="off"
-                    className="h-11 border-slate-200 focus:border-primary focus:ring-primary/20"
+                    className="h-11"
                   />
                 </FormControl>
                 <FormMessage />
@@ -166,7 +165,7 @@ export const RegisterForm = () => {
 
           <Button
             type="submit"
-            className="w-full h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
+            className="h-11 w-full"
             disabled={isPending}
           >
             {isPending ? "Creating account..." : "Create account"}
@@ -174,17 +173,15 @@ export const RegisterForm = () => {
 
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-slate-200" />
+              <div className="border-border w-full border-t" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-white text-slate-500">
-                Or continue with
-              </span>
+              <span className="bg-card text-muted-foreground px-4">Or continue with</span>
             </div>
           </div>
 
           <div className="flex items-center justify-center">
-            <GoogleLoginButton />
+            <GoogleLoginButton expectedRole="USER" />
           </div>
         </form>
       </Form>

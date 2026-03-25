@@ -11,101 +11,85 @@ export const HeroSection: React.FC<{
   const navigate = useNavigate();
   return (
     <section className="relative overflow-hidden">
-      {/* Subtle decorative elements */}
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-accent/20 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
-      </div>
+      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,var(--color-accent),transparent_28%)] opacity-25" />
 
-      <div className="container mx-auto px-6 md:px-12 py-24 md:py-32">
-        <div className="max-w-4xl mx-auto text-center">
-          {/* Badge */}
-          <motion.div
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/30 text-primary text-sm font-medium mb-8"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-          >
-            <span className="w-2 h-2 bg-primary rounded-full" />
-            Learn from verified experts
-          </motion.div>
-
-          {/* Main heading */}
-          <motion.h1
-            className="text-4xl md:text-6xl lg:text-7xl font-bold text-stone-900 leading-tight tracking-tight"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-          >
-            Master practical skills with live expert workshops
-          </motion.h1>
-
-          {/* Subheading */}
-          <motion.p
-            className="mt-6 text-lg md:text-xl text-stone-600 max-w-2xl mx-auto leading-relaxed"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            Join live cohorts led by industry experts. Learn effectively with
-            community support, flexible schedules, and lifetime access to
-            recorded sessions.
-          </motion.p>
-
-          {/* CTA buttons */}
-          <motion.div
-            className="flex flex-col sm:flex-row gap-4 justify-center mt-10"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-          >
-            <Button
-              size="lg"
-              className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg px-8 h-12 text-base font-medium"
-              onClick={() => navigate(RoutePath.Register)}
+      <div className="mx-auto max-w-[1200px] px-4 py-24 md:px-20 md:py-32">
+        <div className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
+          <div className="max-w-3xl">
+            <motion.div
+              className="bg-secondary text-secondary-foreground inline-flex items-center gap-2 rounded-sm px-2 py-0.5 text-[11px] font-medium uppercase tracking-[0.08em]"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
             >
-              Get Started
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              className="border-stone-300 text-stone-700 hover:bg-stone-100 hover:text-primary rounded-lg px-8 h-12 text-base font-medium"
-              onClick={onLearnMoreButtonClick}
-            >
-              Learn More
-            </Button>
-          </motion.div>
+              <span className="bg-live animate-live-pulse inline-flex h-2 w-2 rounded-full" />
+              Expert-led live workshops
+            </motion.div>
 
-          {/* Stats or social proof */}
+            <motion.h1
+              className="mt-6 font-serif text-5xl leading-none text-balance text-foreground md:text-6xl lg:text-7xl"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+            >
+              Learn practical skills in rooms built for completion, not just signups.
+            </motion.h1>
+
+            <motion.p
+              className="text-muted-foreground mt-6 max-w-xl text-lg"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              Skill Stew pairs verified experts with live cohorts, recorded
+              access, and a community layer that keeps momentum between sessions.
+            </motion.p>
+
+            <motion.div
+              className="mt-10 flex flex-col gap-4 sm:flex-row"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+            >
+              <Button size="lg" className="px-8" onClick={() => navigate(RoutePath.Register)}>
+                Get Started
+                <ArrowRight className="ml-2 h-4 w-4" strokeWidth={1.5} />
+              </Button>
+              <Button variant="outline" size="lg" className="px-8" onClick={onLearnMoreButtonClick}>
+                Learn More
+              </Button>
+            </motion.div>
+          </div>
+
           <motion.div
-            className="mt-16 flex flex-wrap justify-center gap-8 md:gap-16"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.5 }}
+            className="grid gap-4 sm:grid-cols-2"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
           >
-            <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-primary">
-                89%
+            {[
+              {
+                value: "89%",
+                label: "Completion rate across structured cohorts",
+              },
+              {
+                value: "500+",
+                label: "Experts building trust through verification",
+              },
+              {
+                value: "2k+",
+                label: "Learners moving through live sessions",
+              },
+              {
+                value: "24/7",
+                label: "Recorded replay access after missed workshops",
+              },
+            ].map((item) => (
+              <div key={item.label} className="bg-card border-border rounded-lg border p-6">
+                <p className="text-primary text-3xl font-semibold">{item.value}</p>
+                <p className="text-muted-foreground mt-3 text-sm">{item.label}</p>
               </div>
-              <div className="text-sm text-stone-500 mt-1">Completion Rate</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-primary">
-                500+
-              </div>
-              <div className="text-sm text-stone-500 mt-1">
-                Expert Instructors
-              </div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-primary">
-                2000+
-              </div>
-              <div className="text-sm text-stone-500 mt-1">
-                Active Workshops
-              </div>
-            </div>
+            ))}
           </motion.div>
         </div>
       </div>

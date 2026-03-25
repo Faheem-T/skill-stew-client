@@ -8,18 +8,20 @@ export const InfoSection = forwardRef<HTMLDivElement, unknown>(
     return (
       <section
         id="about"
-        className="py-24 md:py-32 bg-primary text-white"
+        className="bg-card py-24 md:py-32"
         ref={ref}
       >
-        <div className="container mx-auto px-6 md:px-12">
-          {/* Section header */}
+        <div className="mx-auto max-w-[1200px] px-4 md:px-20">
           <div className="max-w-3xl">
-            <h2 className="text-3xl md:text-5xl font-bold tracking-tight">
+            <p className="text-muted-foreground text-[11px] font-medium uppercase tracking-[0.08em]">
+              What is {APP_NAME}
+            </p>
+            <h2 className="mt-4 text-3xl font-semibold text-foreground md:text-5xl">
               What is {APP_NAME}?
             </h2>
-            <p className="mt-4 text-lg md:text-xl text-white/80 leading-relaxed">
+            <p className="text-muted-foreground mt-4 text-lg leading-relaxed md:text-xl">
               {APP_NAME} connects learners with{" "}
-              <span className="text-accent font-medium">
+              <span className="text-foreground font-medium">
                 verified industry experts
               </span>{" "}
               who lead live, cohort-based workshops. Learn effectively through
@@ -28,7 +30,6 @@ export const InfoSection = forwardRef<HTMLDivElement, unknown>(
             </p>
           </div>
 
-          {/* Cards grid */}
           <div className="grid md:grid-cols-2 gap-6 mt-12">
             <InfoCard
               icon={<GraduationCap className="w-6 h-6" />}
@@ -53,12 +54,12 @@ const InfoCard: React.FC<{
   description: string;
 }> = ({ icon, title, description }) => {
   return (
-    <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 md:p-8 border border-white/10 hover:bg-white/15 transition-colors">
-      <div className="w-12 h-12 rounded-lg bg-accent/20 flex items-center justify-center text-accent mb-4">
+    <div className="bg-background border-border rounded-lg border p-6 md:p-8">
+      <div className="bg-secondary text-primary mb-4 flex h-12 w-12 items-center justify-center rounded-lg">
         {icon}
       </div>
-      <h3 className="text-xl md:text-2xl font-semibold text-white">{title}</h3>
-      <p className="mt-3 text-white/70 leading-relaxed">{description}</p>
+      <h3 className="text-xl font-semibold text-foreground md:text-2xl">{title}</h3>
+      <p className="text-muted-foreground mt-3 leading-relaxed">{description}</p>
     </div>
   );
 };

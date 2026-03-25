@@ -50,19 +50,20 @@ const features = [
 export const FeaturesSection: React.FC = () => {
   return (
     <section id="features" className="py-24 md:py-32">
-      <div className="container mx-auto px-6 md:px-12">
-        {/* Section header */}
-        <div className="text-center max-w-2xl mx-auto mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-stone-900 tracking-tight">
+      <div className="mx-auto max-w-[1200px] px-4 md:px-20">
+        <div className="mx-auto mb-16 max-w-2xl">
+          <p className="text-muted-foreground text-[11px] font-medium uppercase tracking-[0.08em]">
+            Why it works
+          </p>
+          <h2 className="mt-4 text-3xl font-semibold text-foreground md:text-4xl">
             Why expert-led workshops work better
           </h2>
-          <p className="mt-4 text-lg text-stone-600">
+          <p className="text-muted-foreground mt-4 text-lg">
             We've designed every feature to maximize learning effectiveness and
             community engagement.
           </p>
         </div>
 
-        {/* Features grid */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((feature, index) => (
             <FeatureCard key={index} {...feature} />
@@ -79,12 +80,12 @@ const FeatureCard: React.FC<{
   description: string;
 }> = ({ icon, title, description }) => {
   return (
-    <div className="group p-6 rounded-lg border border-stone-200 bg-white hover:border-primary/30 hover:shadow-sm transition-all">
-      <div className="w-10 h-10 rounded-lg bg-accent/40 flex items-center justify-center text-primary mb-4 group-hover:bg-accent/60 transition-colors">
+    <div className="bg-card border-border hover:border-primary rounded-lg border p-6 transition-colors">
+      <div className="bg-secondary text-primary mb-4 flex h-10 w-10 items-center justify-center rounded-lg">
         {icon}
       </div>
-      <h3 className="text-lg font-semibold text-stone-900">{title}</h3>
-      <p className="mt-2 text-stone-600 text-sm leading-relaxed">
+      <h3 className="text-lg font-semibold text-foreground">{title}</h3>
+      <p className="text-muted-foreground mt-2 text-sm leading-relaxed">
         {description}
       </p>
     </div>

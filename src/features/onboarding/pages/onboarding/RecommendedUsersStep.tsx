@@ -23,27 +23,27 @@ export const RecommendedUsersStep: React.FC<RecommendedUsersStepProps> = ({
   const users = data?.data || [];
 
   return (
-    <div className="flex flex-col items-center justify-start py-12 px-8 h-full overflow-y-auto">
+    <div className="flex h-full flex-col items-center justify-start overflow-y-auto px-8 py-12">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="max-w-2xl w-full"
       >
-        <h2 className="text-2xl font-bold text-slate-900 text-center mb-8">
+        <h2 className="mb-8 text-2xl font-semibold text-foreground">
           People You Might Be Interested In
         </h2>
 
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-8 h-8 text-primary animate-spin" />
+            <Loader2 className="text-primary h-8 w-8 animate-spin" strokeWidth={1.5} />
           </div>
         ) : error ? (
-          <div className="text-center py-12">
-            <p className="text-slate-600">Failed to load recommendations</p>
+          <div className="py-12">
+            <p className="text-muted-foreground">Failed to load recommendations</p>
           </div>
         ) : users.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-slate-600">No users found yet</p>
+          <div className="py-12">
+            <p className="text-muted-foreground">No users found yet</p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -68,11 +68,8 @@ export const RecommendedUsersStep: React.FC<RecommendedUsersStepProps> = ({
           </div>
         )}
 
-        <div className="flex gap-4 mt-12 justify-center">
-          <Button
-            onClick={onComplete}
-            className="px-8 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90"
-          >
+        <div className="mt-12 flex gap-4">
+          <Button onClick={onComplete} className="px-8">
             Done
           </Button>
         </div>

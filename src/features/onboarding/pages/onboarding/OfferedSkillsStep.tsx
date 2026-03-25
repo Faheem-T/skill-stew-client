@@ -133,26 +133,26 @@ export const OfferedSkillsStep: React.FC<OfferedSkillsStepProps> = ({
           {/* Left side - Search and selection */}
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-semibold text-slate-900 mb-2">
+              <h3 className="mb-2 text-lg font-semibold text-foreground">
                 Add Your Skills
               </h3>
-              <p className="text-sm text-slate-600">
+              <p className="text-muted-foreground text-sm">
                 Search and select the skills you're proficient in
               </p>
             </div>
 
             {/* Search input */}
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" strokeWidth={1.5} />
               <Input
                 placeholder="Search for a skill..."
                 value={currentSkillSearch}
                 onChange={(e) => setCurrentSkillSearch(e.target.value)}
-                className="pl-10 h-11 border-slate-200"
+                className="h-11 pl-10"
               />
               {/* Dropdown results */}
               {searchResults.length > 0 && (
-                <div className="absolute top-full left-0 right-0 z-50 mt-2 bg-white border border-slate-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                <div className="bg-popover border-border absolute top-full left-0 right-0 z-50 mt-2 max-h-48 overflow-y-auto rounded-lg border shadow-md">
                   {searchResults.map((skill) => {
                     const isAlreadySelected = offeredSkills.some(
                       (selected) => selected.skill.id === skill.id,
@@ -160,27 +160,27 @@ export const OfferedSkillsStep: React.FC<OfferedSkillsStepProps> = ({
                     return (
                       <div
                         key={skill.id}
-                        className={`p-3 rounded-lg flex items-center gap-2 transition-colors ${
-                          isAlreadySelected
-                            ? "opacity-50 bg-slate-50 cursor-not-allowed"
-                            : "hover:bg-primary/5 cursor-pointer"
-                        }`}
+                          className={`p-3 rounded-lg flex items-center gap-2 transition-colors ${
+                            isAlreadySelected
+                              ? "bg-secondary/50 cursor-not-allowed opacity-50"
+                              : "hover:bg-secondary cursor-pointer"
+                          }`}
                         onClick={() =>
                           !isAlreadySelected && handleSelectSkill(skill)
                         }
                       >
                         <div className="flex-1">
-                          <div className="font-medium text-sm text-slate-900">
+                          <div className="text-sm font-medium text-foreground">
                             {skill.name}
                           </div>
                           {skill.alternateNames.length > 0 && (
-                            <div className="text-xs text-slate-500">
+                            <div className="text-muted-foreground text-xs">
                               Also known as: {skill.alternateNames.join(", ")}
                             </div>
                           )}
                         </div>
                         {isAlreadySelected && (
-                          <Award className="w-4 h-4 text-amber-500" />
+                          <Award className="text-warning w-4 h-4" strokeWidth={1.5} />
                         )}
                       </div>
                     );
@@ -191,28 +191,28 @@ export const OfferedSkillsStep: React.FC<OfferedSkillsStepProps> = ({
 
             {/* Selected skill detail card - animated */}
             {selectedSkill && (
-              <div className="space-y-4 p-6 bg-linear-to-br from-primary/10 to-accent/10 border border-primary/20 rounded-xl">
+              <div className="border-border bg-card space-y-4 rounded-lg border p-6">
                 <div className="flex items-center justify-between">
-                  <span className="font-semibold text-slate-900">
+                  <span className="font-semibold text-foreground">
                     {selectedSkill.name}
                   </span>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => setSelectedSkill(null)}
-                    className="h-6 w-6 p-0 hover:bg-blue-200"
+                    className="h-6 w-6 p-0"
                   >
-                    <X className="h-4 w-4" />
+                    <X className="h-4 w-4" strokeWidth={1.5} />
                   </Button>
                 </div>
 
                 {/* Proficiency Slider */}
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <label className="text-sm font-medium text-slate-700">
+                    <label className="text-sm font-medium text-foreground">
                       Proficiency Level
                     </label>
-                    <span className="text-xs font-semibold text-primary bg-primary/20 px-2 py-1 rounded">
+                    <span className="bg-secondary text-secondary-foreground rounded-sm px-2 py-1 text-xs font-medium">
                       {skillProficiencies[currentProficiency[0]]}
                     </span>
                   </div>
@@ -224,7 +224,7 @@ export const OfferedSkillsStep: React.FC<OfferedSkillsStepProps> = ({
                     step={1}
                     className="mb-2"
                   />
-                  <div className="flex justify-between text-xs text-slate-500 px-1">
+                  <div className="text-muted-foreground flex justify-between px-1 text-xs">
                     <span>Beginner</span>
                     <span>Expert</span>
                   </div>
@@ -232,7 +232,7 @@ export const OfferedSkillsStep: React.FC<OfferedSkillsStepProps> = ({
 
                 <Button
                   onClick={handleAddSkillWithProficiency}
-                  className="w-full bg-primary hover:bg-primary/90"
+                  className="w-full"
                 >
                   Add Skill
                 </Button>
@@ -243,10 +243,10 @@ export const OfferedSkillsStep: React.FC<OfferedSkillsStepProps> = ({
           {/* Right side - Selected skills list */}
           <div className="space-y-4">
             <div>
-              <h3 className="text-lg font-semibold text-slate-900 mb-2">
+              <h3 className="mb-2 text-lg font-semibold text-foreground">
                 Selected Skills ({offeredSkills.length})
               </h3>
-              <p className="text-sm text-slate-600">
+              <p className="text-muted-foreground text-sm">
                 Your current skill profile
               </p>
             </div>
@@ -256,14 +256,14 @@ export const OfferedSkillsStep: React.FC<OfferedSkillsStepProps> = ({
                 {offeredSkills.map((item) => (
                   <div
                     key={item.skill.id}
-                    className="flex items-center justify-between p-4 bg-slate-50 border border-slate-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-all group"
+                    className="bg-card border-border hover:border-primary group flex items-center justify-between rounded-lg border p-4 transition-colors"
                   >
                     <div className="flex-1">
-                      <div className="font-medium text-slate-900">
+                      <div className="font-medium text-foreground">
                         {item.skill.name}
                       </div>
-                      <div className="text-xs text-slate-600 mt-1">
-                        <span className="inline-block bg-amber-100 text-amber-800 px-2 py-1 rounded font-medium">
+                      <div className="text-muted-foreground mt-1 text-xs">
+                        <span className="bg-secondary text-secondary-foreground inline-block rounded-sm px-2 py-1 font-medium">
                           {item.proficiency}
                         </span>
                       </div>
@@ -274,15 +274,15 @@ export const OfferedSkillsStep: React.FC<OfferedSkillsStepProps> = ({
                       onClick={() => handleRemoveOfferedSkill(item.skill.id)}
                       className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
                     >
-                      <X className="h-4 w-4 text-red-600" />
+                      <X className="text-destructive h-4 w-4" strokeWidth={1.5} />
                     </Button>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center py-12 px-4 bg-slate-50 border-2 border-dashed border-slate-300 rounded-lg">
-                <Award className="w-10 h-10 text-slate-400 mb-2" />
-                <p className="text-sm text-slate-600 text-center">
+              <div className="bg-card border-border flex flex-col items-center justify-center rounded-lg border border-dashed px-4 py-12">
+                <Award className="text-muted-foreground mb-2 h-10 w-10" strokeWidth={1.5} />
+                <p className="text-muted-foreground text-sm">
                   No skills added yet. Search and add your skills to get
                   started!
                 </p>
@@ -293,7 +293,7 @@ export const OfferedSkillsStep: React.FC<OfferedSkillsStepProps> = ({
       </div>
 
       {/* Navigation buttons at bottom */}
-      <div className="flex justify-between gap-4 px-8 py-4 border-t border-slate-200 bg-slate-50 shrink-0">
+      <div className="bg-card border-border flex shrink-0 justify-between gap-4 border-t px-8 py-4">
         {onBack ? (
           <Button
             type="button"
@@ -312,7 +312,7 @@ export const OfferedSkillsStep: React.FC<OfferedSkillsStepProps> = ({
           type="button"
           onClick={handleNext}
           disabled={offeredSkills.length === 0}
-          className="px-8 bg-primary hover:bg-primary/90 text-primary-foreground disabled:opacity-50"
+          className="px-8"
         >
           Next
         </Button>

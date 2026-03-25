@@ -37,31 +37,31 @@ export const NotificationsPage = () => {
   const notifications = data?.pages.flatMap((page) => page.data) ?? [];
 
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div className="bg-background min-h-screen">
       <AppNavbar />
-      <div className="container mx-auto px-6 md:px-12 py-12 max-w-3xl">
-        <div className="flex items-center gap-3 mb-8">
-          <Bell className="w-6 h-6 text-primary" />
-          <h1 className="text-2xl md:text-3xl font-bold text-stone-900 tracking-tight">
+      <div className="mx-auto max-w-3xl px-4 py-12 md:px-10">
+        <div className="mb-8 flex items-center gap-3">
+          <Bell className="text-primary h-6 w-6" strokeWidth={1.5} />
+          <h1 className="text-2xl font-semibold text-foreground md:text-3xl">
             Notifications
           </h1>
         </div>
 
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-8 h-8 text-primary animate-spin" />
+            <Loader2 className="text-primary h-8 w-8 animate-spin" strokeWidth={1.5} />
           </div>
         ) : error ? (
-          <div className="text-center py-20 bg-white rounded-lg border border-stone-200">
-            <p className="text-stone-600">
+          <div className="bg-card border-border rounded-lg border py-20 text-center">
+            <p className="text-muted-foreground">
               Failed to load notifications. Please try again.
             </p>
           </div>
         ) : notifications.length === 0 ? (
-          <div className="text-center py-20 bg-white rounded-lg border border-stone-200">
-            <BellOff className="w-10 h-10 text-stone-300 mx-auto mb-3" />
-            <p className="text-stone-500 font-medium">No notifications yet</p>
-            <p className="text-sm text-stone-400 mt-1">
+          <div className="bg-card border-border rounded-lg border py-20 text-center">
+            <BellOff className="text-muted-foreground mx-auto mb-3 h-10 w-10" strokeWidth={1.5} />
+            <p className="text-foreground font-medium">No notifications yet</p>
+            <p className="text-muted-foreground mt-1 text-sm">
               You'll be notified when something happens
             </p>
           </div>
@@ -77,7 +77,7 @@ export const NotificationsPage = () => {
             {/* Intersection sentinel + loading spinner */}
             <div ref={sentinelRef} className="py-4 flex justify-center">
               {isFetchingNextPage && (
-                <Loader2 className="w-5 h-5 text-primary animate-spin" />
+                <Loader2 className="text-primary h-5 w-5 animate-spin" strokeWidth={1.5} />
               )}
             </div>
           </div>

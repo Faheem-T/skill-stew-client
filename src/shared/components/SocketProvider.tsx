@@ -1,8 +1,17 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, useEffect, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  type ReactNode,
+} from "react";
 import type { Socket } from "socket.io-client";
 import { useSocket } from "@/shared/hooks/useSocket";
-import type { Notification } from "@/features/notification/types/types";
+import {
+  NotificationType,
+  type Notification,
+} from "@/features/notification/types/types";
 import { NotificationToast } from "@/features/notification/components/NotificationToast";
 import { useQueryClient, type InfiniteData } from "@tanstack/react-query";
 import type {
@@ -11,10 +20,14 @@ import type {
 } from "@/shared/api/baseApi";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
+import { useLogout } from "@/features/auth/hooks/useLogout";
+import useCurrentUserProfile from "@/shared/hooks/useCurrentUserProfile";
 
 const SocketContext = createContext<React.RefObject<Socket | null> | null>(
   null,
 );
+
+const APPROVAL_LOGOUT_DELAY_MS = 1500;
 
 export function useSocketContext() {
   return useContext(SocketContext);
@@ -28,6 +41,10 @@ export function SocketProvider({ children }: SocketProviderProps) {
   const socketRef = useSocket();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const { data: userProfile } = useCurrentUserProfile();
+  const { mutate: logout } = useLogout();
+  const approvalLogoutTimerRef = useRef<number | null>(null);
+  const approvalLogoutTriggeredRef = useRef(false);
 
   useEffect(() => {
     const socket = socketRef.current;
@@ -78,6 +95,17 @@ export function SocketProvider({ children }: SocketProviderProps) {
           ],
         };
       });
+
+      if (
+        notification.data.type === NotificationType.EXPERT_APPLICATION_APPROVED &&
+        userProfile?.role === "EXPERT_APPLICANT" &&
+        !approvalLogoutTriggeredRef.current
+      ) {
+        approvalLogoutTriggeredRef.current = true;
+        approvalLogoutTimerRef.current = window.setTimeout(() => {
+          logout();
+        }, APPROVAL_LOGOUT_DELAY_MS);
+      }
     };
 
     socket.on("notification:new", handleNewNotification);
@@ -85,7 +113,15 @@ export function SocketProvider({ children }: SocketProviderProps) {
     return () => {
       socket.off("notification:new", handleNewNotification);
     };
-  }, [socketRef, queryClient, navigate]);
+  }, [socketRef, queryClient, navigate, logout, userProfile?.role]);
+
+  useEffect(() => {
+    return () => {
+      if (approvalLogoutTimerRef.current !== null) {
+        window.clearTimeout(approvalLogoutTimerRef.current);
+      }
+    };
+  }, []);
 
   return (
     <SocketContext.Provider value={socketRef}>

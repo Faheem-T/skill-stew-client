@@ -15,6 +15,10 @@ export const DashboardRoutingPage: React.FC = () => {
     return <Navigate to={RoutePath.Home} replace />;
   }
 
+  if (userProfile.role === "EXPERT_APPLICANT") {
+    return <Navigate to={RoutePath.ExpertApplication} replace />;
+  }
+
   return (
     <Navigate
       to={`${RoutePath.Dashboard}/${userProfile.role.toLowerCase()}`}

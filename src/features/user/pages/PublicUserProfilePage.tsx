@@ -92,9 +92,9 @@ const ConnectButton = ({
         <Button
           variant="outline"
           disabled
-          className="border-yellow-300 bg-yellow-50 text-yellow-800 rounded-lg px-6 h-10 font-medium cursor-default"
+          className="bg-warning-muted border-border px-6 font-medium cursor-default"
         >
-          <Clock className="w-4 h-4" />
+          <Clock className="w-4 h-4" strokeWidth={1.5} />
           Request Sent
         </Button>
       );
@@ -108,9 +108,9 @@ const ConnectButton = ({
         <Button
           variant="outline"
           disabled
-          className="border-green-500 bg-green-100 text-green-800 rounded-lg px-6 h-10 font-semibold cursor-default"
+          className="bg-success-muted border-border px-6 font-semibold cursor-default"
         >
-          <UserCheck className="w-4 h-4" />
+          <UserCheck className="w-4 h-4" strokeWidth={1.5} />
           Connected
         </Button>
       );
@@ -135,16 +135,16 @@ const IncomingRequestBanner = ({
 }) => {
   const isBusy = isAccepting || isRejecting;
   return (
-    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 md:p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+    <div className="bg-info-muted border-border flex flex-col gap-4 rounded-lg border p-4 md:flex-row md:items-center md:p-5">
       <div className="flex items-center gap-3 flex-1 min-w-0">
-        <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
-          <UserPlus className="w-5 h-5 text-blue-600" />
+        <div className="bg-secondary flex h-10 w-10 shrink-0 items-center justify-center rounded-full">
+          <UserPlus className="text-info w-5 h-5" strokeWidth={1.5} />
         </div>
         <div>
-          <p className="font-semibold text-blue-900 text-sm">
+          <p className="text-foreground text-sm font-semibold">
             Connection Request
           </p>
-          <p className="text-blue-700 text-sm">
+          <p className="text-muted-foreground text-sm">
             <span className="font-medium">{userName}</span> wants to connect
             with you
           </p>
@@ -155,7 +155,7 @@ const IncomingRequestBanner = ({
           onClick={onAccept}
           disabled={isBusy}
           size="sm"
-          className="rounded-lg font-medium bg-blue-600 hover:bg-blue-700 text-white"
+          className="font-medium"
         >
           {isAccepting ? (
             <Loader2 className="w-4 h-4 animate-spin" />
@@ -169,7 +169,7 @@ const IncomingRequestBanner = ({
           disabled={isBusy}
           size="sm"
           variant="outline"
-          className="rounded-lg font-medium border-blue-300 text-blue-700 hover:bg-blue-100"
+          className="font-medium"
         >
           {isRejecting ? (
             <Loader2 className="w-4 h-4 animate-spin" />
@@ -328,13 +328,13 @@ export const PublicUserProfilePage = () => {
 
   if (isProfileLoading) {
     return (
-      <div className="min-h-screen bg-stone-50">
+      <div className="bg-background min-h-screen">
         <AppNavbar />
-        <div className="container mx-auto px-6 md:px-12 py-12">
+        <div className="mx-auto max-w-[1200px] px-4 py-12 md:px-10">
           <div className="animate-pulse space-y-8">
-            <div className="h-48 bg-stone-200 rounded-lg" />
-            <div className="h-32 bg-stone-200 rounded-lg" />
-            <div className="h-64 bg-stone-200 rounded-lg" />
+            <div className="bg-secondary h-48 rounded-lg" />
+            <div className="bg-secondary h-32 rounded-lg" />
+            <div className="bg-secondary h-64 rounded-lg" />
           </div>
         </div>
       </div>
@@ -343,13 +343,13 @@ export const PublicUserProfilePage = () => {
 
   if (!profile) {
     return (
-      <div className="min-h-screen bg-stone-50">
+      <div className="bg-background min-h-screen">
         <AppNavbar />
-        <div className="container mx-auto px-6 md:px-12 py-40 text-center">
-          <h2 className="text-2xl font-bold text-stone-900 mb-2">
+        <div className="mx-auto max-w-[1200px] px-4 py-40 md:px-10">
+          <h2 className="mb-2 text-2xl font-semibold text-foreground">
             User not found
           </h2>
-          <p className="text-stone-500 mb-6">
+          <p className="text-muted-foreground mb-6">
             This profile doesn't exist or has been removed.
           </p>
           <Button variant="outline" onClick={() => navigate(-1)}>
@@ -362,14 +362,14 @@ export const PublicUserProfilePage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div className="bg-background min-h-screen">
       <AppNavbar />
 
-      <div className="container mx-auto px-6 md:px-12 py-12 md:py-16">
+      <div className="mx-auto max-w-[1200px] px-4 py-12 md:px-10 md:py-16">
         {/* Profile Header */}
         <div className="relative mb-8">
           {/* Banner */}
-          <div className="h-32 md:h-48 rounded-lg overflow-hidden bg-primary relative">
+          <div className="bg-card border-border relative h-32 overflow-hidden rounded-lg border md:h-48">
             {profile.bannerUrl ? (
               <img
                 src={profile.bannerUrl}
@@ -378,15 +378,15 @@ export const PublicUserProfilePage = () => {
               />
             ) : (
               <>
-                <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
-                <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
+                <div className="bg-secondary absolute top-0 right-0 h-64 w-64 rounded-full -translate-y-1/2 translate-x-1/2 opacity-60" />
+                <div className="bg-accent absolute bottom-0 left-0 h-48 w-48 rounded-full -translate-x-1/2 translate-y-1/2 opacity-45" />
               </>
             )}
           </div>
 
           {/* Avatar and Basic Info */}
           <div className="relative z-10 flex flex-col md:flex-row gap-4 md:gap-6 px-4 md:px-8">
-            <Avatar className="w-28 h-28 md:w-32 md:h-32 border-4 border-stone-50 shadow-lg -mt-16 md:-mt-12 shrink-0">
+            <Avatar className="border-background -mt-16 h-28 w-28 shrink-0 border-4 md:-mt-12 md:h-32 md:w-32">
               <AvatarImage src={profile.avatarUrl} className="object-cover" />
               <AvatarFallback className="bg-accent/30 text-primary text-3xl font-semibold">
                 {profile.name?.charAt(0) || profile.username?.charAt(0) || "U"}
@@ -397,27 +397,27 @@ export const PublicUserProfilePage = () => {
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
                   <div className="flex items-center gap-2">
-                    <h1 className="text-2xl md:text-3xl font-bold text-stone-900 tracking-tight">
+                    <h1 className="text-2xl font-semibold text-foreground md:text-3xl">
                       {profile.name || profile.username || "User"}
                     </h1>
                     {profile.isVerified && (
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <ShieldCheck className="w-5 h-5 text-primary cursor-help" />
+                          <ShieldCheck className="w-5 h-5 cursor-help text-primary" strokeWidth={1.5} />
                         </TooltipTrigger>
                         <TooltipContent>Verified User</TooltipContent>
                       </Tooltip>
                     )}
                   </div>
                   {profile.username && profile.name && (
-                    <p className="text-stone-500">@{profile.username}</p>
+                    <p className="text-muted-foreground">@{profile.username}</p>
                   )}
                   {profile.userId && (
                     <button
                       onClick={() => setIsConnectionsModalOpen(true)}
-                      className="mt-1 flex items-center gap-1 text-sm text-stone-600 hover:text-primary transition-colors cursor-pointer"
+                      className="text-muted-foreground mt-1 flex cursor-pointer items-center gap-1 text-sm transition-colors hover:text-foreground"
                     >
-                      <span className="font-semibold text-stone-900">
+                      <span className="font-semibold text-foreground">
                         {connectionsCount}
                       </span>{" "}
                       connections
@@ -436,7 +436,7 @@ export const PublicUserProfilePage = () => {
                     />
                   )}
                 {isAuthenticated && isConnectionLoading && (
-                  <div className="h-10 w-32 animate-pulse bg-stone-200 rounded-lg" />
+                  <div className="bg-secondary h-10 w-32 animate-pulse rounded-lg" />
                 )}
               </div>
             </div>
@@ -461,11 +461,11 @@ export const PublicUserProfilePage = () => {
           <div className="lg:col-span-2 space-y-8">
             {/* About Section */}
             {profile.about && (
-              <section className="bg-white rounded-lg border border-stone-200 p-6">
-                <h2 className="text-lg font-semibold text-stone-900 mb-4">
+              <section className="bg-card border-border rounded-lg border p-6">
+                <h2 className="mb-4 text-lg font-semibold text-foreground">
                   About
                 </h2>
-                <p className="text-stone-600 leading-relaxed whitespace-pre-line">
+                <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
                   {profile.about}
                 </p>
               </section>
@@ -473,18 +473,18 @@ export const PublicUserProfilePage = () => {
 
             {/* No additional content placeholder */}
             {!profile.about && (
-              <section className="bg-white rounded-lg border border-stone-200 p-6 text-center">
-                <p className="text-stone-400 text-sm">
+              <section className="bg-card border-border rounded-lg border p-6">
+                <p className="text-muted-foreground text-sm">
                   This user hasn't added a bio yet.
                 </p>
               </section>
             )}
 
             {/* Skills I Offer to Teach */}
-            <section className="bg-white rounded-lg border border-stone-200 p-6 shadow-sm">
+            <section className="bg-card border-border rounded-lg border p-6">
               <div className="flex items-center gap-2 mb-4">
-                <Sparkles className="w-5 h-5 text-primary" />
-                <h2 className="text-lg font-semibold text-stone-900">
+                <Sparkles className="w-5 h-5 text-primary" strokeWidth={1.5} />
+                <h2 className="text-lg font-semibold text-foreground">
                   Skills I Offer to Teach
                 </h2>
               </div>
@@ -493,37 +493,37 @@ export const PublicUserProfilePage = () => {
                   {skillProfile.offered.map((item) => (
                     <div
                       key={item.skill.id}
-                      className="group flex flex-col p-4 bg-stone-50 rounded-lg border border-stone-100 transition-all cursor-default"
+                      className="bg-background border-border group flex cursor-default flex-col rounded-lg border p-4 transition-colors"
                     >
                       <div className="flex items-start justify-between mb-2">
-                        <span className="font-semibold text-stone-800">
+                        <span className="font-semibold text-foreground">
                           {item.skill.name}
                         </span>
                         <Badge
                           variant="secondary"
-                          className="bg-primary/10 text-primary"
+                          className=""
                         >
                           {item.proficiency}
                         </Badge>
                       </div>
-                      <div className="flex items-center gap-2 text-sm text-stone-500">
+                      <div className="text-muted-foreground flex items-center gap-2 text-sm">
                         <span>{item.hoursTaught}h taught</span>
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-stone-500 text-sm">
+                <p className="text-muted-foreground text-sm">
                   This user has not listed any teaching skills.
                 </p>
               )}
             </section>
 
             {/* Skills I Want to Learn */}
-            <section className="bg-white rounded-lg border border-stone-200 p-6 shadow-sm">
+            <section className="bg-card border-border rounded-lg border p-6">
               <div className="flex items-center gap-2 mb-4">
-                <BookOpen className="w-5 h-5 text-primary" />
-                <h2 className="text-lg font-semibold text-stone-900">
+                <BookOpen className="w-5 h-5 text-primary" strokeWidth={1.5} />
+                <h2 className="text-lg font-semibold text-foreground">
                   Skills I Want to Learn
                 </h2>
               </div>
@@ -532,19 +532,19 @@ export const PublicUserProfilePage = () => {
                   {skillProfile.wanted.map((item) => (
                     <div
                       key={item.skill.id}
-                      className="flex items-center gap-2 px-4 py-2 bg-stone-50 rounded-lg border border-stone-100 transition-all cursor-default"
+                      className="bg-background border-border flex cursor-default items-center gap-2 rounded-lg border px-4 py-2"
                     >
-                      <span className="font-medium text-stone-700">
+                      <span className="font-medium text-foreground">
                         {item.skill.name}
                       </span>
-                      <span className="text-xs text-stone-400 font-medium">
+                      <span className="text-muted-foreground text-xs font-medium">
                         {item.hoursLearned}h learned
                       </span>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-stone-500 text-sm">
+                <p className="text-muted-foreground text-sm">
                   This user has no listed learning goals.
                 </p>
               )}
@@ -554,8 +554,8 @@ export const PublicUserProfilePage = () => {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Info */}
-            <div className="bg-white rounded-lg border border-stone-200 p-6">
-              <h3 className="text-lg font-semibold text-stone-900 mb-4">
+            <div className="bg-card border-border rounded-lg border p-6">
+              <h3 className="mb-4 text-lg font-semibold text-foreground">
                 Details
               </h3>
               <div className="space-y-4">
@@ -574,7 +574,7 @@ export const PublicUserProfilePage = () => {
                   />
                 )}
                 {!profile.location && !profile.timezone && (
-                  <p className="text-stone-400 text-sm">
+                  <p className="text-muted-foreground text-sm">
                     No details available.
                   </p>
                 )}
@@ -583,10 +583,10 @@ export const PublicUserProfilePage = () => {
 
             {/* Languages */}
             {profile.languages && profile.languages.length > 0 && (
-              <div className="bg-white rounded-lg border border-stone-200 p-6">
+              <div className="bg-card border-border rounded-lg border p-6">
                 <div className="flex items-center gap-2 mb-4">
-                  <Languages className="w-5 h-5 text-primary" />
-                  <h3 className="text-lg font-semibold text-stone-900">
+                  <Languages className="w-5 h-5 text-primary" strokeWidth={1.5} />
+                  <h3 className="text-lg font-semibold text-foreground">
                     Languages
                   </h3>
                 </div>
@@ -595,7 +595,7 @@ export const PublicUserProfilePage = () => {
                     <Badge
                       key={lang}
                       variant="outline"
-                      className="border-stone-200 text-stone-600 text-sm font-normal"
+                      className="text-sm font-medium"
                     >
                       {getLanguageName(lang)}
                     </Badge>
@@ -606,10 +606,10 @@ export const PublicUserProfilePage = () => {
 
             {/* Social Links */}
             {profile.socialLinks && profile.socialLinks.length > 0 && (
-              <div className="bg-white rounded-lg border border-stone-200 p-6">
+              <div className="bg-card border-border rounded-lg border p-6">
                 <div className="flex items-center gap-2 mb-4">
-                  <Globe className="w-5 h-5 text-primary" />
-                  <h3 className="text-lg font-semibold text-stone-900">
+                  <Globe className="w-5 h-5 text-primary" strokeWidth={1.5} />
+                  <h3 className="text-lg font-semibold text-foreground">
                     Links
                   </h3>
                 </div>
@@ -620,7 +620,7 @@ export const PublicUserProfilePage = () => {
                       href={link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-sm text-stone-600 hover:text-primary transition-colors"
+                      className="text-muted-foreground hover:text-foreground flex items-center gap-2 text-sm transition-colors"
                     >
                       <LinkIcon className="w-4 h-4" />
                       <span className="truncate">{link}</span>
@@ -632,16 +632,14 @@ export const PublicUserProfilePage = () => {
 
             {/* Connection Status Card (for authenticated users) */}
             {isAuthenticated && connectionStatus === "CONNECTED" && (
-              <div className="bg-primary rounded-lg p-6 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
-                <div className="absolute bottom-0 left-0 w-16 h-16 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
-                <div className="relative z-10 flex items-center gap-3">
-                  <Check className="w-5 h-5 text-accent" />
+              <div className="bg-success-muted border-border rounded-lg border p-6">
+                <div className="flex items-center gap-3">
+                  <Check className="text-success w-5 h-5" strokeWidth={1.5} />
                   <div>
-                    <h3 className="font-semibold text-white">
+                    <h3 className="font-semibold text-foreground">
                       You're Connected
                     </h3>
-                    <p className="text-white/70 text-sm">
+                    <p className="text-muted-foreground text-sm">
                       You and {profile.name || profile.username} are connected.
                     </p>
                   </div>
@@ -675,12 +673,12 @@ const InfoItem = ({
   if (!value) return null;
   return (
     <div className="flex items-start gap-3">
-      <div className="w-8 h-8 rounded-lg bg-stone-100 flex items-center justify-center text-stone-500 shrink-0">
+      <div className="bg-secondary text-muted-foreground flex h-8 w-8 shrink-0 items-center justify-center rounded-lg">
         {icon}
       </div>
       <div>
-        <p className="text-xs text-stone-400">{label}</p>
-        <p className="text-sm text-stone-700">{value}</p>
+        <p className="text-muted-foreground text-xs">{label}</p>
+        <p className="text-sm text-foreground">{value}</p>
       </div>
     </div>
   );

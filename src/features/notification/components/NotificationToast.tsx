@@ -19,10 +19,9 @@ export const NotificationToast = ({
     getNotificationHref(notification.data) ?? RoutePath.Notifications;
 
   return (
-    <div className="pointer-events-auto w-80 rounded-lg border border-stone-200 bg-white shadow-lg overflow-hidden">
+    <div className="bg-popover text-popover-foreground border-border pointer-events-auto w-80 overflow-hidden rounded-lg border shadow-md">
       <div className="flex items-start gap-3 p-4">
-        {/* Colored accent bar */}
-        <div className="w-1 self-stretch rounded-full bg-primary shrink-0" />
+        <div className="bg-primary w-1 self-stretch shrink-0 rounded-full" />
 
         <div
           className="flex-1 min-w-0 cursor-pointer"
@@ -31,20 +30,20 @@ export const NotificationToast = ({
             onNavigate(href);
           }}
         >
-          <p className="text-sm font-semibold text-stone-900 truncate">
+          <p className="truncate text-sm font-semibold">
             {notification.title}
           </p>
-          <p className="text-sm text-stone-600 mt-0.5 line-clamp-2">
+          <p className="text-muted-foreground mt-0.5 line-clamp-2 text-sm">
             {notification.message}
           </p>
-          <p className="text-xs text-stone-400 mt-1">Just now</p>
+          <p className="text-muted-foreground mt-1 text-xs">Just now</p>
         </div>
 
         <button
           onClick={() => toast.dismiss(toastId)}
-          className="shrink-0 p-1 rounded hover:bg-stone-100 text-stone-400 hover:text-stone-600 transition-colors"
+          className="text-muted-foreground hover:bg-secondary hover:text-foreground shrink-0 rounded p-1 transition-colors"
         >
-          <X className="w-3.5 h-3.5" />
+          <X className="h-3.5 w-3.5" strokeWidth={1.5} />
         </button>
       </div>
     </div>
