@@ -18,7 +18,15 @@ import {
 } from "@/shared/components/ui/tooltip";
 import { useNavigate } from "react-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { UserPlus, UserCheck, UserX, MailOpen } from "lucide-react";
+import {
+  UserPlus,
+  UserCheck,
+  UserX,
+  MailOpen,
+  FileClock,
+  BadgeCheck,
+  BadgeX,
+} from "lucide-react";
 import type {
   ApiResponseWithData,
   PaginatedApiResponse,
@@ -32,6 +40,16 @@ function getNotificationSubtext(notification: Notification): string {
       return `${notification.data.accepterUsername ?? "A user"} accepted`;
     case NotificationType.CONNECTION_REJECTED:
       return `${notification.data.rejecterUsername ?? "A user"} declined`;
+    case NotificationType.EXPERT_APPLICATION_SUBMITTED:
+      return notification.data.expertUsername
+        ? `${notification.data.expertUsername} applied`
+        : "New expert application";
+    case NotificationType.EXPERT_APPLICATION_APPROVED:
+      return "Your expert access is ready";
+    case NotificationType.EXPERT_APPLICATION_REJECTED:
+      return notification.data.rejectionReason
+        ? "Application review complete"
+        : "Your application was reviewed";
     default:
       return "";
   }
@@ -45,6 +63,12 @@ function getNotificationIcon(type: NotificationType) {
       return <UserCheck className="w-4 h-4 text-green-600" />;
     case NotificationType.CONNECTION_REJECTED:
       return <UserX className="w-4 h-4 text-stone-500" />;
+    case NotificationType.EXPERT_APPLICATION_SUBMITTED:
+      return <FileClock className="w-4 h-4 text-primary" />;
+    case NotificationType.EXPERT_APPLICATION_APPROVED:
+      return <BadgeCheck className="w-4 h-4 text-green-600" />;
+    case NotificationType.EXPERT_APPLICATION_REJECTED:
+      return <BadgeX className="w-4 h-4 text-red-600" />;
     default:
       return null;
   }

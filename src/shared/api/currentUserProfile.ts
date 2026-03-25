@@ -28,6 +28,14 @@ export type CurrentUserProfile =
       id: string;
       role: "EXPERT";
       email: string;
+      bio: string;
+      socialLinks: string[];
+      fullName: string;
+      joinedAt: Date;
+      languages: string[];
+      phone: string;
+      avatarUrl?: string;
+      bannerUrl?: string;
     }
   | {
       id: string;
