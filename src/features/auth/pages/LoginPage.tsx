@@ -19,13 +19,14 @@ import { useNavigate } from "react-router";
 import { useAppStore } from "@/app/store";
 import { GoogleLoginButton } from "@/features/auth/components/GoogleAuthButton";
 import { PasswordInput } from "@/shared/components/ui/password-input";
-import { APP_NAME } from "@/shared/config/constants";
-import { Sparkles } from "lucide-react";
+import { ArrowRight, BookOpen, CircleCheck, Users } from "lucide-react";
 import useCurrentUserProfile, {
   CURRENT_USER_PROFILE_QUERY_KEY,
 } from "@/shared/hooks/useCurrentUserProfile";
 import { InitialLoadScreen } from "@/app/pages/InitialLoadScreen";
 import { RoutePath } from "@/shared/config/routes";
+import { AuthSplitLayout } from "@/features/auth/components/AuthSplitLayout";
+import { Link } from "react-router";
 
 export const LoginPage = () => {
   const navigate = useNavigate();
@@ -87,141 +88,141 @@ export const LoginPage = () => {
   }
 
   return (
-    <div className="min-h-screen flex">
-      {/* Left side - Decorative */}
-      <div className="hidden lg:flex lg:w-1/2 bg-primary relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-accent/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-accent/15 rounded-full translate-y-1/2 -translate-x-1/2 blur-3xl" />
-
-        <div className="relative z-10 flex flex-col justify-center px-12 text-white">
-          <div className="flex items-center gap-3 mb-8">
-            <img src="/logo.png" className="h-12 w-12 object-contain" />
-            <span className="text-2xl font-bold">{APP_NAME}</span>
-          </div>
-          <h1 className="text-4xl font-bold mb-4">Welcome back!</h1>
-          <p className="text-lg text-white/80 max-w-md">
-            Continue your skill exchange journey. Connect with learners and
-            experts in our community.
-          </p>
-          <div className="mt-8 flex items-center gap-2 text-white/60">
-            <Sparkles className="w-5 h-5" />
-            <span>Share skills, grow together</span>
-          </div>
+    <AuthSplitLayout
+      eyebrow="Welcome back"
+      title="Pick up where your learning left off."
+      description="Return to your workshops, expert applications, and community activity without losing your place."
+      aside={
+        <div className="grid gap-4 sm:grid-cols-3">
+          {[
+            {
+              icon: BookOpen,
+              title: "Live cohorts",
+              body: "Rejoin structured sessions and track your progress.",
+            },
+            {
+              icon: Users,
+              title: "Community",
+              body: "Keep discussions and connections moving between sessions.",
+            },
+            {
+              icon: CircleCheck,
+              title: "Verified experts",
+              body: "Learn from instructors with a trust-first review flow.",
+            },
+          ].map(({ icon: Icon, title, body }) => (
+            <div key={title} className="bg-background border-border rounded-lg border p-6">
+              <Icon className="text-primary h-5 w-5" strokeWidth={1.5} />
+              <p className="mt-6 text-sm font-semibold">{title}</p>
+              <p className="text-muted-foreground mt-2 text-sm">{body}</p>
+            </div>
+          ))}
         </div>
+      }
+      footer={
+        <p className="text-muted-foreground text-sm">
+          By signing in, you agree to our{" "}
+          <a href="#" className="text-foreground underline underline-offset-4">
+            Terms of Service
+          </a>{" "}
+          and{" "}
+          <a href="#" className="text-foreground underline underline-offset-4">
+            Privacy Policy
+          </a>
+          .
+        </p>
+      }
+    >
+      <div className="flex items-center justify-between text-sm">
+        <span className="text-muted-foreground">No account yet?</span>
+        <button
+          className="text-foreground inline-flex items-center gap-1 font-medium"
+          onClick={() => navigate(RoutePath.Register)}
+          type="button"
+        >
+          Create one <ArrowRight className="h-4 w-4" strokeWidth={1.5} />
+        </button>
       </div>
 
-      {/* Right side - Login form */}
-      <div className="flex-1 flex flex-col items-center justify-center p-8 bg-slate-50">
-        <div className="w-full max-w-md">
-          {/* Sign up link - desktop */}
-          <div className="hidden sm:block text-center mb-6 text-sm text-slate-600">
-            Don't have an account?{" "}
-            <span
-              className="font-semibold text-primary hover:underline cursor-pointer"
-              onClick={() => navigate(RoutePath.Register)}
-            >
-              Sign up
-            </span>
-          </div>
+      <div className="bg-card border-border rounded-lg border p-8">
+        <div className="mb-8">
+          <h2 className="text-2xl font-semibold text-foreground">Sign in</h2>
+          <p className="text-muted-foreground mt-2">
+            Enter your credentials to continue.
+          </p>
+        </div>
 
-          {/* Mobile logo */}
-          <div className="lg:hidden flex items-center justify-center gap-3 mb-8">
-            <img src="/logo.png" className="h-10 w-10 object-contain" />
-            <span className="text-xl font-bold text-primary">{APP_NAME}</span>
-          </div>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+            <FormField
+              name="email"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input placeholder="you@example.com" className="h-11" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              name="password"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <PasswordInput
+                      placeholder="Enter your password"
+                      className="h-11"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <div className="bg-white rounded-2xl shadow-xl p-8 border border-slate-200">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl font-bold text-slate-900">Sign in</h2>
-              <p className="text-slate-500 mt-2">
-                Enter your credentials to continue
-              </p>
+            {form.formState.errors.root && (
+              <div className="border-destructive/30 text-destructive rounded-lg border px-4 py-3 text-sm">
+                {form.formState.errors.root.message}
+              </div>
+            )}
+
+            <Button type="submit" className="h-11 w-full" disabled={isPending}>
+              {isPending ? "Signing in..." : "Sign in"}
+            </Button>
+
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="border-border w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="bg-card text-muted-foreground px-4">
+                  Or continue with
+                </span>
+              </div>
             </div>
 
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-5"
-              >
-                <FormField
-                  name="email"
-                  control={form.control}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-slate-700">Email</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="you@example.com"
-                          className="h-11 border-slate-200 focus:border-primary focus:ring-primary/20"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  name="password"
-                  control={form.control}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-slate-700">Password</FormLabel>
-                      <FormControl>
-                        <PasswordInput
-                          placeholder="Enter your password"
-                          className="h-11 border-slate-200 focus:border-primary focus:ring-primary/20"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {form.formState.errors.root && (
-                  <div className="text-red-500 text-sm bg-red-50 p-3 rounded-lg border border-red-200">
-                    {form.formState.errors.root.message}
-                  </div>
-                )}
-
-                <Button
-                  type="submit"
-                  className="w-full h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
-                  disabled={isPending}
-                >
-                  {isPending ? "Signing in..." : "Sign in"}
-                </Button>
-
-                <div className="relative my-6">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-slate-200" />
-                  </div>
-                  <div className="relative flex justify-center text-sm">
-                    <span className="px-4 bg-white text-slate-500">
-                      Or continue with
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-center">
-                  <GoogleLoginButton expectedRole="USER" />
-                </div>
-              </form>
-            </Form>
-          </div>
-
-          <p className="text-center text-sm text-slate-500 mt-6">
-            By signing in, you agree to our{" "}
-            <a href="#" className="text-primary hover:underline">
-              Terms of Service
-            </a>{" "}
-            and{" "}
-            <a href="#" className="text-primary hover:underline">
-              Privacy Policy
-            </a>
-          </p>
-        </div>
+            <div className="flex items-center justify-center">
+              <GoogleLoginButton expectedRole="USER" />
+            </div>
+          </form>
+        </Form>
       </div>
-    </div>
+
+      <p className="text-muted-foreground text-sm">
+        Want to teach?{" "}
+        <Link
+          to={RoutePath.ExpertRegister}
+          className="text-foreground underline underline-offset-4"
+        >
+          Start an expert account
+        </Link>
+        .
+      </p>
+    </AuthSplitLayout>
   );
 };

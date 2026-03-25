@@ -16,7 +16,6 @@ export const StepIndicator: React.FC<StepIndicatorProps> = ({
 
   return (
     <div className={`space-y-4 ${className || ""}`}>
-      {/* Step indicators */}
       <div className="flex justify-between items-center gap-1">
         {stepArray.map((step) => (
           <motion.div
@@ -28,18 +27,15 @@ export const StepIndicator: React.FC<StepIndicatorProps> = ({
           >
             <div
               className={`relative h-2 rounded-full transition-colors ${
-                step <= currentStep
-                  ? "bg-primary"
-                  : "bg-slate-300"
+                step <= currentStep ? "bg-primary" : "bg-border"
               }`}
             />
           </motion.div>
         ))}
       </div>
 
-      {/* Step number display */}
       <div className="text-center">
-        <span className="text-sm font-semibold text-slate-700">
+        <span className="text-sm font-medium text-muted-foreground">
           Step <span className="text-primary">{currentStep}</span> of {totalSteps}
         </span>
       </div>

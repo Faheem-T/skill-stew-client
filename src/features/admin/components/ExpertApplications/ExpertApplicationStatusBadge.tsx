@@ -5,7 +5,7 @@ const statusVariantMap: Record<
   ExpertApplicationStatus,
   "default" | "secondary" | "destructive" | "outline"
 > = {
-  pending: "secondary",
+  pending: "outline",
   approved: "default",
   rejected: "destructive",
 };
@@ -16,9 +16,15 @@ export const ExpertApplicationStatusBadge = ({
   status: ExpertApplicationStatus;
 }) => {
   return (
-    <Badge variant={statusVariantMap[status]} className="capitalize">
+    <Badge
+      variant={statusVariantMap[status]}
+      className={
+        status === "pending"
+          ? "bg-warning-muted text-foreground border-border capitalize"
+          : "capitalize"
+      }
+    >
       {status}
     </Badge>
   );
 };
-

@@ -60,7 +60,7 @@ export const UsernameField = ({ currentUsername }: UsernameFieldProps) => {
             isAvailable &&
             field.value?.trim() &&
             !errors.username && (
-              <div className="flex items-center gap-1 mt-2 text-sm text-green-600 font-medium">
+              <div className="text-success flex items-center gap-1 mt-2 text-sm font-medium">
                 <CheckIcon className="w-4 h-4" />
                 <span>Username is available</span>
               </div>

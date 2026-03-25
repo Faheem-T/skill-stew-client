@@ -174,10 +174,10 @@ export const WantedSkillsStep: React.FC<WantedSkillsStepProps> = ({
           {/* Left side - Search and adding */}
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-semibold text-slate-900 mb-2">
+              <h3 className="mb-2 text-lg font-semibold text-foreground">
                 What Do You Want to Learn?
               </h3>
-              <p className="text-sm text-slate-600">
+              <p className="text-muted-foreground text-sm">
                 Select skills you're interested in acquiring through exchanges
               </p>
             </div>
@@ -185,16 +185,16 @@ export const WantedSkillsStep: React.FC<WantedSkillsStepProps> = ({
             {/* Search input for interested skills */}
             <div className="space-y-3">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" strokeWidth={1.5} />
                 <Input
                   placeholder="Search for skills to learn..."
                   value={wantedSkillSearch}
                   onChange={(e) => setWantedSkillSearch(e.target.value)}
-                  className="pl-10 h-11 border-primary/30 hover:bg-primary/5"
+                  className="h-11 pl-10"
                 />
                 {/* Dropdown results */}
                 {wantedSearchResults.length > 0 && (
-                  <div className="absolute top-full left-0 right-0 z-50 mt-2 bg-white border border-slate-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                  <div className="bg-popover border-border absolute top-full left-0 right-0 z-50 mt-2 max-h-48 overflow-y-auto rounded-lg border shadow-md">
                     {wantedSearchResults.map((skill) => {
                       const isAlreadyWanted = wantedSkills.some(
                         (selected) => selected.id === skill.id,
@@ -209,24 +209,24 @@ export const WantedSkillsStep: React.FC<WantedSkillsStepProps> = ({
                           key={skill.id}
                           className={`p-3 rounded-lg flex items-center gap-2 transition-colors ${
                             isDisabled
-                              ? "opacity-50 bg-slate-50 cursor-not-allowed"
-                              : "hover:bg-primary/5 cursor-pointer"
+                              ? "bg-secondary/50 cursor-not-allowed opacity-50"
+                              : "hover:bg-secondary cursor-pointer"
                           }`}
                           onClick={() =>
                             !isDisabled && handleAddWantedSkill(skill)
                           }
                         >
                           <div className="flex-1">
-                            <div className="font-medium text-sm text-slate-900">
+                            <div className="text-sm font-medium text-foreground">
                               {skill.name}
                             </div>
                             {skill.alternateNames.length > 0 && (
-                              <div className="text-xs text-slate-500">
+                              <div className="text-muted-foreground text-xs">
                                 Also known as: {skill.alternateNames.join(", ")}
                               </div>
                             )}
                             {isAlreadyWanted && (
-                              <div className="text-xs text-amber-600 font-medium">
+                              <div className="text-warning text-xs font-medium">
                                 Already selected to learn
                               </div>
                             )}
@@ -237,7 +237,7 @@ export const WantedSkillsStep: React.FC<WantedSkillsStepProps> = ({
                             )}
                           </div>
                           {isDisabled && (
-                            <X className="w-4 h-4 text-slate-400" />
+                            <X className="text-muted-foreground w-4 h-4" strokeWidth={1.5} />
                           )}
                         </div>
                       );
@@ -248,9 +248,9 @@ export const WantedSkillsStep: React.FC<WantedSkillsStepProps> = ({
             </div>
 
             {/* Info box */}
-            <div className="flex gap-3 p-4 bg-accent/10 border border-accent/30 rounded-lg">
-              <Lightbulb className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-              <div className="text-sm text-primary/80">
+            <div className="bg-info-muted border-border flex gap-3 rounded-lg border p-4">
+              <Lightbulb className="text-info mt-0.5 w-5 h-5 shrink-0" strokeWidth={1.5} />
+              <div className="text-sm text-foreground">
                 <p className="font-medium">Pro tip:</p>
                 <p>
                   You can't select a skill you're already offering as a wanted
@@ -263,10 +263,10 @@ export const WantedSkillsStep: React.FC<WantedSkillsStepProps> = ({
           {/* Right side - Selected skills display */}
           <div className="space-y-4">
             <div>
-              <h3 className="text-lg font-semibold text-slate-900 mb-2">
+              <h3 className="mb-2 text-lg font-semibold text-foreground">
                 Learning Goals ({wantedSkills.length})
               </h3>
-              <p className="text-sm text-slate-600">
+              <p className="text-muted-foreground text-sm">
                 Skills you want to acquire
               </p>
             </div>
@@ -277,25 +277,25 @@ export const WantedSkillsStep: React.FC<WantedSkillsStepProps> = ({
                   <Badge
                     key={skill.id}
                     variant="secondary"
-                    className="flex items-center gap-2 py-2 px-3 bg-primary/20 text-primary hover:bg-primary/30 border border-primary/40"
+                    className="border-border bg-secondary text-secondary-foreground flex items-center gap-2 px-3 py-2"
                   >
-                    <Lightbulb className="w-3 h-3" />
+                    <Lightbulb className="w-3 h-3" strokeWidth={1.5} />
                     {skill.name}
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => handleRemoveWantedSkill(skill.id)}
-                      className="h-4 w-4 p-0 hover:bg-primary/40 ml-1"
+                      className="ml-1 h-4 w-4 p-0"
                     >
-                      <X className="h-3 w-3" />
+                      <X className="h-3 w-3" strokeWidth={1.5} />
                     </Button>
                   </Badge>
                 ))}
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center py-12 px-4 bg-slate-50 border-2 border-dashed border-slate-300 rounded-lg">
-                <Lightbulb className="w-10 h-10 text-slate-400 mb-2" />
-                <p className="text-sm text-slate-600 text-center">
+              <div className="bg-card border-border flex flex-col items-center justify-center rounded-lg border border-dashed px-4 py-12">
+                <Lightbulb className="text-muted-foreground mb-2 h-10 w-10" strokeWidth={1.5} />
+                <p className="text-muted-foreground text-sm">
                   No learning goals yet. Add skills you'd like to learn!
                 </p>
               </div>
@@ -305,7 +305,7 @@ export const WantedSkillsStep: React.FC<WantedSkillsStepProps> = ({
       </div>
 
       {/* Navigation buttons at bottom */}
-      <div className="flex justify-between gap-4 px-8 py-4 border-t border-slate-200 bg-slate-50 shrink-0">
+      <div className="bg-card border-border flex shrink-0 justify-between gap-4 border-t px-8 py-4">
         {onBack ? (
           <Button
             type="button"
@@ -324,7 +324,7 @@ export const WantedSkillsStep: React.FC<WantedSkillsStepProps> = ({
           type="button"
           onClick={form.handleSubmit(onSubmit)}
           disabled={mutation.isPending}
-          className="px-8 bg-primary hover:bg-primary/90 disabled:opacity-50"
+          className="px-8"
         >
           {mutation.isPending ? "Saving..." : "Complete"}
         </Button>

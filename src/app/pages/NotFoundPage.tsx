@@ -5,25 +5,24 @@ import { Home } from "lucide-react";
 
 export const NotFoundPage = () => {
   return (
-    <div className="min-h-screen bg-stone-50 flex items-center justify-center px-6">
-      <div className="text-center max-w-md">
-        {/* Big playful 404 */}
-        <p className="text-[8rem] md:text-[10rem] font-bold leading-none text-primary/15 select-none">
+    <div className="bg-background flex min-h-screen items-center justify-center px-6">
+      <div className="max-w-md text-left">
+        <p className="text-primary/15 select-none font-serif text-[8rem] leading-none md:text-[10rem]">
           404
         </p>
-
-        {/* Emoji + message */}
-        <p className="text-4xl mb-2">🍲</p>
-        <h1 className="text-2xl font-bold text-stone-900 mb-2">
-          This page got overcooked
+        <p className="text-muted-foreground text-[11px] font-medium uppercase tracking-[0.08em]">
+          Missing page
+        </p>
+        <h1 className="mt-2 text-2xl font-semibold text-foreground">
+          This page is no longer on the menu
         </h1>
-        <p className="text-stone-500 mb-8">
-          Looks like the recipe for this page is missing from our kitchen.
-          Let&apos;s get you back to something tasty.
+        <p className="text-muted-foreground mt-3 mb-8">
+          The link may be outdated or the route may have moved. Return to the
+          homepage to continue browsing workshops and profiles.
         </p>
 
         <Link to={RoutePath.Home}>
-          <Button className="bg-primary hover:bg-primary/90 text-white rounded-lg px-6 h-11 font-medium">
+          <Button className="px-6">
             <Home className="w-4 h-4 mr-2" />
             Back to Home
           </Button>

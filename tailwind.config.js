@@ -4,7 +4,9 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Plus Jakarta Sans', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        sans: ["DM Sans", "sans-serif"],
+        serif: ["Playfair Display", "serif"],
+        mono: ["JetBrains Mono", "monospace"],
       },
       colors: {
         background: "var(--color-background)",
@@ -23,6 +25,18 @@ module.exports = {
         "accent-foreground": "var(--color-accent-foreground)",
         destructive: "var(--color-destructive)",
         "destructive-foreground": "var(--color-destructive-foreground)",
+        success: "var(--color-success)",
+        "success-foreground": "var(--color-success-foreground)",
+        "success-muted": "var(--color-success-muted)",
+        warning: "var(--color-warning)",
+        "warning-foreground": "var(--color-warning-foreground)",
+        "warning-muted": "var(--color-warning-muted)",
+        info: "var(--color-info)",
+        "info-foreground": "var(--color-info-foreground)",
+        "info-muted": "var(--color-info-muted)",
+        live: "var(--color-live)",
+        "live-foreground": "var(--color-live-foreground)",
+        "live-muted": "var(--color-live-muted)",
         border: "var(--color-border)",
         input: "var(--color-input)",
         ring: "var(--color-ring)",

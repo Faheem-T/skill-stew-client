@@ -25,6 +25,7 @@ import { RoutePath } from "@/shared/config/routes";
 import { NotificationsPage } from "@/features/notification/pages/NotificationsPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
 import { ExpertApplicationPage } from "@/features/expert/pages/ExpertApplicationPage";
+import { ExpertDashboardPage } from "@/features/expert/pages/ExpertDashboardPage";
 
 export const queryClient = new QueryClient();
 
@@ -104,6 +105,16 @@ export const router = createBrowserRouter([
         children: [
           { path: RoutePath.UserDashboard, element: <UserDashboard /> },
           { path: RoutePath.UserProfile, element: <UserProfilePage /> },
+        ],
+      },
+      {
+        // EXPERT only routes
+        element: <ProtectedRoute roles={["EXPERT"]} />,
+        children: [
+          {
+            path: RoutePath.ExpertDashboard,
+            element: <ExpertDashboardPage />,
+          },
         ],
       },
       {

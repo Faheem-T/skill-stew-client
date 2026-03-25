@@ -47,54 +47,48 @@ export const UserDashboard = () => {
   const recommendedUsers = recommendedUsersData?.data || [];
 
   return (
-    <div className="min-h-screen bg-stone-50">
-      {/* Header */}
+    <div className="bg-background min-h-screen">
       <AppNavbar />
 
-      <div className="container mx-auto px-6 md:px-12 py-12 md:py-16">
-        {/* Welcome Section */}
+      <div className="mx-auto max-w-[1200px] px-4 py-12 md:px-10 md:py-16">
         <div className="mb-12">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
+          <div className="mb-8 flex flex-col md:flex-row md:items-end md:justify-between">
             <div>
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/30 text-primary text-sm font-medium mb-4">
-                <span className="w-2 h-2 bg-primary rounded-full" />
+              <div className="bg-secondary text-secondary-foreground mb-4 inline-flex items-center gap-2 rounded-sm px-2 py-0.5 text-[11px] font-medium uppercase tracking-[0.08em]">
+                <span className="bg-live inline-flex h-2 w-2 rounded-full" />
                 Dashboard
               </div>
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-stone-900 tracking-tight">
-                Welcome back, {data?.name || data?.username || "there"}! 👋
+              <h1 className="text-3xl font-semibold text-foreground md:text-4xl lg:text-5xl">
+                Welcome back, {data?.name || data?.username || "there"}.
               </h1>
-              <p className="mt-3 text-lg text-stone-600">
+              <p className="text-muted-foreground mt-3 text-lg">
                 You have 3 upcoming skill exchanges this week
               </p>
             </div>
             <div className="flex gap-3 mt-6 md:mt-0">
-              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg px-6 h-11 font-medium">
+              <Button className="px-6">
                 <Plus className="w-4 h-4 mr-2" />
                 New Exchange
               </Button>
-              <Button
-                variant="outline"
-                className="border-stone-300 text-stone-700 hover:bg-stone-100 hover:text-primary rounded-lg px-6 h-11 font-medium"
-              >
+              <Button variant="outline" className="px-6">
                 Browse Skills
               </Button>
             </div>
           </div>
 
-          {/* Onboarding completion indicator */}
           {data && !data.isOnboardingComplete && (
             <Alert
               variant="default"
-              className="bg-accent/20 border-accent/40 mb-8"
+              className="bg-warning-muted border-border mb-8"
             >
-              <BadgeAlertIcon className="text-primary" />
-              <AlertTitle className="text-stone-900 font-semibold">
+              <BadgeAlertIcon className="text-warning" />
+              <AlertTitle className="font-semibold text-foreground">
                 Complete your onboarding
               </AlertTitle>
-              <AlertDescription className="text-stone-600">
+              <AlertDescription className="text-muted-foreground">
                 <span
                   onClick={() => setIsOnboardingModalOpen(true)}
-                  className="underline cursor-pointer hover:text-primary transition-colors"
+                  className="cursor-pointer underline underline-offset-4"
                 >
                   Click here to complete onboarding
                 </span>{" "}
@@ -103,7 +97,6 @@ export const UserDashboard = () => {
             </Alert>
           )}
 
-          {/* Quick Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
             <StatCard value="12" label="Skills Learned" />
             <StatCard value="8" label="Skills Taught" />
@@ -118,16 +111,13 @@ export const UserDashboard = () => {
             {/* Upcoming Skill Exchanges */}
             <section>
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl md:text-2xl font-bold text-stone-900 tracking-tight flex items-center gap-2">
-                  <Calendar className="w-5 h-5 text-primary" />
+                <h2 className="flex items-center gap-2 text-xl font-semibold text-foreground md:text-2xl">
+                  <Calendar className="w-5 h-5 text-primary" strokeWidth={1.5} />
                   Upcoming Skill Exchanges
                 </h2>
-                <Button
-                  variant="ghost"
-                  className="text-stone-600 hover:text-primary text-sm"
-                >
+                <Button variant="ghost" className="text-sm">
                   View All
-                  <ArrowRight className="w-4 h-4 ml-1" />
+                  <ArrowRight className="w-4 h-4 ml-1" strokeWidth={1.5} />
                 </Button>
               </div>
 
@@ -138,9 +128,9 @@ export const UserDashboard = () => {
                   learning="Spanish"
                   time="Today, 3:00 PM - 4:00 PM"
                   avatarFallback="MR"
-                  avatarBgClass="bg-primary text-white"
-                  bgClass="bg-white"
-                  borderClass="border-stone-200 hover:border-primary/30"
+                  avatarBgClass="bg-secondary text-foreground"
+                  bgClass="bg-card"
+                  borderClass="border-border hover:border-primary"
                   primaryAction="join"
                 />
 
@@ -150,9 +140,9 @@ export const UserDashboard = () => {
                   learning="Guitar"
                   time="Tomorrow, 7:00 PM - 8:30 PM"
                   avatarFallback="DC"
-                  avatarBgClass="bg-primary text-white"
-                  bgClass="bg-white"
-                  borderClass="border-stone-200 hover:border-primary/30"
+                  avatarBgClass="bg-secondary text-foreground"
+                  bgClass="bg-card"
+                  borderClass="border-border hover:border-primary"
                   primaryAction="reschedule"
                 />
 
@@ -162,9 +152,9 @@ export const UserDashboard = () => {
                   learning="Cooking"
                   time="Friday, 6:00 PM - 7:30 PM"
                   avatarFallback="SJ"
-                  avatarBgClass="bg-primary text-white"
-                  bgClass="bg-white"
-                  borderClass="border-stone-200 hover:border-primary/30"
+                  avatarBgClass="bg-secondary text-foreground"
+                  bgClass="bg-card"
+                  borderClass="border-border hover:border-primary"
                   primaryAction="confirm"
                 />
               </div>
@@ -173,32 +163,29 @@ export const UserDashboard = () => {
             {/* People You Might Be Interested In */}
             <section>
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl md:text-2xl font-bold text-stone-900 tracking-tight flex items-center gap-2">
-                  <Users className="w-5 h-5 text-primary" />
+                <h2 className="flex items-center gap-2 text-xl font-semibold text-foreground md:text-2xl">
+                  <Users className="w-5 h-5 text-primary" strokeWidth={1.5} />
                   People You Might Be Interested In
                 </h2>
-                <Button
-                  variant="ghost"
-                  className="text-stone-600 hover:text-primary text-sm"
-                >
+                <Button variant="ghost" className="text-sm">
                   Discover More
-                  <ArrowRight className="w-4 h-4 ml-1" />
+                  <ArrowRight className="w-4 h-4 ml-1" strokeWidth={1.5} />
                 </Button>
               </div>
 
               {isLoadingRecommended ? (
                 <div className="flex items-center justify-center py-12">
-                  <Loader2 className="w-8 h-8 text-primary animate-spin" />
+                  <Loader2 className="w-8 h-8 text-primary animate-spin" strokeWidth={1.5} />
                 </div>
               ) : recommendedError ? (
-                <div className="text-center py-12 bg-white rounded-lg border border-stone-200">
-                  <p className="text-stone-600">
+                <div className="bg-card border-border rounded-lg border py-12">
+                  <p className="text-muted-foreground">
                     Failed to load recommendations
                   </p>
                 </div>
               ) : recommendedUsers.length === 0 ? (
-                <div className="text-center py-12 bg-white rounded-lg border border-stone-200">
-                  <p className="text-stone-600">No users found yet</p>
+                <div className="bg-card border-border rounded-lg border py-12">
+                  <p className="text-muted-foreground">No users found yet</p>
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -222,9 +209,9 @@ export const UserDashboard = () => {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Recent Activity */}
-            <div className="bg-white rounded-lg border border-stone-200 p-6">
-              <h3 className="text-lg font-semibold text-stone-900 flex items-center gap-2 mb-4">
-                <Activity className="w-5 h-5 text-primary" />
+            <div className="bg-card border-border rounded-lg border p-6">
+              <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-foreground">
+                <Activity className="w-5 h-5 text-primary" strokeWidth={1.5} />
                 Recent Activity
               </h3>
               <ActivityFeed
@@ -255,125 +242,97 @@ export const UserDashboard = () => {
             </div>
 
             {/* Trending Skills */}
-            <div className="bg-white rounded-lg border border-stone-200 p-6">
-              <h3 className="text-lg font-semibold text-stone-900 flex items-center gap-2 mb-4">
-                <TrendingUp className="w-5 h-5 text-primary" />
+            <div className="bg-card border-border rounded-lg border p-6">
+              <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-foreground">
+                <TrendingUp className="w-5 h-5 text-primary" strokeWidth={1.5} />
                 Trending Skills
               </h3>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-stone-600">
+                  <span className="text-muted-foreground text-sm">
                     AI/Machine Learning
                   </span>
-                  <Badge className="bg-accent/20 text-primary border-0 text-xs">
+                  <Badge className="text-xs">
                     Hot
                   </Badge>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-stone-600">
+                  <span className="text-muted-foreground text-sm">
                     Sustainable Living
                   </span>
-                  <Badge
-                    variant="secondary"
-                    className="bg-stone-100 text-stone-600 border-0 text-xs"
-                  >
+                  <Badge variant="secondary" className="text-xs">
                     Rising
                   </Badge>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-stone-600">Digital Art</span>
-                  <Badge
-                    variant="outline"
-                    className="border-stone-200 text-stone-500 text-xs"
-                  >
+                  <span className="text-muted-foreground text-sm">Digital Art</span>
+                  <Badge variant="outline" className="text-xs">
                     Popular
                   </Badge>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-stone-600">Mindfulness</span>
-                  <Badge
-                    variant="outline"
-                    className="border-stone-200 text-stone-500 text-xs"
-                  >
+                  <span className="text-muted-foreground text-sm">Mindfulness</span>
+                  <Badge variant="outline" className="text-xs">
                     Growing
                   </Badge>
                 </div>
               </div>
             </div>
 
-            {/* Your Skills */}
-            <div className="bg-white rounded-lg border border-stone-200 p-6">
-              <h3 className="text-lg font-semibold text-stone-900 flex items-center gap-2 mb-4">
-                <BookOpen className="w-5 h-5 text-primary" />
+            <div className="bg-card border-border rounded-lg border p-6">
+              <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-foreground">
+                <BookOpen className="w-5 h-5 text-primary" strokeWidth={1.5} />
                 Your Skills
               </h3>
               <div className="space-y-4">
                 <div>
-                  <h4 className="text-sm font-medium text-stone-500 mb-2">
+                  <h4 className="text-muted-foreground mb-2 text-sm font-medium">
                     Teaching
                   </h4>
                   <div className="flex flex-wrap gap-1.5">
-                    <Badge className="bg-accent/20 text-primary border-0 text-xs font-normal">
+                    <Badge className="text-xs font-medium">
                       Web Design
                     </Badge>
-                    <Badge className="bg-accent/20 text-primary border-0 text-xs font-normal">
+                    <Badge className="text-xs font-medium">
                       Photography
                     </Badge>
-                    <Badge className="bg-accent/20 text-primary border-0 text-xs font-normal">
+                    <Badge className="text-xs font-medium">
                       Digital Marketing
                     </Badge>
                   </div>
                 </div>
                 <div>
-                  <h4 className="text-sm font-medium text-stone-500 mb-2">
+                  <h4 className="text-muted-foreground mb-2 text-sm font-medium">
                     Learning
                   </h4>
                   <div className="flex flex-wrap gap-1.5">
-                    <Badge
-                      variant="outline"
-                      className="border-stone-200 text-stone-600 text-xs font-normal"
-                    >
+                    <Badge variant="outline" className="text-xs font-medium">
                       Spanish
                     </Badge>
-                    <Badge
-                      variant="outline"
-                      className="border-stone-200 text-stone-600 text-xs font-normal"
-                    >
+                    <Badge variant="outline" className="text-xs font-medium">
                       Guitar
                     </Badge>
-                    <Badge
-                      variant="outline"
-                      className="border-stone-200 text-stone-600 text-xs font-normal"
-                    >
+                    <Badge variant="outline" className="text-xs font-medium">
                       Cooking
                     </Badge>
                   </div>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="w-full text-stone-600 hover:text-primary hover:bg-stone-50 mt-2"
-                >
+                <Button variant="ghost" size="sm" className="mt-2 w-full">
                   Edit Skills
                 </Button>
               </div>
             </div>
 
-            {/* Achievement */}
-            <div className="bg-primary rounded-lg p-6 text-center relative overflow-hidden">
-              {/* Decorative elements */}
-              <div className="absolute top-0 right-0 w-24 h-24 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
-              <div className="absolute bottom-0 left-0 w-16 h-16 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
-
-              <div className="relative z-10">
-                <div className="w-12 h-12 rounded-lg bg-white/10 flex items-center justify-center mx-auto mb-3">
-                  <Award className="w-6 h-6 text-accent" />
+            <div className="bg-card border-border rounded-lg border p-6">
+              <div>
+                <div className="bg-secondary mb-3 flex h-12 w-12 items-center justify-center rounded-lg">
+                  <Award className="w-6 h-6 text-primary" strokeWidth={1.5} />
                 </div>
-                <h3 className="font-semibold text-white mb-2">Skill Mentor</h3>
-                <p className="text-sm text-white/70 mb-4">
+                <h3 className="mb-2 font-semibold text-foreground">Skill Mentor</h3>
+                <p className="text-muted-foreground mb-4 text-sm">
                   You've successfully taught 5+ people new skills!
                 </p>
-                <Badge className="bg-accent text-primary border-0 font-medium">
+                <Badge variant="secondary" className="font-medium">
                   Achievement Unlocked
                 </Badge>
               </div>
@@ -388,9 +347,9 @@ export const UserDashboard = () => {
 // Simplified stat card matching homepage design language
 const StatCard = ({ value, label }: { value: string; label: string }) => {
   return (
-    <div className="bg-white rounded-lg border border-stone-200 p-5 text-center hover:border-primary/30 hover:shadow-sm transition-all">
-      <div className="text-2xl md:text-3xl font-bold text-primary">{value}</div>
-      <div className="text-sm text-stone-500 mt-1">{label}</div>
+    <div className="bg-card border-border rounded-lg border p-5">
+      <div className="text-primary text-2xl font-semibold md:text-3xl">{value}</div>
+      <div className="text-muted-foreground mt-1 text-sm">{label}</div>
     </div>
   );
 };

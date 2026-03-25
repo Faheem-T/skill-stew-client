@@ -51,13 +51,13 @@ export const UserProfilePage = () => {
 
   if (isProfileLoading || isSkillProfileLoading) {
     return (
-      <div className="min-h-screen bg-stone-50">
+      <div className="bg-background min-h-screen">
         <AppNavbar />
-        <div className="container mx-auto px-6 md:px-12 py-12">
+        <div className="mx-auto max-w-[1200px] px-4 py-12 md:px-10">
           <div className="animate-pulse space-y-8">
-            <div className="h-48 bg-stone-200 rounded-lg" />
-            <div className="h-32 bg-stone-200 rounded-lg" />
-            <div className="h-64 bg-stone-200 rounded-lg" />
+            <div className="bg-secondary h-48 rounded-lg" />
+            <div className="bg-secondary h-32 rounded-lg" />
+            <div className="bg-secondary h-64 rounded-lg" />
           </div>
         </div>
       </div>
@@ -65,14 +65,14 @@ export const UserProfilePage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div className="bg-background min-h-screen">
       <AppNavbar />
 
-      <div className="container mx-auto px-6 md:px-12 py-12 md:py-16">
+      <div className="mx-auto max-w-[1200px] px-4 py-12 md:px-10 md:py-16">
         {/* Profile Header */}
         <div className="relative mb-8">
           {/* Banner */}
-          <div className="h-32 md:h-48 rounded-lg overflow-hidden bg-primary relative">
+          <div className="bg-card border-border relative h-32 overflow-hidden rounded-lg border md:h-48">
             {profile?.bannerUrl ? (
               <img
                 src={profile.bannerUrl}
@@ -81,15 +81,15 @@ export const UserProfilePage = () => {
               />
             ) : (
               <>
-                <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
-                <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
+                <div className="bg-secondary absolute top-0 right-0 h-64 w-64 rounded-full -translate-y-1/2 translate-x-1/2 opacity-60" />
+                <div className="bg-accent absolute bottom-0 left-0 h-48 w-48 rounded-full -translate-x-1/2 translate-y-1/2 opacity-45" />
               </>
             )}
           </div>
 
           {/* Avatar and Basic Info */}
           <div className="relative z-10 flex flex-col md:flex-row gap-4 md:gap-6 px-4 md:px-8">
-            <Avatar className="w-28 h-28 md:w-32 md:h-32 border-4 border-stone-50 shadow-lg -mt-16 md:-mt-12 shrink-0">
+            <Avatar className="border-background -mt-16 h-28 w-28 shrink-0 border-4 md:-mt-12 md:h-32 md:w-32">
               <AvatarImage src={profile?.avatarUrl} className="object-cover" />
               <AvatarFallback className="bg-accent/30 text-primary text-3xl font-semibold">
                 {profile?.name?.charAt(0) ||
@@ -101,21 +101,21 @@ export const UserProfilePage = () => {
             <div className="flex-1 pb-2">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
-                  <h1 className="text-2xl md:text-3xl font-bold text-stone-900 tracking-tight">
+                  <h1 className="text-2xl font-semibold text-foreground md:text-3xl">
                     {profile?.name || profile?.username || "User"}
                   </h1>
                   {profile?.username && profile?.name && (
-                    <p className="text-stone-500">@{profile.username}</p>
+                    <p className="text-muted-foreground">@{profile.username}</p>
                   )}
                   {isConnectionsLoading ? (
-                    <div className="h-4 w-24 bg-stone-200 animate-pulse rounded mt-2" />
+                    <div className="bg-secondary mt-2 h-4 w-24 animate-pulse rounded" />
                   ) : (
                     connectionsCount >= 0 && (
                       <button
                         onClick={() => setIsConnectionsModalOpen(true)}
-                        className="mt-1 flex items-center gap-1 text-sm text-stone-600 hover:text-primary transition-colors cursor-pointer"
+                        className="text-muted-foreground mt-1 flex cursor-pointer items-center gap-1 text-sm transition-colors hover:text-foreground"
                       >
-                        <span className="font-semibold text-stone-900">
+                        <span className="font-semibold text-foreground">
                           {connectionsCount}
                         </span>{" "}
                         connections
@@ -126,7 +126,7 @@ export const UserProfilePage = () => {
                 <div className="flex gap-2">
                   <Button
                     variant="outline"
-                    className="border-stone-300 text-stone-700 hover:bg-stone-100 hover:text-primary rounded-lg px-6 h-10 font-medium"
+                    className="px-6"
                     onClick={() => setIsEditUsernameOpen(true)}
                   >
                     <User className="w-4 h-4 mr-2" />
@@ -134,7 +134,7 @@ export const UserProfilePage = () => {
                   </Button>
                   <Button
                     variant="outline"
-                    className="border-stone-300 text-stone-700 hover:bg-stone-100 hover:text-primary rounded-lg px-6 h-10 font-medium"
+                    className="px-6"
                     onClick={() => setIsEditProfileOpen(true)}
                   >
                     <Edit2 className="w-4 h-4 mr-2" />
@@ -151,21 +151,21 @@ export const UserProfilePage = () => {
           <div className="lg:col-span-2 space-y-8">
             {/* About Section */}
             {profile?.about && (
-              <section className="bg-white rounded-lg border border-stone-200 p-6">
-                <h2 className="text-lg font-semibold text-stone-900 mb-4">
+              <section className="bg-card border-border rounded-lg border p-6">
+                <h2 className="mb-4 text-lg font-semibold text-foreground">
                   About
                 </h2>
-                <p className="text-stone-600 leading-relaxed whitespace-pre-line">
+                <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
                   {profile.about}
                 </p>
               </section>
             )}
 
             {/* Skills I Offer */}
-            <section className="bg-white rounded-lg border border-stone-200 p-6">
+            <section className="bg-card border-border rounded-lg border p-6">
               <div className="flex items-center gap-2 mb-4">
-                <GraduationCap className="w-5 h-5 text-primary" />
-                <h2 className="text-lg font-semibold text-stone-900">
+                <GraduationCap className="w-5 h-5 text-primary" strokeWidth={1.5} />
+                <h2 className="text-lg font-semibold text-foreground">
                   Skills I Can Teach
                 </h2>
               </div>
@@ -174,29 +174,29 @@ export const UserProfilePage = () => {
                   {skillProfile.offered.map((item) => (
                     <div
                       key={item.skill.id}
-                      className="flex items-center justify-between p-4 bg-stone-50 rounded-lg border border-stone-100"
+                      className="bg-background border-border flex items-center justify-between rounded-lg border p-4"
                     >
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-lg bg-accent/30 flex items-center justify-center">
                           <BookOpen className="w-5 h-5 text-primary" />
                         </div>
                         <div>
-                          <h3 className="font-medium text-stone-900">
+                          <h3 className="font-medium text-foreground">
                             {item.skill.name}
                           </h3>
-                          <p className="text-sm text-stone-500">
+                          <p className="text-muted-foreground text-sm">
                             {item.hoursTaught} hours taught
                           </p>
                         </div>
                       </div>
-                      <Badge className="bg-accent/20 text-primary border-0 text-xs">
+                      <Badge className="text-xs">
                         {item.proficiency}
                       </Badge>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-stone-500 text-sm">
+                <p className="text-muted-foreground text-sm">
                   No skills added yet. Add skills you can teach to start
                   exchanging!
                 </p>
@@ -204,10 +204,10 @@ export const UserProfilePage = () => {
             </section>
 
             {/* Skills I Want to Learn */}
-            <section className="bg-white rounded-lg border border-stone-200 p-6">
+            <section className="bg-card border-border rounded-lg border p-6">
               <div className="flex items-center gap-2 mb-4">
-                <BookOpen className="w-5 h-5 text-primary" />
-                <h2 className="text-lg font-semibold text-stone-900">
+                <BookOpen className="w-5 h-5 text-primary" strokeWidth={1.5} />
+                <h2 className="text-lg font-semibold text-foreground">
                   Skills I Want to Learn
                 </h2>
               </div>
@@ -216,19 +216,19 @@ export const UserProfilePage = () => {
                   {skillProfile.wanted.map((item) => (
                     <div
                       key={item.skill.id}
-                      className="flex items-center gap-2 px-4 py-2 bg-stone-50 rounded-lg border border-stone-100"
+                      className="bg-background border-border flex items-center gap-2 rounded-lg border px-4 py-2"
                     >
-                      <span className="font-medium text-stone-700">
+                      <span className="font-medium text-foreground">
                         {item.skill.name}
                       </span>
-                      <span className="text-xs text-stone-400">
+                      <span className="text-muted-foreground text-xs">
                         {item.hoursLearned}h learned
                       </span>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-stone-500 text-sm">
+                <p className="text-muted-foreground text-sm">
                   No learning goals added yet. Add skills you want to learn!
                 </p>
               )}
@@ -238,8 +238,8 @@ export const UserProfilePage = () => {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Contact & Info */}
-            <div className="bg-white rounded-lg border border-stone-200 p-6">
-              <h3 className="text-lg font-semibold text-stone-900 mb-4">
+            <div className="bg-card border-border rounded-lg border p-6">
+              <h3 className="mb-4 text-lg font-semibold text-foreground">
                 Details
               </h3>
               <div className="space-y-4">
@@ -274,10 +274,10 @@ export const UserProfilePage = () => {
 
             {/* Languages */}
             {profile?.languages && profile.languages.length > 0 && (
-              <div className="bg-white rounded-lg border border-stone-200 p-6">
+              <div className="bg-card border-border rounded-lg border p-6">
                 <div className="flex items-center gap-2 mb-4">
-                  <Languages className="w-5 h-5 text-primary" />
-                  <h3 className="text-lg font-semibold text-stone-900">
+                  <Languages className="w-5 h-5 text-primary" strokeWidth={1.5} />
+                  <h3 className="text-lg font-semibold text-foreground">
                     Languages
                   </h3>
                 </div>
@@ -286,7 +286,7 @@ export const UserProfilePage = () => {
                     <Badge
                       key={lang}
                       variant="outline"
-                      className="border-stone-200 text-stone-600 text-sm font-normal"
+                      className="text-sm font-medium"
                     >
                       {getLanguageName(lang)}
                     </Badge>
@@ -297,10 +297,10 @@ export const UserProfilePage = () => {
 
             {/* Social Links */}
             {profile?.socialLinks && profile.socialLinks.length > 0 && (
-              <div className="bg-white rounded-lg border border-stone-200 p-6">
+              <div className="bg-card border-border rounded-lg border p-6">
                 <div className="flex items-center gap-2 mb-4">
-                  <Globe className="w-5 h-5 text-primary" />
-                  <h3 className="text-lg font-semibold text-stone-900">
+                  <Globe className="w-5 h-5 text-primary" strokeWidth={1.5} />
+                  <h3 className="text-lg font-semibold text-foreground">
                     Links
                   </h3>
                 </div>
@@ -311,7 +311,7 @@ export const UserProfilePage = () => {
                       href={link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-sm text-stone-600 hover:text-primary transition-colors"
+                      className="text-muted-foreground hover:text-foreground flex items-center gap-2 text-sm transition-colors"
                     >
                       <LinkIcon className="w-4 h-4" />
                       <span className="truncate">{link}</span>
@@ -322,19 +322,15 @@ export const UserProfilePage = () => {
             )}
 
             {/* Quick Stats */}
-            <div className="bg-primary rounded-lg p-6 relative overflow-hidden">
-              {/* Decorative elements */}
-              <div className="absolute top-0 right-0 w-24 h-24 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
-              <div className="absolute bottom-0 left-0 w-16 h-16 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
-
-              <div className="relative z-10">
-                <h3 className="font-semibold text-white mb-4">Quick Stats</h3>
+            <div className="bg-card border-border rounded-lg border p-6">
+              <div>
+                <h3 className="mb-4 font-semibold text-foreground">Quick Stats</h3>
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-accent">
+                  <div>
+                    <div className="text-primary text-2xl font-semibold">
                       {skillProfile?.offered?.length || 0}
                     </div>
-                    <div className="text-xs text-white/70">
+                    <div className="text-muted-foreground text-xs">
                       {pluralize(
                         skillProfile?.offered?.length || 0,
                         "Skill",
@@ -343,11 +339,11 @@ export const UserProfilePage = () => {
                       Teaching
                     </div>
                   </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-accent">
+                  <div>
+                    <div className="text-primary text-2xl font-semibold">
                       {skillProfile?.wanted?.length || 0}
                     </div>
-                    <div className="text-xs text-white/70">
+                    <div className="text-muted-foreground text-xs">
                       {pluralize(
                         skillProfile?.wanted?.length || 0,
                         "Skill",
@@ -356,23 +352,23 @@ export const UserProfilePage = () => {
                       Learning
                     </div>
                   </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-accent">
+                  <div>
+                    <div className="text-primary text-2xl font-semibold">
                       {skillProfile?.offered?.reduce(
                         (sum, s) => sum + s.hoursTaught,
                         0,
                       ) || 0}
                     </div>
-                    <div className="text-xs text-white/70">Hours Taught</div>
+                    <div className="text-muted-foreground text-xs">Hours Taught</div>
                   </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-accent">
+                  <div>
+                    <div className="text-primary text-2xl font-semibold">
                       {skillProfile?.wanted?.reduce(
                         (sum, s) => sum + s.hoursLearned,
                         0,
                       ) || 0}
                     </div>
-                    <div className="text-xs text-white/70">Hours Learned</div>
+                    <div className="text-muted-foreground text-xs">Hours Learned</div>
                   </div>
                 </div>
               </div>
@@ -420,12 +416,12 @@ const InfoItem = ({
   if (!value) return null;
   return (
     <div className="flex items-start gap-3">
-      <div className="w-8 h-8 rounded-lg bg-stone-100 flex items-center justify-center text-stone-500 shrink-0">
+      <div className="bg-secondary text-muted-foreground flex h-8 w-8 shrink-0 items-center justify-center rounded-lg">
         {icon}
       </div>
       <div>
-        <p className="text-xs text-stone-400">{label}</p>
-        <p className="text-sm text-stone-700">{value}</p>
+        <p className="text-muted-foreground text-xs">{label}</p>
+        <p className="text-sm text-foreground">{value}</p>
       </div>
     </div>
   );

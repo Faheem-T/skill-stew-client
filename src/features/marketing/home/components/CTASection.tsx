@@ -8,34 +8,34 @@ export const CTASection: React.FC = () => {
   const navigate = useNavigate();
   return (
     <section className="py-24 md:py-32">
-      <div className="container mx-auto px-6 md:px-12">
-        {/* Main CTA */}
-        <div className="bg-primary rounded-xl p-8 md:p-16 text-center relative overflow-hidden">
-          {/* Decorative elements */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
-
-          <div className="relative z-10">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-tight">
+      <div className="mx-auto max-w-[1200px] px-4 md:px-20">
+        <div className="bg-card border-border rounded-lg border p-8 md:p-16">
+          <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
+            <div>
+              <p className="text-muted-foreground text-[11px] font-medium uppercase tracking-[0.08em]">
+                Start learning
+              </p>
+              <h2 className="mt-4 text-3xl font-semibold text-foreground md:text-4xl lg:text-5xl">
               Ready to start learning?
-            </h2>
-            <p className="mt-4 text-lg text-white/80 max-w-xl mx-auto">
-              Join our community of learners and teachers. Your next skill is
-              just a click away.
-            </p>
-            <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+              </h2>
+              <p className="text-muted-foreground mt-4 max-w-xl text-lg">
+                Join a platform built around live teaching, trusted experts,
+                and workshop momentum that lasts beyond a single session.
+              </p>
+            </div>
+            <div className="flex flex-col gap-4 sm:flex-row">
               <Button
                 size="lg"
-                className="bg-white text-primary hover:bg-white/90 rounded-lg px-8 h-12 text-base font-medium"
+                className="px-8"
                 onClick={() => navigate(RoutePath.Register)}
               >
                 Get Started
-                <ArrowRight className="ml-2 h-4 w-4" />
+                <ArrowRight className="ml-2 h-4 w-4" strokeWidth={1.5} />
               </Button>
               <Button
                 variant="outline"
                 size="lg"
-                className="border-white/60 text-primary hover:bg-white/15 hover:border-white rounded-lg px-8 h-12 text-base font-medium"
+                className="px-8"
                 onClick={() => navigate(RoutePath.Login)}
               >
                 Log In
@@ -44,19 +44,18 @@ export const CTASection: React.FC = () => {
           </div>
         </div>
 
-        {/* Expert CTA */}
-        <div className="mt-8 bg-stone-900 rounded-xl p-8 md:p-12 text-center md:text-left md:flex md:items-center md:justify-between">
+        <div className="bg-background border-border mt-8 rounded-lg border p-8 md:flex md:items-center md:justify-between md:p-12">
           <div>
-            <h3 className="text-2xl md:text-3xl font-bold text-white">
+            <h3 className="text-2xl font-semibold text-foreground md:text-3xl">
               Are you a professional?
             </h3>
-            <p className="mt-2 text-stone-400">
+            <p className="text-muted-foreground mt-2">
               Start teaching and earning by becoming a verified expert.
             </p>
           </div>
           <Button
             size="lg"
-            className="mt-6 md:mt-0 bg-accent text-primary hover:bg-accent/90 rounded-lg px-6 h-11 font-medium"
+            className="mt-6 px-6 md:mt-0"
             onClick={() => navigate(RoutePath.ExpertRegister)}
           >
             Apply to become an Expert

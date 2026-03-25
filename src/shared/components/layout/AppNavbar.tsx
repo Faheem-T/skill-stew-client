@@ -21,6 +21,7 @@ import { InitialLoadScreen } from "@/app/pages/InitialLoadScreen";
 import { RoutePath } from "@/shared/config/routes";
 import { useQuery } from "@tanstack/react-query";
 import { getUnreadCountRequest } from "@/features/notification/api/GetUnreadCount";
+import { ThemeToggle } from "@/shared/components/theme/ThemeToggle";
 
 /**
  * AppNavbar - Navigation bar for authenticated users
@@ -38,14 +39,14 @@ export const AppNavbar: React.FC = () => {
   }
 
   return (
-    <div className="h-16 flex items-center justify-between bg-white border-b border-stone-200 px-6 md:px-12 sticky top-0 z-50">
+    <div className="border-border/80 bg-background/95 sticky top-0 z-50 flex h-14 items-center justify-between border-b px-4 md:px-10">
       {/* Logo */}
       <Link
         to={RoutePath.Dashboard}
         className="h-full flex items-center gap-2.5"
       >
         <img src="/logo.png" className="h-9 w-9 object-contain" />
-        <span className="font-semibold text-lg text-primary">{APP_NAME}</span>
+        <span className="text-lg font-semibold text-foreground">{APP_NAME}</span>
       </Link>
 
       {/* Navigation links - centered */}
@@ -54,9 +55,11 @@ export const AppNavbar: React.FC = () => {
           <Button
             variant="ghost"
             className={
-              isActive(RoutePath.Dashboard) || isActive(RoutePath.UserDashboard)
-                ? "text-primary bg-primary/10"
-                : "text-stone-600 hover:text-primary hover:bg-stone-100"
+              isActive(RoutePath.Dashboard) ||
+              isActive(RoutePath.UserDashboard) ||
+              isActive(RoutePath.ExpertDashboard)
+                ? "bg-secondary text-foreground"
+                : ""
             }
           >
             Dashboard
@@ -67,8 +70,8 @@ export const AppNavbar: React.FC = () => {
             variant="ghost"
             className={
               isActive(RoutePath.Workshops)
-                ? "text-primary bg-primary/10"
-                : "text-stone-600 hover:text-primary hover:bg-stone-100"
+                ? "bg-secondary text-foreground"
+                : ""
             }
           >
             Workshops
@@ -79,8 +82,8 @@ export const AppNavbar: React.FC = () => {
             variant="ghost"
             className={
               isActive(RoutePath.Exchanges)
-                ? "text-primary bg-primary/10"
-                : "text-stone-600 hover:text-primary hover:bg-stone-100"
+                ? "bg-secondary text-foreground"
+                : ""
             }
           >
             Skill Exchanges
@@ -91,8 +94,8 @@ export const AppNavbar: React.FC = () => {
             variant="ghost"
             className={
               isActive(RoutePath.Community)
-                ? "text-primary bg-primary/10"
-                : "text-stone-600 hover:text-primary hover:bg-stone-100"
+                ? "bg-secondary text-foreground"
+                : ""
             }
           >
             Community
@@ -102,12 +105,13 @@ export const AppNavbar: React.FC = () => {
 
       {/* Right side actions */}
       <div className="flex items-center gap-3">
+        <ThemeToggle />
         {/* Search */}
         <div className="hidden lg:block relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-400" />
+          <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" strokeWidth={1.5} />
           <Input
             placeholder="Search workshops, users..."
-            className="pl-9 w-64 h-9 bg-stone-50 border-stone-200 focus-visible:ring-primary/20"
+            className="h-9 w-64 pl-9"
           />
         </div>
 
@@ -129,7 +133,7 @@ const UserAvatar: React.FC = () => {
   if (isProfilePending) {
     return (
       <Avatar className="h-9 w-9 cursor-pointer">
-        <AvatarFallback className="bg-stone-200 text-stone-600 text-sm">
+        <AvatarFallback className="bg-secondary text-muted-foreground text-sm">
           ...
         </AvatarFallback>
       </Avatar>
@@ -139,7 +143,7 @@ const UserAvatar: React.FC = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Avatar className="h-9 w-9 cursor-pointer ring-2 ring-primary/20 hover:ring-primary/40 transition-all overflow-hidden rounded-full">
+        <Avatar className="border-border hover:border-primary h-9 w-9 cursor-pointer overflow-hidden rounded-full border transition-colors">
           <AvatarImage
             src={
               userProfile?.role === "USER" || userProfile?.role === "ADMIN"
@@ -148,59 +152,47 @@ const UserAvatar: React.FC = () => {
             }
             className="h-full w-full object-cover"
           />
-          <AvatarFallback className="bg-stone-200 text-stone-600 text-sm font-medium">
+          <AvatarFallback className="bg-secondary text-muted-foreground text-sm font-medium">
             {userProfile?.email.slice(0, 2).toUpperCase()}
           </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
-      <DropdownMenuContent
-        align="end"
-        className="w-48 rounded-lg border-stone-200"
-      >
+      <DropdownMenuContent align="end" className="w-48">
         <DropdownMenuItem className="flex flex-col items-start py-3">
-          <div className="text-sm font-medium text-stone-900">
+          <div className="text-sm font-medium text-foreground">
             {userProfile?.role === "USER" && userProfile?.name
               ? userProfile.name
               : userProfile?.email}
           </div>
-          <div className="text-xs text-stone-500 mt-0.5">
+          <div className="text-muted-foreground mt-0.5 text-xs">
             {(userProfile?.role === "USER" || userProfile?.role === "ADMIN") &&
               userProfile?.username &&
               `@${userProfile.username}`}
           </div>
         </DropdownMenuItem>
-        <DropdownMenuItem disabled className="h-px bg-stone-100 p-0" />
+        <DropdownMenuItem disabled className="bg-border h-px p-0" />
         <DropdownMenuItem asChild>
-          <Link
-            to={RoutePath.Dashboard}
-            className="cursor-pointer text-stone-600 hover:text-primary"
-          >
+          <Link to={RoutePath.Dashboard} className="cursor-pointer">
             Dashboard
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link
-            to={RoutePath.UserProfile}
-            className="cursor-pointer text-stone-600 hover:text-primary"
-          >
+          <Link to={RoutePath.UserProfile} className="cursor-pointer">
             Profile
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link
-            to={RoutePath.Settings}
-            className="cursor-pointer text-stone-600 hover:text-primary"
-          >
+          <Link to={RoutePath.Settings} className="cursor-pointer">
             Settings
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem disabled className="h-px bg-stone-100 p-0" />
+        <DropdownMenuItem disabled className="bg-border h-px p-0" />
         <DropdownMenuItem asChild>
           <Button
             disabled={isPending}
             onClick={() => mutate()}
             variant="ghost"
-            className="w-full justify-start text-stone-600 hover:text-primary h-auto p-2"
+            className="h-auto w-full justify-start p-2"
           >
             {isPending ? "Logging out..." : "Log Out"}
           </Button>
@@ -224,11 +216,11 @@ const NotificationBell: React.FC = () => {
       <Button
         variant="ghost"
         size="icon"
-        className="relative text-stone-600 hover:text-primary"
+        className="relative"
       >
         <Bell className="h-5 w-5" />
         {count > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
+          <span className="bg-live text-live-foreground absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-bold">
             {count > 99 ? "99+" : count}
           </span>
         )}

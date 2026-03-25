@@ -58,17 +58,17 @@ function getNotificationSubtext(notification: Notification): string {
 function getNotificationIcon(type: NotificationType) {
   switch (type) {
     case NotificationType.CONNECTION_REQUEST:
-      return <UserPlus className="w-4 h-4 text-blue-600" />;
+      return <UserPlus className="text-info h-4 w-4" strokeWidth={1.5} />;
     case NotificationType.CONNECTION_ACCEPTED:
-      return <UserCheck className="w-4 h-4 text-green-600" />;
+      return <UserCheck className="text-success h-4 w-4" strokeWidth={1.5} />;
     case NotificationType.CONNECTION_REJECTED:
-      return <UserX className="w-4 h-4 text-stone-500" />;
+      return <UserX className="text-muted-foreground h-4 w-4" strokeWidth={1.5} />;
     case NotificationType.EXPERT_APPLICATION_SUBMITTED:
-      return <FileClock className="w-4 h-4 text-primary" />;
+      return <FileClock className="text-primary h-4 w-4" strokeWidth={1.5} />;
     case NotificationType.EXPERT_APPLICATION_APPROVED:
-      return <BadgeCheck className="w-4 h-4 text-green-600" />;
+      return <BadgeCheck className="text-success h-4 w-4" strokeWidth={1.5} />;
     case NotificationType.EXPERT_APPLICATION_REJECTED:
-      return <BadgeX className="w-4 h-4 text-red-600" />;
+      return <BadgeX className="text-destructive h-4 w-4" strokeWidth={1.5} />;
     default:
       return null;
   }
@@ -161,11 +161,11 @@ export const NotificationItem = ({ notification }: NotificationItemProps) => {
   return (
     <div
       onClick={handleClick}
-      className={`p-4 rounded-lg border transition-colors ${
+      className={`rounded-lg border p-4 transition-colors ${
         notification.isRead
-          ? "bg-white border-stone-200"
-          : "bg-accent/5 border-accent/30"
-      } ${isClickable ? "cursor-pointer hover:border-primary/40 hover:shadow-sm" : ""}`}
+          ? "bg-card border-border"
+          : "bg-secondary/50 border-primary/25"
+      } ${isClickable ? "cursor-pointer hover:border-primary" : ""}`}
     >
       <div className="flex items-start gap-3">
         {/* Avatar or icon */}
@@ -174,26 +174,26 @@ export const NotificationItem = ({ notification }: NotificationItemProps) => {
             {avatarUrl && (
               <AvatarImage src={avatarUrl} className="object-cover" />
             )}
-            <AvatarFallback className="bg-stone-100 text-stone-500">
+            <AvatarFallback className="bg-secondary text-muted-foreground">
               {getNotificationIcon(notification.data.type)}
             </AvatarFallback>
           </Avatar>
           {/* Unread dot */}
           {!notification.isRead && (
-            <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-primary border-2 border-white" />
+            <div className="bg-live border-card absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2" />
           )}
         </div>
 
         <div className="flex-1 min-w-0">
           <p
-            className={`text-sm ${notification.isRead ? "text-stone-700" : "text-stone-900 font-semibold"}`}
+            className={`text-sm ${notification.isRead ? "text-foreground" : "text-foreground font-semibold"}`}
           >
             {notification.title}
           </p>
-          <p className="text-sm text-stone-500 mt-0.5">
+          <p className="text-muted-foreground mt-0.5 text-sm">
             {notification.message}
           </p>
-          <p className="text-xs text-stone-400 mt-1">
+          <p className="text-muted-foreground mt-1 text-xs">
             {getNotificationSubtext(notification)} ·{" "}
             {new Date(notification.createdAt).toLocaleDateString(undefined, {
               month: "short",
@@ -210,9 +210,9 @@ export const NotificationItem = ({ notification }: NotificationItemProps) => {
             <TooltipTrigger asChild>
               <button
                 onClick={handleMarkAsRead}
-                className="shrink-0 p-1.5 rounded-md text-stone-400 hover:text-primary hover:bg-stone-100 transition-colors"
+                className="text-muted-foreground hover:bg-secondary hover:text-foreground shrink-0 rounded-md p-1.5 transition-colors"
               >
-                <MailOpen className="w-4 h-4" />
+                <MailOpen className="h-4 w-4" strokeWidth={1.5} />
               </button>
             </TooltipTrigger>
             <TooltipContent>Mark as read</TooltipContent>

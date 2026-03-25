@@ -61,11 +61,11 @@ export const PersonCard = ({
   return (
     <div
       onClick={handleCardClick}
-      className="p-4 border border-stone-200 rounded-lg hover:border-primary/50 hover:shadow-md transition-all bg-white cursor-pointer"
+      className="bg-card border-border hover:border-primary rounded-lg border p-4 transition-colors cursor-pointer"
     >
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-start gap-4 flex-1 min-w-0">
-          <div className="w-12 h-12 rounded-full shrink-0 overflow-hidden bg-accent/20 flex items-center justify-center">
+          <div className="bg-secondary flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full">
             {avatarUrl ? (
               <img
                 src={avatarUrl}
@@ -77,20 +77,20 @@ export const PersonCard = ({
             )}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="font-semibold text-stone-900 truncate">
+            <p className="truncate font-semibold text-foreground">
               {name || username || "User"}
             </p>
-            {location && <p className="text-sm text-stone-500">{location}</p>}
+            {location && <p className="text-muted-foreground text-sm">{location}</p>}
             {offeredSkills && offeredSkills.length > 0 && (
               <div className="mt-2">
-                <p className="text-xs font-medium text-stone-600 mb-1">
+                <p className="text-muted-foreground mb-1 text-xs font-medium">
                   Offers:
                 </p>
                 <div className="flex flex-wrap gap-1">
                   {offeredSkills.map((skill) => (
                     <span
                       key={skill.skillId}
-                      className="text-xs bg-primary/10 text-primary px-2 py-1 rounded"
+                      className="bg-secondary text-secondary-foreground rounded-sm px-2 py-1 text-xs"
                     >
                       {skill.skillName}
                     </span>
@@ -100,14 +100,14 @@ export const PersonCard = ({
             )}
             {wantedSkills && wantedSkills.length > 0 && (
               <div className="mt-2">
-                <p className="text-xs font-medium text-stone-600 mb-1">
+                <p className="text-muted-foreground mb-1 text-xs font-medium">
                   Wants to learn:
                 </p>
                 <div className="flex flex-wrap gap-1">
                   {wantedSkills.map((skill) => (
                     <span
                       key={skill.skillId}
-                      className="text-xs bg-accent/30 text-stone-700 px-2 py-1 rounded"
+                      className="bg-accent text-accent-foreground rounded-sm px-2 py-1 text-xs"
                     >
                       {skill.skillName}
                     </span>
@@ -118,12 +118,12 @@ export const PersonCard = ({
           </div>
         </div>
         {isSuccess ? (
-          <span className="px-4 py-2 rounded-lg text-sm font-medium shrink-0 bg-yellow-100 text-yellow-800 border border-yellow-300">
+          <span className="bg-warning-muted text-foreground border-border shrink-0 rounded-md border px-4 py-2 text-sm font-medium">
             Pending
           </span>
         ) : (
           <button
-            className="px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors shrink-0 whitespace-nowrap disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
+            className="bg-primary text-primary-foreground flex shrink-0 items-center gap-2 rounded-md px-4 py-2 font-medium whitespace-nowrap disabled:cursor-not-allowed disabled:opacity-40"
             onClick={handleConnect}
             disabled={isPending}
           >

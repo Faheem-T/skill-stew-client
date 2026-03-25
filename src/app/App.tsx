@@ -3,10 +3,11 @@ import { Toaster } from "react-hot-toast";
 import { RouterProvider } from "react-router";
 import { router, queryClient } from "./router";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { ThemeProvider } from "@/shared/theme/theme";
 
 function App() {
   return (
-    <>
+    <ThemeProvider>
       <QueryClientProvider client={queryClient}>
         <Toaster
           position="bottom-left"
@@ -20,10 +21,9 @@ function App() {
             style: {
               background: "var(--popover)",
               color: "var(--popover-foreground)",
-              border: "1px solid color-mix(in srgb, var(--border) 82%, white)",
-              borderRadius: "20px",
-              boxShadow:
-                "0 20px 50px rgba(15, 23, 42, 0.12), 0 6px 18px rgba(15, 23, 42, 0.08)",
+              border: "1px solid var(--border)",
+              borderRadius: "8px",
+              boxShadow: "var(--shadow-md)",
               padding: "14px 16px",
               fontFamily: "var(--font-sans)",
               fontSize: "14px",
@@ -33,14 +33,13 @@ function App() {
             success: {
               duration: 3500,
               iconTheme: {
-                primary: "var(--primary)",
-                secondary: "var(--accent)",
+                primary: "var(--success)",
+                secondary: "var(--success-foreground)",
               },
               style: {
-                background:
-                  "linear-gradient(135deg, color-mix(in srgb, var(--accent) 40%, white), var(--popover))",
-                border:
-                  "1px solid color-mix(in srgb, var(--accent) 55%, var(--border))",
+                background: "var(--success-muted)",
+                color: "var(--foreground)",
+                border: "1px solid var(--border)",
               },
             },
             error: {
@@ -50,22 +49,19 @@ function App() {
                 secondary: "var(--destructive-foreground)",
               },
               style: {
-                background:
-                  "linear-gradient(135deg, color-mix(in srgb, var(--destructive) 12%, white), var(--popover))",
-                border:
-                  "1px solid color-mix(in srgb, var(--destructive) 28%, var(--border))",
+                background: "var(--popover)",
+                border: "1px solid var(--destructive)",
               },
             },
             loading: {
               iconTheme: {
-                primary: "var(--primary)",
-                secondary: "var(--accent)",
+                primary: "var(--info)",
+                secondary: "var(--info-foreground)",
               },
               style: {
-                background:
-                  "linear-gradient(135deg, color-mix(in srgb, var(--primary) 10%, white), var(--popover))",
-                border:
-                  "1px solid color-mix(in srgb, var(--primary) 18%, var(--border))",
+                background: "var(--info-muted)",
+                color: "var(--foreground)",
+                border: "1px solid var(--border)",
               },
             },
           }}
@@ -73,7 +69,7 @@ function App() {
         <RouterProvider router={router} />
         <ReactQueryDevtools />
       </QueryClientProvider>
-    </>
+    </ThemeProvider>
   );
 }
 

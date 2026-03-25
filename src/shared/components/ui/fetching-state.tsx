@@ -9,7 +9,7 @@ type FetchingStateProps = {
 
 const containerVariants = {
   page: "min-h-screen w-full",
-  section: "w-full min-h-64 rounded-xl border border-stone-200 bg-stone-50 px-6 py-16",
+  section: "bg-card border-border w-full min-h-64 rounded-lg border px-6 py-16",
   inline: "w-full py-6",
 } as const
 
@@ -44,17 +44,16 @@ export function FetchingState({
           alt=""
           aria-hidden="true"
           className={cn(
-            "animate-pulseColor object-contain",
+            "animate-live-pulse object-contain",
             logoVariants[variant],
             logoClassName,
           )}
         />
         <span className="sr-only">{accessibleLabel}</span>
         {label ? (
-          <p className="max-w-sm text-sm text-stone-600">{label}</p>
+          <p className="text-muted-foreground max-w-sm text-sm">{label}</p>
         ) : null}
       </div>
     </div>
   )
 }
-

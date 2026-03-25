@@ -8,6 +8,7 @@ import {
 import type React from "react";
 import { InitialLoadScreen } from "@/app/pages/InitialLoadScreen";
 import { useAdminProfile } from "@/shared/hooks/useAdminProfile";
+import { ThemeToggle } from "@/shared/components/theme/ThemeToggle";
 
 export const AdminTopBar: React.FC<{
   mainText: string;
@@ -21,18 +22,19 @@ export const AdminTopBar: React.FC<{
   }
 
   return (
-    <div className="flex justify-between items-center m-4 h-14">
+    <div className="border-border bg-background/95 sticky top-0 z-20 flex h-14 items-center justify-between border-b px-4 md:px-8">
       <div className="flex flex-col gap-1">
-        <div className="font-bold text-3xl">{mainText}</div>
-        {subText && <div className="text-muted-foreground">{subText}</div>}
+        <div className="text-2xl font-semibold">{mainText}</div>
+        {subText && <div className="text-muted-foreground text-sm">{subText}</div>}
       </div>
       {!sideItems ? (
-        <div className="flex gap-4">
+        <div className="flex items-center gap-3">
+          <ThemeToggle />
           <Button type="button" variant="outline" size="icon">
-            <Bell />
+            <Bell strokeWidth={1.5} />
           </Button>
           <Button type="button" variant="outline" size="icon">
-            <MessageSquareDotIcon />
+            <MessageSquareDotIcon strokeWidth={1.5} />
           </Button>
           <Avatar className="rounded-full">
             <AvatarImage src="person.jpg" className="object-cover" />

@@ -10,10 +10,19 @@ The frontend client for **SkillStew**, a platform for discovering and attending 
 
 This client interfaces with the [skill-stew-api](https://github.com/Faheem-T/skill-stew-api) backend, which powers the microservices architecture. This repository is built with a modern React stack and organized using feature-sliced design principles.
 
+## Design System
+
+The frontend design system lives in [docs/design-system.md](/home/faheem/Work/dev/brototype/skillStew/skill-stew-client/docs/design-system.md) and is the single source of truth for UI decisions.
+
+- All colors must come from CSS variables defined in `src/index.css`
+- The app ships with light and dark themes via a persisted theme preference
+- Typography is constrained to `Playfair Display` for marketing display headings, `DM Sans` for UI/body copy, and `JetBrains Mono` for technical metadata
+- UI must follow the three-zone model from the design system: Marketing, App Interior, and Live Streaming
+
 ## Tech Stack
 
 - **Framework**: React 19 + Vite
-- **Styling**: Tailwind CSS v4 + Shadcn UI (Radix UI Primitives) + Lucide Icons
+- **Styling**: Tailwind CSS v4 + Radix UI Primitives + Lucide Icons + token-driven design system
 - **State Management**:
   - Zustand (Global Application State)
   - TanStack React Query v5 (Data Fetching & Server State)

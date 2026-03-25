@@ -125,7 +125,7 @@ export const GoogleLoginButton = ({
     return () => {
       window.googleAuthCallback = () => {};
     };
-  }, [googleAuthFn, navigate, queryClient, setAccessToken]);
+  }, [expectedRole, googleAuthFn, navigate, queryClient, setAccessToken]);
   return (
     <div>
       <div ref={buttonRef} />

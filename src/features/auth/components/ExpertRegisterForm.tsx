@@ -92,16 +92,16 @@ export const ExpertRegisterForm = () => {
   };
 
   return (
-    <div className="rounded-4xl border border-stone-200 bg-stone-50 p-8 shadow-[0_24px_80px_-48px_rgba(68,26,26,0.45)] sm:p-10">
+    <div className="bg-card border-border rounded-lg border p-8 sm:p-10">
       <div className="mb-8 space-y-3">
-        <div className="inline-flex items-center rounded-full border border-primary/15 bg-primary/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-primary">
+        <div className="bg-secondary text-secondary-foreground inline-flex items-center rounded-sm border border-transparent px-2 py-0.5 text-[11px] font-medium uppercase tracking-[0.08em]">
           Expert access
         </div>
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-stone-900">
+          <h2 className="text-2xl font-semibold text-foreground">
             Create your expert account
           </h2>
-          <p className="mt-2 text-sm leading-6 text-stone-600">
+          <p className="text-muted-foreground mt-2 text-sm leading-6">
             Set up your account to begin your expert verification journey on
             Skill Stew.
           </p>
@@ -115,12 +115,12 @@ export const ExpertRegisterForm = () => {
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-stone-700">Email</FormLabel>
+                <FormLabel>Email</FormLabel>
                 <FormControl>
                   <Input
                     {...field}
                     placeholder="expert@example.com"
-                    className="h-12 rounded-xl border-stone-300 bg-white focus-visible:border-primary focus-visible:ring-primary/20"
+                    className="h-11"
                   />
                 </FormControl>
                 <FormMessage />
@@ -133,12 +133,12 @@ export const ExpertRegisterForm = () => {
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-stone-700">Password</FormLabel>
+                <FormLabel>Password</FormLabel>
                 <FormControl>
                   <PasswordInput
                     {...field}
                     placeholder="Create a strong password"
-                    className="h-12 rounded-xl border-stone-300 bg-white focus-visible:border-primary focus-visible:ring-primary/20"
+                    className="h-11"
                   />
                 </FormControl>
                 <FormMessage />
@@ -151,15 +151,13 @@ export const ExpertRegisterForm = () => {
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-stone-700">
-                  Confirm password
-                </FormLabel>
+                <FormLabel>Confirm password</FormLabel>
                 <FormControl>
                   <PasswordInput
                     {...field}
                     placeholder="Confirm your password"
                     autoComplete="off"
-                    className="h-12 rounded-xl border-stone-300 bg-white focus-visible:border-primary focus-visible:ring-primary/20"
+                    className="h-11"
                   />
                 </FormControl>
                 <FormMessage />
@@ -168,14 +166,14 @@ export const ExpertRegisterForm = () => {
           />
 
           {form.formState.errors.root && (
-            <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+            <div className="border-destructive/30 text-destructive rounded-lg border px-4 py-3 text-sm">
               {form.formState.errors.root.message}
             </div>
           )}
 
           <Button
             type="submit"
-            className="h-12 w-full rounded-xl bg-primary text-primary-foreground hover:bg-primary/90"
+            className="h-11 w-full"
             disabled={isPending}
           >
             {isPending ? "Creating expert account..." : "Continue as expert"}
@@ -183,14 +181,14 @@ export const ExpertRegisterForm = () => {
 
           <div className="relative py-1">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-stone-200" />
+              <div className="border-border w-full border-t" />
             </div>
-            <div className="relative flex justify-center text-xs uppercase tracking-[0.2em] text-stone-500">
-              <span className="bg-stone-50 px-3">Or use Google</span>
+            <div className="text-muted-foreground relative flex justify-center text-[11px] font-medium uppercase tracking-[0.08em]">
+              <span className="bg-card px-3">Or use Google</span>
             </div>
           </div>
 
-          <div className="flex justify-center rounded-xl border border-dashed border-stone-200 bg-white px-4 py-4">
+          <div className="border-border flex justify-center rounded-lg border px-4 py-4">
             <GoogleLoginButton expectedRole="EXPERT_APPLICANT" />
           </div>
         </form>

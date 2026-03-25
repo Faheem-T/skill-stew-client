@@ -91,7 +91,7 @@ export const ReviewActions = ({ applicationId }: Props) => {
 
   if (confirming === "approve") {
     return (
-      <div className="flex items-center gap-2">
+      <div className="bg-card border-border flex items-center gap-2 rounded-lg border p-3">
         <span className="text-sm text-muted-foreground">Approve this application?</span>
         <Button
           type="button"
@@ -116,7 +116,7 @@ export const ReviewActions = ({ applicationId }: Props) => {
 
   if (confirming === "reject") {
     return (
-      <div className="flex flex-col gap-2 w-full max-w-sm">
+      <div className="bg-card border-border flex w-full max-w-sm flex-col gap-2 rounded-lg border p-3">
         <Textarea
           placeholder="Rejection reason (optional)"
           value={rejectionReason}

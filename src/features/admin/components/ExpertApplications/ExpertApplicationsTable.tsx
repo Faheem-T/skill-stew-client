@@ -45,22 +45,26 @@ export const ExpertApplicationsTable = ({
   }
 
   if (isError || !data) {
-    return <div>Could not load expert applications.</div>;
+    return (
+      <div className="bg-card border-border rounded-lg border p-6 text-sm text-muted-foreground">
+        Could not load expert applications.
+      </div>
+    );
   }
 
   const applications = data.pages.flatMap((page) => page.data);
-  console.log(applications);
 
   if (applications.length === 0) {
     return (
-      <div className="rounded-xl border border-stone-200 bg-stone-50 p-6 text-sm text-muted-foreground">
+      <div className="bg-card border-border rounded-lg border p-6 text-sm text-muted-foreground">
         No expert applications found for the current filter.
       </div>
     );
   }
 
   return (
-    <Table>
+    <div className="bg-card border-border overflow-hidden rounded-lg border">
+      <Table>
       <TableHeader>
         <TableRow>
           <TableHead>Applicant</TableHead>
@@ -98,7 +102,8 @@ export const ExpertApplicationsTable = ({
           </TableRow>
         </TableFooter>
       )}
-    </Table>
+      </Table>
+    </div>
   );
 };
 
@@ -128,7 +133,7 @@ const ExpertApplicationRow = ({
       <TableCell className="max-w-72 whitespace-normal">
         <div className="font-medium">{application.proposedTitle}</div>
         {application.socialLinks.length > 0 && (
-          <div className="text-muted-foreground">
+          <div className="text-muted-foreground text-sm">
             {application.socialLinks.length} social{" "}
             {application.socialLinks.length === 1 ? "link" : "links"}
           </div>

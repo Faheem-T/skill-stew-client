@@ -26,7 +26,7 @@ export const ExpertApplicationsPage = () => {
   const selectedStatus = getStatusFromSearchParams(searchParams.get("status"));
 
   return (
-    <div>
+    <div className="bg-background min-h-screen">
       <AdminTopBar
         mainText="Expert Applications"
         subText="Review incoming expert applications submitted by instructors."
@@ -60,10 +60,9 @@ export const ExpertApplicationsPage = () => {
           </div>
         }
       />
-      <div className="p-4 md:p-6">
+      <div className="mx-auto max-w-[1200px] px-4 py-6 md:px-8">
         <ExpertApplicationsTable filters={{ status: selectedStatus }} />
       </div>
     </div>
   );
 };
-

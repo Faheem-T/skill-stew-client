@@ -17,7 +17,7 @@ export const HomePage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div className="bg-background min-h-screen">
       <TopBar />
       <HeroSection onLearnMoreButtonClick={handleLearnMoreButtonClick} />
       <InfoSection ref={sectionRef} />

@@ -18,10 +18,11 @@ import {
   FormLabel,
   FormMessage,
 } from "@/shared/components/ui/form";
-import { Input } from "@/shared/components/ui/input";
 import { Button } from "@/shared/components/ui/button";
-import { Carousel } from "@/shared/components/ui/Carousel";
 import { RoutePath } from "@/shared/config/routes";
+import { AuthSplitLayout } from "@/features/auth/components/AuthSplitLayout";
+import { LockKeyhole, ShieldCheck } from "lucide-react";
+import { PasswordInput } from "@/shared/components/ui/password-input";
 
 const setPasswordSchema = z
   .object({
@@ -100,21 +101,33 @@ export const SetPasswordPage = () => {
   }
 
   return (
-    <div className="flex justify-between h-full bg-primary">
-      <div className="w-2/3 h-screen text-background flex flex-col">
-        <div className="p-8">
-          <img src="logo.png" className="w-12" />
-          <h1 className="text-xl ">Welcome to SkillStew</h1>
+    <AuthSplitLayout
+      eyebrow="Account setup"
+      title="Create a password you can rely on."
+      description="Finish account setup with a strong password that matches the platform security requirements."
+      aside={
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="bg-background border-border rounded-lg border p-6">
+            <LockKeyhole className="text-primary h-5 w-5" strokeWidth={1.5} />
+            <p className="mt-6 text-sm font-semibold">Strong by default</p>
+            <p className="text-muted-foreground mt-2 text-sm">
+              Use a mix of uppercase, lowercase, numbers, and symbols.
+            </p>
+          </div>
+          <div className="bg-background border-border rounded-lg border p-6">
+            <ShieldCheck className="text-primary h-5 w-5" strokeWidth={1.5} />
+            <p className="mt-6 text-sm font-semibold">Protected access</p>
+            <p className="text-muted-foreground mt-2 text-sm">
+              This password secures future sign-ins and account recovery.
+            </p>
+          </div>
         </div>
-        <Carousel />
-      </div>
-      <div className="flex flex-col items-start text-foreground justify-center p-48 w-full rounded-tl-4xl bg-background">
-        <h1 className="text-3xl font-bold py-4">Set Password</h1>
+      }
+    >
+      <div className="bg-card border-border rounded-lg border p-8">
+        <h1 className="py-1 text-2xl font-semibold">Set Password</h1>
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-8 w-full"
-          >
+          <form onSubmit={form.handleSubmit(onSubmit)} className="mt-6 space-y-5">
             <FormField
               name="password"
               control={form.control}
@@ -123,7 +136,7 @@ export const SetPasswordPage = () => {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input placeholder="Password" type="password" {...field} />
+                    <PasswordInput placeholder="Password" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -137,9 +150,8 @@ export const SetPasswordPage = () => {
                 <FormItem>
                   <FormLabel>Confirm Password</FormLabel>
                   <FormControl>
-                    <Input
+                    <PasswordInput
                       placeholder="Confirm password"
-                      type="password"
                       {...field}
                     />
                   </FormControl>
@@ -149,22 +161,16 @@ export const SetPasswordPage = () => {
             />
 
             {form.formState.errors.root && (
-              <div className="text-red-500 text-sm">
+              <div className="text-destructive text-sm">
                 {form.formState.errors.root.message}
               </div>
             )}
-            <Button
-              type="submit"
-              disabled={isPending}
-              className="fixed right-8 bottom-8 font-bold"
-              size="lg"
-              variant="default"
-            >
-              Register
+            <Button type="submit" disabled={isPending} className="w-full">
+              {isPending ? "Saving..." : "Save password"}
             </Button>
           </form>
         </Form>
       </div>
-    </div>
+    </AuthSplitLayout>
   );
 };

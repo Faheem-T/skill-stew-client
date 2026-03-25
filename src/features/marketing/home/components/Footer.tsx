@@ -5,136 +5,72 @@ import { RoutePath } from "@/shared/config/routes";
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="bg-stone-900 text-white py-16">
-      <div className="container mx-auto px-6 md:px-12">
+    <footer className="bg-card border-border border-t py-16">
+      <div className="mx-auto max-w-[1200px] px-4 md:px-20">
         <div className="grid md:grid-cols-4 gap-8 md:gap-12">
-          {/* Brand */}
           <div className="md:col-span-2">
             <div className="flex items-center gap-2.5">
               <img src="/logo.png" className="h-8 w-8 object-contain" />
-              <span className="font-semibold text-lg">{APP_NAME}</span>
+              <span className="text-lg font-semibold text-foreground">{APP_NAME}</span>
             </div>
-            <p className="mt-4 text-stone-400 max-w-sm leading-relaxed">
+            <p className="text-muted-foreground mt-4 max-w-sm leading-relaxed">
               Connect with people who have the skills you need, and share your
               expertise in return. Learn, teach, and grow together.
             </p>
           </div>
 
-          {/* Links */}
           <div>
-            <h4 className="font-medium text-sm uppercase tracking-wider text-stone-400 mb-4">
+            <h4 className="text-muted-foreground mb-4 text-[11px] font-medium uppercase tracking-[0.08em]">
               Platform
             </h4>
             <ul className="space-y-3">
               <li>
-                <Link
-                  to={RoutePath.Login}
-                  className="text-stone-300 hover:text-white transition-colors"
-                >
-                  Log In
-                </Link>
+                <Link to={RoutePath.Login} className="text-muted-foreground hover:text-foreground transition-colors">Log In</Link>
               </li>
               <li>
-                <Link
-                  to={RoutePath.Register}
-                  className="text-stone-300 hover:text-white transition-colors"
-                >
-                  Sign Up
-                </Link>
+                <Link to={RoutePath.Register} className="text-muted-foreground hover:text-foreground transition-colors">Sign Up</Link>
               </li>
               <li>
-                <Link
-                  to={RoutePath.ExpertApplication}
-                  className="text-stone-300 hover:text-white transition-colors"
-                >
-                  Become an Expert
-                </Link>
+                <Link to={RoutePath.ExpertApplication} className="text-muted-foreground hover:text-foreground transition-colors">Become an Expert</Link>
               </li>
               <li>
-                <a
-                  href="#features"
-                  className="text-stone-300 hover:text-white transition-colors"
-                >
-                  Features
-                </a>
+                <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors">Features</a>
               </li>
               <li>
-                <a
-                  href="#how-it-works"
-                  className="text-stone-300 hover:text-white transition-colors"
-                >
-                  How it Works
-                </a>
+                <a href="#how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">How it Works</a>
               </li>
             </ul>
           </div>
 
-          {/* More links */}
           <div>
-            <h4 className="font-medium text-sm uppercase tracking-wider text-stone-400 mb-4">
+            <h4 className="text-muted-foreground mb-4 text-[11px] font-medium uppercase tracking-[0.08em]">
               Company
             </h4>
             <ul className="space-y-3">
               <li>
-                <a
-                  href="#"
-                  className="text-stone-300 hover:text-white transition-colors"
-                >
-                  About Us
-                </a>
+                <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">About Us</a>
               </li>
               <li>
-                <a
-                  href="#"
-                  className="text-stone-300 hover:text-white transition-colors"
-                >
-                  Contact
-                </a>
+                <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">Contact</a>
               </li>
               <li>
-                <a
-                  href="#"
-                  className="text-stone-300 hover:text-white transition-colors"
-                >
-                  Privacy Policy
-                </a>
+                <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">Privacy Policy</a>
               </li>
               <li>
-                <a
-                  href="#"
-                  className="text-stone-300 hover:text-white transition-colors"
-                >
-                  Terms of Service
-                </a>
+                <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">Terms of Service</a>
               </li>
             </ul>
           </div>
         </div>
 
-        {/* Bottom */}
-        <div className="mt-12 pt-8 border-t border-stone-800 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-stone-500 text-sm">
+        <div className="border-border mt-12 flex flex-col items-center justify-between gap-4 border-t pt-8 md:flex-row">
+          <p className="text-muted-foreground text-sm">
             © {new Date().getFullYear()} {APP_NAME}. All rights reserved.
           </p>
           <div className="flex gap-6">
-            <a
-              href="#"
-              className="text-stone-500 hover:text-white transition-colors text-sm"
-            >
-              Twitter
-            </a>
-            <a
-              href="#"
-              className="text-stone-500 hover:text-white transition-colors text-sm"
-            >
-              LinkedIn
-            </a>
-            <a
-              href="#"
-              className="text-stone-500 hover:text-white transition-colors text-sm"
-            >
-              Instagram
-            </a>
+            <a href="#" className="text-muted-foreground hover:text-foreground transition-colors text-sm">Twitter</a>
+            <a href="#" className="text-muted-foreground hover:text-foreground transition-colors text-sm">LinkedIn</a>
+            <a href="#" className="text-muted-foreground hover:text-foreground transition-colors text-sm">Instagram</a>
           </div>
         </div>
       </div>

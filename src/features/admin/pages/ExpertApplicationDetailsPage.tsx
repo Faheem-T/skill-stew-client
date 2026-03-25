@@ -58,13 +58,24 @@ export const ExpertApplicationDetailsPage = () => {
   }
 
   if (isError || !data) {
-    return <div className="p-6">Could not load the expert application.</div>;
+    return (
+      <div className="bg-background min-h-screen">
+        <AdminTopBar mainText="Application details" />
+        <div className="mx-auto max-w-[1200px] px-4 py-6 md:px-8">
+          <Card className="py-0">
+            <CardContent className="px-6 py-6 text-sm text-muted-foreground">
+              Could not load the expert application.
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
   }
 
   const application = data.data;
 
   return (
-    <div>
+    <div className="bg-background min-h-screen">
       <AdminTopBar
         mainText={application.fullName}
         subText="Review the submitted expert application details."
@@ -79,9 +90,9 @@ export const ExpertApplicationDetailsPage = () => {
           </div>
         }
       />
-      <div className="space-y-6 p-4 md:p-6">
+      <div className="mx-auto max-w-[1200px] space-y-6 px-4 py-6 md:px-8">
         <Card className="py-0">
-          <CardHeader className="border-b py-6">
+          <CardHeader className="border-border border-b py-6">
             <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
               <div className="space-y-2">
                 <CardTitle className="flex items-center gap-2">
@@ -254,7 +265,7 @@ const DetailSection = ({
 }) => {
   return (
     <Card className="py-0">
-      <CardHeader className="border-b py-6">
+      <CardHeader className="border-border border-b py-6">
         <CardTitle>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>

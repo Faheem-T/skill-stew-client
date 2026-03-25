@@ -9,6 +9,7 @@ export const RoutePath = {
   AdminLogin: "/admin/login",
   Dashboard: "/dashboard",
   UserDashboard: "/dashboard/user",
+  ExpertDashboard: "/dashboard/expert",
   UserProfile: "/profile",
   AdminDashboard: "/dashboard/admin",
   AdminUsers: "/admin/users",

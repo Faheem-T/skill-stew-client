@@ -48,49 +48,48 @@ export const ReviewsSection: React.FC = () => {
 
   return (
     <section id="reviews" className="py-24 md:py-32">
-      <div className="container mx-auto px-6 md:px-12">
+      <div className="mx-auto max-w-[1200px] px-4 md:px-20">
         <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
-          {/* Left side - Header */}
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold text-stone-900 tracking-tight">
+            <p className="text-muted-foreground text-[11px] font-medium uppercase tracking-[0.08em]">
+              Testimonials
+            </p>
+            <h2 className="mt-4 text-3xl font-semibold text-foreground md:text-4xl">
               See what our users have to say
             </h2>
-            <p className="mt-4 text-lg text-stone-600 leading-relaxed">
+            <p className="text-muted-foreground mt-4 text-lg leading-relaxed">
               Skill Stew has helped thousands learn new skills. Read their
               reviews to understand what they love about us.
             </p>
 
-            {/* Navigation buttons */}
             <div className="flex gap-3 mt-8">
               <button
                 onClick={prevReview}
-                className="w-10 h-10 rounded-lg border border-stone-300 flex items-center justify-center text-stone-600 hover:border-primary hover:text-primary transition-colors"
+                className="border-border text-muted-foreground hover:border-primary hover:text-foreground flex h-10 w-10 items-center justify-center rounded-md border transition-colors"
                 aria-label="Previous review"
               >
-                <ChevronLeft className="w-5 h-5" />
+                <ChevronLeft className="w-5 h-5" strokeWidth={1.5} />
               </button>
               <button
                 onClick={nextReview}
-                className="w-10 h-10 rounded-lg border border-stone-300 flex items-center justify-center text-stone-600 hover:border-primary hover:text-primary transition-colors"
+                className="border-border text-muted-foreground hover:border-primary hover:text-foreground flex h-10 w-10 items-center justify-center rounded-md border transition-colors"
                 aria-label="Next review"
               >
-                <ChevronRight className="w-5 h-5" />
+                <ChevronRight className="w-5 h-5" strokeWidth={1.5} />
               </button>
             </div>
           </div>
 
-          {/* Right side - Review card */}
           <div className="relative">
             <ReviewCard {...reviews[activeIndex]} />
 
-            {/* Dots indicator */}
             <div className="flex justify-center gap-2 mt-6">
               {reviews.map((_, index) => (
                 <button
                   key={index}
                   onClick={() => setActiveIndex(index)}
                   className={`w-2 h-2 rounded-full transition-colors ${
-                    index === activeIndex ? "bg-primary" : "bg-stone-300"
+                    index === activeIndex ? "bg-primary" : "bg-border"
                   }`}
                   aria-label={`Go to review ${index + 1}`}
                 />
@@ -109,21 +108,20 @@ const ReviewCard: React.FC<{
   role: string;
 }> = ({ message, name, role }) => {
   return (
-    <div className="bg-white border border-stone-200 rounded-lg p-6 md:p-8 relative">
-      {/* Quote icon */}
-      <div className="absolute -top-4 left-6 w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-        <Quote className="w-4 h-4 text-white" />
+    <div className="bg-card border-border relative rounded-lg border p-6 md:p-8">
+      <div className="bg-secondary absolute -top-4 left-6 flex h-8 w-8 items-center justify-center rounded-lg">
+        <Quote className="text-primary w-4 h-4" strokeWidth={1.5} />
       </div>
 
-      <p className="text-stone-700 leading-relaxed mt-4 text-lg">"{message}"</p>
+      <p className="text-foreground mt-4 text-lg leading-relaxed">"{message}"</p>
 
       <div className="mt-6 flex items-center gap-3">
-        <div className="w-10 h-10 rounded-full bg-accent/40 flex items-center justify-center text-primary font-semibold text-sm">
+        <div className="bg-secondary text-primary flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold">
           {name.charAt(0)}
         </div>
         <div>
-          <div className="font-medium text-stone-900">{name}</div>
-          <div className="text-sm text-stone-500">{role}</div>
+          <div className="font-medium text-foreground">{name}</div>
+          <div className="text-muted-foreground text-sm">{role}</div>
         </div>
       </div>
     </div>

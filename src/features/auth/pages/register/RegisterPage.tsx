@@ -1,81 +1,88 @@
 import { useNavigate } from "react-router";
 import { RegisterForm } from "../../components/RegisterForm";
-import { APP_NAME } from "@/shared/config/constants";
-import { Sparkles } from "lucide-react";
+import { BadgeCheck, BookOpen, Users } from "lucide-react";
 import { RoutePath } from "@/shared/config/routes";
+import { AuthSplitLayout } from "@/features/auth/components/AuthSplitLayout";
+import { Link } from "react-router";
 
 export const RegisterPage = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen flex">
-      {/* Left side - Decorative */}
-      <div className="hidden lg:flex lg:w-1/2 bg-primary relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-accent/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-accent/15 rounded-full translate-y-1/2 -translate-x-1/2 blur-3xl" />
-
-        <div className="relative z-10 flex flex-col justify-center px-12 text-white">
-          <div className="flex items-center gap-3 mb-8">
-            <img src="/logo.png" className="h-12 w-12 object-contain" />
-            <span className="text-2xl font-bold">{APP_NAME}</span>
-          </div>
-          <h1 className="text-4xl font-bold mb-4">Join our community</h1>
-          <p className="text-lg text-white/80 max-w-md">
-            Start your skill exchange journey today. Connect with learners and
-            experts ready to share their knowledge.
-          </p>
-          <div className="mt-8 flex items-center gap-2 text-white/60">
-            <Sparkles className="w-5 h-5" />
-            <span>Learn, teach, and grow together</span>
-          </div>
+    <AuthSplitLayout
+      eyebrow="Learner sign up"
+      title="Build a steadier way to learn."
+      description="Create your Skill Stew account to join expert-led cohorts, track progress, and connect with people learning alongside you."
+      aside={
+        <div className="grid gap-4 sm:grid-cols-3">
+          {[
+            {
+              icon: BookOpen,
+              title: "Structured workshops",
+              body: "Choose sessions built around live teaching and completion.",
+            },
+            {
+              icon: Users,
+              title: "Cohort support",
+              body: "Stay close to peers, discussions, and accountability.",
+            },
+            {
+              icon: BadgeCheck,
+              title: "Expert trust",
+              body: "Learn from instructors shaped by a verification process.",
+            },
+          ].map(({ icon: Icon, title, body }) => (
+            <div key={title} className="bg-background border-border rounded-lg border p-6">
+              <Icon className="text-primary h-5 w-5" strokeWidth={1.5} />
+              <p className="mt-6 text-sm font-semibold">{title}</p>
+              <p className="text-muted-foreground mt-2 text-sm">{body}</p>
+            </div>
+          ))}
         </div>
+      }
+      footer={
+        <p className="text-muted-foreground text-sm">
+          By signing up, you agree to our{" "}
+          <a href="#" className="text-foreground underline underline-offset-4">
+            Terms of Service
+          </a>{" "}
+          and{" "}
+          <a href="#" className="text-foreground underline underline-offset-4">
+            Privacy Policy
+          </a>
+          .
+        </p>
+      }
+    >
+      <div className="flex flex-wrap items-center justify-between gap-3 text-sm">
+        <button
+          className="text-foreground font-medium underline underline-offset-4"
+          onClick={() => navigate(RoutePath.Login)}
+          type="button"
+        >
+          Already have an account?
+        </button>
+        <button
+          className="text-muted-foreground underline underline-offset-4"
+          onClick={() => navigate(RoutePath.ExpertRegister)}
+          type="button"
+        >
+          Register as an expert instead
+        </button>
       </div>
 
-      {/* Right side - Register form */}
-      <div className="flex-1 flex flex-col items-center justify-center p-8 bg-slate-50">
-        <div className="w-full max-w-md">
-          {/* Sign in link - desktop */}
-          <div className="hidden sm:block text-center mb-6 text-sm text-slate-600">
-            Already have an account?{" "}
-            <span
-              className="font-semibold text-primary hover:underline cursor-pointer"
-              onClick={() => navigate(RoutePath.Login)}
-            >
-              Sign in
-            </span>
-          </div>
+      <RegisterForm />
 
-          {/* Expert register link - desktop */}
-          <div className="hidden sm:block text-center mb-4 text-sm text-slate-600">
-            Want to teach?{" "}
-            <span
-              className="font-semibold text-primary hover:underline cursor-pointer"
-              onClick={() => navigate(RoutePath.ExpertRegister)}
-            >
-              Register as an Expert
-            </span>
-          </div>
-
-          {/* Mobile logo */}
-          <div className="lg:hidden flex items-center justify-center gap-3 mb-8">
-            <img src="/logo.png" className="h-10 w-10 object-contain" />
-            <span className="text-xl font-bold text-primary">{APP_NAME}</span>
-          </div>
-
-          <RegisterForm />
-
-          <p className="text-center text-sm text-slate-500 mt-6">
-            By signing up, you agree to our{" "}
-            <a href="#" className="text-primary hover:underline">
-              Terms of Service
-            </a>{" "}
-            and{" "}
-            <a href="#" className="text-primary hover:underline">
-              Privacy Policy
-            </a>
-          </p>
-        </div>
-      </div>
-    </div>
+      <p className="text-muted-foreground text-sm">
+        Want a teaching profile?{" "}
+        <Link
+          to={RoutePath.ExpertRegister}
+          className="text-foreground underline underline-offset-4"
+        >
+          Start the expert route
+        </Link>
+        .
+      </p>
+    </AuthSplitLayout>
   );
 };
