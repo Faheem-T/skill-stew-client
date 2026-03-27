@@ -1,23 +1,23 @@
-import { cn } from "@/shared/lib/utils"
+import { cn } from "@/shared/lib/utils";
 
 type FetchingStateProps = {
-  variant?: "page" | "section" | "inline"
-  label?: string
-  className?: string
-  logoClassName?: string
-}
+  variant?: "page" | "section" | "inline";
+  label?: string;
+  className?: string;
+  logoClassName?: string;
+};
 
 const containerVariants = {
   page: "min-h-screen w-full",
   section: "bg-card border-border w-full min-h-64 rounded-lg border px-6 py-16",
   inline: "w-full py-6",
-} as const
+} as const;
 
 const logoVariants = {
-  page: "w-1/3 md:w-1/7",
+  page: "w-10",
   section: "w-20 md:w-16",
   inline: "w-12",
-} as const
+} as const;
 
 export function FetchingState({
   variant = "section",
@@ -25,7 +25,7 @@ export function FetchingState({
   className,
   logoClassName,
 }: FetchingStateProps) {
-  const accessibleLabel = label ?? "Loading"
+  const accessibleLabel = label ?? "Loading";
 
   return (
     <div
@@ -55,5 +55,5 @@ export function FetchingState({
         ) : null}
       </div>
     </div>
-  )
+  );
 }

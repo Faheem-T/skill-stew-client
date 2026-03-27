@@ -35,7 +35,7 @@ export const router = createBrowserRouter([
     loader: initialLoader,
     element: <AppRoot />,
     children: [
-
+      { path: RoutePath.TestRoute, element: <InitialLoadScreen /> },
       {
         path: RoutePath.Home,
         element: <HomePage />,
