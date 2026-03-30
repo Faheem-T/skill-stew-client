@@ -26,7 +26,7 @@ export const useUploadToS3 = (): UseUploadToS3Return => {
         const mimetype = file.type as "image/png" | "image/jpeg" | "image/webp";
 
         const response = await generatePresignedUploadUrlRequest({
-          type: imageType as "avatar" | "banner",
+          type: imageType,
           mimetype,
         });
 
