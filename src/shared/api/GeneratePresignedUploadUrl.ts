@@ -2,7 +2,7 @@ import { api } from "@/shared/api/baseApi";
 import type { ApiResponseWithData } from "@/shared/api/baseApi";
 
 export type GeneratePresignedUploadUrlBody = {
-  type: "avatar" | "banner";
+  type: "avatar" | "banner" | "workshopBanner";
   mimetype: "image/png" | "image/jpeg" | "image/webp";
 };
 

@@ -26,6 +26,7 @@ import { NotificationsPage } from "@/features/notification/pages/NotificationsPa
 import { NotFoundPage } from "./pages/NotFoundPage";
 import { ExpertApplicationPage } from "@/features/expert/pages/ExpertApplicationPage";
 import { ExpertDashboardPage } from "@/features/expert/pages/ExpertDashboardPage";
+import { WorkshopCreatePage } from "@/features/workshop/pages/WorkshopCreatePage";
 
 export const queryClient = new QueryClient();
 
@@ -114,6 +115,10 @@ export const router = createBrowserRouter([
           {
             path: RoutePath.ExpertDashboard,
             element: <ExpertDashboardPage />,
+          },
+          {
+            path: RoutePath.ExpertWorkshopCreate,
+            element: <WorkshopCreatePage />,
           },
         ],
       },

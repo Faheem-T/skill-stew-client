@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
-import { generatePresignedUploadUrlRequest } from "@/features/onboarding/api/GeneratePresignedUploadUrl";
-import type { GeneratePresignedUploadUrlResponse } from "@/features/onboarding/api/GeneratePresignedUploadUrl";
+import { generatePresignedUploadUrlRequest } from "@/shared/api/GeneratePresignedUploadUrl";
+import type { GeneratePresignedUploadUrlResponse } from "@/shared/api/GeneratePresignedUploadUrl";
 import type { ImageUploadType } from "@/shared/config/imageUploadTypes";
 
 export interface UseUploadToS3Return {

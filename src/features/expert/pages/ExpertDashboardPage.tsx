@@ -3,8 +3,10 @@ import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/ui/card";
 import { useCurrentUserProfile } from "@/shared/hooks/useCurrentUserProfile";
+import { RoutePath } from "@/shared/config/routes";
 import { Calendar, LayoutDashboard, Users } from "lucide-react";
 import type { ReactNode } from "react";
+import { Link } from "react-router";
 
 export const ExpertDashboardPage = () => {
   const { data: userProfile } = useCurrentUserProfile();
@@ -69,7 +71,9 @@ export const ExpertDashboardPage = () => {
             <p className="text-sm text-muted-foreground">
               Future expert tools will live here.
             </p>
-            <Button disabled>Workshop tools coming soon</Button>
+            <Button asChild>
+              <Link to={RoutePath.ExpertWorkshopCreate}>Create workshop</Link>
+            </Button>
           </CardContent>
         </Card>
       </main>
