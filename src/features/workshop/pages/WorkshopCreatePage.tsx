@@ -4,7 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { AxiosError } from "axios";
 import { ArrowLeft } from "lucide-react";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { AppNavbar } from "@/shared/components/layout/AppNavbar";
 import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
@@ -57,9 +57,12 @@ import {
   WorkshopPublishedPanel,
   WorkshopUnavailablePanel,
 } from "@/features/workshop/components/WorkshopStatusPanels";
+import { useExpertWorkshopDetails } from "@/features/workshop/hooks/useExpertWorkshopDetails";
 
 export const WorkshopCreatePage = () => {
   const navigate = useNavigate();
+  const { id: routeWorkshopId } = useParams();
+  const isEditMode = Boolean(routeWorkshopId);
   const { data: userProfile } = useCurrentUserProfile();
   const [currentStep, setCurrentStep] = useState<WizardStep>(1);
   const [workshop, setWorkshop] = useState<Workshop | null>(null);
@@ -87,6 +90,11 @@ export const WorkshopCreatePage = () => {
     handleUndoSelection,
   } = useImageFileUpload("workshopBanner");
   const { upload, isUploading } = useUploadToS3();
+  const {
+    data: loadedWorkshop,
+    isLoading: isLoadingWorkshop,
+    error: workshopLoadError,
+  } = useExpertWorkshopDetails(routeWorkshopId ?? "", isEditMode);
 
   const basicsForm = useForm<WorkshopBasicsFormValues>({
     resolver: zodResolver(workshopBasicsSchema),
@@ -117,6 +125,45 @@ export const WorkshopCreatePage = () => {
       setScheduleTimezone(workshop.timezone);
     }
   }, [basicsForm, workshop]);
+
+  useEffect(() => {
+    if (!isEditMode || !loadedWorkshop) {
+      return;
+    }
+
+    if (loadedWorkshop.status !== "draft") {
+      setWorkshop(loadedWorkshop);
+      setWizardStatus({
+        kind: "locked",
+        message: "Only draft workshops can be edited.",
+      });
+      return;
+    }
+
+    setWizardStatus({ kind: "ready" });
+    setWorkshop(loadedWorkshop);
+    setCurrentStep(1);
+    setScheduleErrors([]);
+    setScheduleMessage(null);
+    setReviewErrors([]);
+    setReviewMessage(null);
+    setBasicsMessage(null);
+    setScheduleTimezone(loadedWorkshop.timezone ?? getBrowserTimezone());
+    setScheduleSessions(
+      loadedWorkshop.sessions.length > 0
+        ? normalizeScheduleSessions(
+            loadedWorkshop.sessions.map((session) => ({
+              localId: session.id,
+              weekNumber: session.weekNumber,
+              dayOfWeek: session.dayOfWeek,
+              sessionOrder: session.sessionOrder,
+              startTime: session.startTime,
+            })),
+          )
+        : normalizeScheduleSessions([createDefaultScheduleSession(0)]),
+    );
+    setSessionEditors(toSessionEditorItems(loadedWorkshop.sessions));
+  }, [isEditMode, loadedWorkshop]);
 
   const createWorkshopMutation = useMutation({
     mutationFn: createWorkshopRequest,
@@ -554,6 +601,38 @@ export const WorkshopCreatePage = () => {
     isUploading;
 
   const renderMainContent = () => {
+    if (isEditMode && isLoadingWorkshop && !workshop) {
+      return (
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+          <div className="space-y-6">
+            <div className="h-24 animate-pulse rounded-lg bg-muted" />
+            <div className="h-[520px] animate-pulse rounded-lg bg-muted" />
+          </div>
+          <div className="h-[360px] animate-pulse rounded-lg bg-muted" />
+        </div>
+      );
+    }
+
+    if (isEditMode && workshopLoadError) {
+      const status = workshopLoadError.response?.status;
+      const message = getGeneralErrorMessage(
+        workshopLoadError,
+        "Unable to load this workshop right now.",
+      );
+
+      return (
+        <WorkshopUnavailablePanel
+          status={
+            status === 403
+              ? { kind: "forbidden", message }
+              : status === 409
+                ? { kind: "locked", message }
+                : { kind: "missing", message }
+          }
+        />
+      );
+    }
+
     if (
       wizardStatus.kind === "forbidden" ||
       wizardStatus.kind === "locked" ||
@@ -700,12 +779,14 @@ export const WorkshopCreatePage = () => {
             </Badge>
             <div className="space-y-2">
               <h1 className="text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
-                Create a workshop that is ready to run live
+                {isEditMode
+                  ? "Edit your workshop draft"
+                  : "Create a workshop that is ready to run live"}
               </h1>
               <p className="max-w-3xl text-sm leading-6 text-muted-foreground md:text-base">
-                Build the draft in four steps: define the workshop, structure
-                the schedule, title each session, and publish when the cohort is
-                complete.
+                {isEditMode
+                  ? "Refine the draft, adjust the schedule, and publish when the workshop is ready."
+                  : "Build the draft in four steps: define the workshop, structure the schedule, title each session, and publish when the cohort is complete."}
               </p>
             </div>
           </div>
@@ -713,10 +794,10 @@ export const WorkshopCreatePage = () => {
           <div className="flex flex-wrap items-center gap-3">
             <Button
               variant="outline"
-              onClick={() => navigate(RoutePath.ExpertDashboard)}
+              onClick={() => navigate(RoutePath.ExpertWorkshops)}
             >
               <ArrowLeft className="h-4 w-4" />
-              Back to dashboard
+              Back to workshops
             </Button>
             <Badge className="rounded-sm bg-secondary text-secondary-foreground">
               {userProfile?.email ?? "Expert"}

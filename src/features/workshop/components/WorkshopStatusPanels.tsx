@@ -42,7 +42,7 @@ export const WorkshopUnavailablePanel = ({
       </CardHeader>
       <CardFooter className="border-t border-border/70 pt-6">
         <Button asChild>
-          <Link to={RoutePath.ExpertDashboard}>Return to expert dashboard</Link>
+          <Link to={RoutePath.ExpertWorkshops}>Return to workshops</Link>
         </Button>
       </CardFooter>
     </Card>
@@ -82,7 +82,7 @@ export const WorkshopPublishedPanel = ({
       </CardContent>
       <CardFooter className="border-t border-border/70 pt-6">
         <Button asChild>
-          <Link to={RoutePath.ExpertDashboard}>Back to expert dashboard</Link>
+          <Link to={RoutePath.ExpertWorkshops}>Back to workshops</Link>
         </Button>
       </CardFooter>
     </Card>

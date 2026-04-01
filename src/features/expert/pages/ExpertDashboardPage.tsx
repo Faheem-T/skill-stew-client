@@ -72,7 +72,7 @@ export const ExpertDashboardPage = () => {
               Future expert tools will live here.
             </p>
             <Button asChild>
-              <Link to={RoutePath.ExpertWorkshopCreate}>Create workshop</Link>
+              <Link to={RoutePath.ExpertWorkshops}>View workshops</Link>
             </Button>
           </CardContent>
         </Card>

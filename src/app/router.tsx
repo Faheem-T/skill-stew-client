@@ -27,6 +27,8 @@ import { NotFoundPage } from "./pages/NotFoundPage";
 import { ExpertApplicationPage } from "@/features/expert/pages/ExpertApplicationPage";
 import { ExpertDashboardPage } from "@/features/expert/pages/ExpertDashboardPage";
 import { WorkshopCreatePage } from "@/features/workshop/pages/WorkshopCreatePage";
+import { ExpertWorkshopsPage } from "@/features/workshop/pages/ExpertWorkshopsPage";
+import { ExpertWorkshopDetailPage } from "@/features/workshop/pages/ExpertWorkshopDetailPage";
 
 export const queryClient = new QueryClient();
 
@@ -117,7 +119,19 @@ export const router = createBrowserRouter([
             element: <ExpertDashboardPage />,
           },
           {
+            path: RoutePath.ExpertWorkshops,
+            element: <ExpertWorkshopsPage />,
+          },
+          {
             path: RoutePath.ExpertWorkshopCreate,
+            element: <WorkshopCreatePage />,
+          },
+          {
+            path: RoutePath.ExpertWorkshopDetail,
+            element: <ExpertWorkshopDetailPage />,
+          },
+          {
+            path: RoutePath.ExpertWorkshopEdit,
             element: <WorkshopCreatePage />,
           },
         ],

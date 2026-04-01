@@ -1,3 +1,5 @@
+export type WorkshopStatus = "draft" | "published" | "archived";
+
 export type ApiErrorItem = {
   message: string;
   field?: string;
@@ -22,11 +24,23 @@ export type Workshop = {
   bannerImageKey: string | null;
   bannerImageUrl: string | null;
   maxCohortSize: number;
-  status: "draft" | "published" | "archived";
+  status: WorkshopStatus;
   sessions: WorkshopSession[];
   timezone: string | null;
   createdAt: string;
   updatedAt: string;
+};
+
+export type WorkshopListItem = {
+  id: string;
+  title: string;
+  description: string | null;
+  bannerImageKey: string | null;
+  bannerImageUrl: string | null;
+  status: WorkshopStatus;
+  timezone: string | null;
+  updatedAt: string;
+  sessionCount: number;
 };
 
 export type WorkshopBasicsDraft = {
