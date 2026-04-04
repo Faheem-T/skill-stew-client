@@ -14,6 +14,13 @@ export const RoutePath = {
   ExpertWorkshopCreate: "/dashboard/expert/workshops/create",
   ExpertWorkshopDetail: "/dashboard/expert/workshops/:id",
   ExpertWorkshopEdit: "/dashboard/expert/workshops/:id/edit",
+  ExpertWorkshopCohortCreate: "/dashboard/expert/workshops/:workshopId/cohorts/create",
+  ExpertWorkshopCohortDetail:
+    "/dashboard/expert/workshops/:workshopId/cohorts/:cohortId",
+  ExpertWorkshopCohortEdit:
+    "/dashboard/expert/workshops/:workshopId/cohorts/:cohortId/edit",
+  ExpertWorkshopCohortMembers:
+    "/dashboard/expert/workshops/:workshopId/cohorts/:cohortId/members",
   UserProfile: "/profile",
   AdminDashboard: "/dashboard/admin",
   AdminUsers: "/admin/users",
@@ -25,5 +32,6 @@ export const RoutePath = {
   Settings: "/settings",
   Notifications: "/notifications",
   PublicProfile: "/user/:id",
+  PublicWorkshopDetail: "/workshops/:id",
   TestRoute: "/test",
 } as const;

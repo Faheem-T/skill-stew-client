@@ -10,7 +10,6 @@ import {
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -63,9 +62,6 @@ export const WorkshopReviewStep = ({
         <CardTitle className="text-2xl font-semibold text-foreground">
           Step 4. Review and publish
         </CardTitle>
-        <CardDescription className="leading-6">
-          Confirm the workshop summary, then publish.
-        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6 border-t border-border/70 pt-6">
         <div className="grid gap-6 md:grid-cols-2">
@@ -175,10 +171,6 @@ export const WorkshopReviewStep = ({
                           : group.section === "sessions"
                             ? "Session details"
                             : "Review"}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      Resolve these backend completeness checks before
-                      publishing again.
                     </p>
                   </div>
                   {group.section !== "review" && (

@@ -4,7 +4,6 @@ import { type UseFormReturn } from "react-hook-form";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/shared/components/ui/card";
@@ -55,10 +54,6 @@ export const WorkshopBasicsStep = ({
         <CardTitle className="text-2xl font-semibold text-foreground">
           Step 1. Basic workshop details
         </CardTitle>
-        <CardDescription className="leading-6">
-          Draft the workshop fundamentals first. Timezone and session structure
-          are handled in the next step.
-        </CardDescription>
       </CardHeader>
       <CardContent className="border-t border-border/70 pt-6">
         <Form {...form}>
@@ -200,11 +195,6 @@ export const WorkshopBasicsStep = ({
             )}
 
             <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border/70 pt-6">
-              <p className="text-sm text-muted-foreground">
-                {isDraftCreated
-                  ? "This will patch the existing draft."
-                  : "This creates the draft and unlocks the scheduling step."}
-              </p>
               <Button type="submit" disabled={isPending}>
                 {(isPending || isUploading) && (
                   <Loader2 className="h-4 w-4 animate-spin" />

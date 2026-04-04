@@ -41,9 +41,6 @@ export const WorkshopStepRail = ({
               <p className="text-sm font-medium text-foreground">
                 {step.title}
               </p>
-              <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                {step.description}
-              </p>
             </button>
           );
         })}

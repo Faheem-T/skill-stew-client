@@ -27,6 +27,7 @@ import {
 } from "@/features/workshop/lib/workshop";
 import {
   createDefaultScheduleSession,
+  createNextScheduleSession,
   getBrowserTimezone,
   normalizeScheduleSessions,
   type ReviewErrorGroup,
@@ -58,6 +59,7 @@ import {
   WorkshopUnavailablePanel,
 } from "@/features/workshop/components/WorkshopStatusPanels";
 import { useExpertWorkshopDetails } from "@/features/workshop/hooks/useExpertWorkshopDetails";
+import { useExpertCohorts } from "@/features/cohort/hooks/useExpertCohorts";
 
 export const WorkshopCreatePage = () => {
   const navigate = useNavigate();
@@ -95,6 +97,16 @@ export const WorkshopCreatePage = () => {
     isLoading: isLoadingWorkshop,
     error: workshopLoadError,
   } = useExpertWorkshopDetails(routeWorkshopId ?? "", isEditMode);
+  const {
+    data: workshopCohorts,
+    isLoading: isLoadingWorkshopCohorts,
+  } = useExpertCohorts(
+    isEditMode && routeWorkshopId
+      ? {
+          workshopId: routeWorkshopId,
+        }
+      : undefined,
+  );
 
   const basicsForm = useForm<WorkshopBasicsFormValues>({
     resolver: zodResolver(workshopBasicsSchema),
@@ -541,7 +553,7 @@ export const WorkshopCreatePage = () => {
     try {
       const response = await publishWorkshopMutation.mutateAsync(workshop.id);
       setWorkshop(response.data);
-      setWizardStatus({ kind: "published" });
+      navigate(RoutePath.ExpertWorkshops, { replace: true });
     } catch (error) {
       if (!(error instanceof AxiosError)) {
         setReviewMessage("Unable to publish the workshop right now.");
@@ -601,7 +613,11 @@ export const WorkshopCreatePage = () => {
     isUploading;
 
   const renderMainContent = () => {
-    if (isEditMode && isLoadingWorkshop && !workshop) {
+    if (
+      isEditMode &&
+      (isLoadingWorkshop || isLoadingWorkshopCohorts) &&
+      !workshop
+    ) {
       return (
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
           <div className="space-y-6">
@@ -610,6 +626,18 @@ export const WorkshopCreatePage = () => {
           </div>
           <div className="h-[360px] animate-pulse rounded-lg bg-muted" />
         </div>
+      );
+    }
+
+    if (isEditMode && (workshopCohorts?.length ?? 0) > 0) {
+      return (
+        <WorkshopUnavailablePanel
+          status={{
+            kind: "locked",
+            message:
+              "This workshop already has cohorts, so the workshop blueprint is frozen. Manage future changes from the cohort screens instead.",
+          }}
+        />
       );
     }
 
@@ -686,7 +714,7 @@ export const WorkshopCreatePage = () => {
                 setScheduleSessions((current) =>
                   normalizeScheduleSessions([
                     ...current,
-                    createDefaultScheduleSession(current.length),
+                    createNextScheduleSession(current),
                   ]),
                 )
               }

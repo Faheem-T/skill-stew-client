@@ -29,6 +29,11 @@ import { ExpertDashboardPage } from "@/features/expert/pages/ExpertDashboardPage
 import { WorkshopCreatePage } from "@/features/workshop/pages/WorkshopCreatePage";
 import { ExpertWorkshopsPage } from "@/features/workshop/pages/ExpertWorkshopsPage";
 import { ExpertWorkshopDetailPage } from "@/features/workshop/pages/ExpertWorkshopDetailPage";
+import { ExpertCohortFormPage } from "@/features/cohort/pages/ExpertCohortFormPage";
+import { ExpertCohortDetailPage } from "@/features/cohort/pages/ExpertCohortDetailPage";
+import { ExpertCohortMembersPage } from "@/features/cohort/pages/ExpertCohortMembersPage";
+import { PublicWorkshopDetailPage } from "@/features/workshop/pages/PublicWorkshopDetailPage";
+import { WorkshopsLandingPage } from "@/features/workshop/pages/WorkshopsLandingPage";
 
 export const queryClient = new QueryClient();
 
@@ -46,6 +51,14 @@ export const router = createBrowserRouter([
       {
         path: RoutePath.PublicProfile,
         element: <PublicUserProfilePage />,
+      },
+      {
+        path: RoutePath.Workshops,
+        element: <WorkshopsLandingPage />,
+      },
+      {
+        path: RoutePath.PublicWorkshopDetail,
+        element: <PublicWorkshopDetailPage />,
       },
       {
         // Guest only routes
@@ -133,6 +146,22 @@ export const router = createBrowserRouter([
           {
             path: RoutePath.ExpertWorkshopEdit,
             element: <WorkshopCreatePage />,
+          },
+          {
+            path: RoutePath.ExpertWorkshopCohortCreate,
+            element: <ExpertCohortFormPage />,
+          },
+          {
+            path: RoutePath.ExpertWorkshopCohortDetail,
+            element: <ExpertCohortDetailPage />,
+          },
+          {
+            path: RoutePath.ExpertWorkshopCohortEdit,
+            element: <ExpertCohortFormPage />,
+          },
+          {
+            path: RoutePath.ExpertWorkshopCohortMembers,
+            element: <ExpertCohortMembersPage />,
           },
         ],
       },

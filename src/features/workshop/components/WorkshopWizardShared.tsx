@@ -10,7 +10,6 @@ import { Button } from "@/shared/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/shared/components/ui/card";
@@ -138,11 +137,9 @@ export const ReviewField = ({
   value: string;
 }) => {
   return (
-    <div className="border-border flex items-start justify-between gap-4 border-b py-3 last:border-b-0 last:pb-0 first:pt-0">
+    <div className="border-border flex flex-col gap-1 border-b py-3 last:border-b-0 last:pb-0 first:pt-0">
       <span className="text-sm text-muted-foreground">{label}</span>
-      <span className="max-w-[60%] text-right text-sm font-medium text-foreground">
-        {value}
-      </span>
+      <span className="text-sm font-medium text-foreground">{value}</span>
     </div>
   );
 };
@@ -182,7 +179,7 @@ export const WorkshopSummaryCard = ({
           />
         ) : (
           <div className="flex h-36 items-center justify-center rounded-lg border border-dashed border-border bg-secondary/40 text-sm text-muted-foreground">
-            Banner preview appears here
+            No banner
           </div>
         )}
         <div className="space-y-2">
@@ -193,9 +190,11 @@ export const WorkshopSummaryCard = ({
             {status}
           </Badge>
           <h2 className="text-xl font-semibold text-foreground">{title}</h2>
-          <p className="text-sm leading-6 text-muted-foreground">
-            {description}
-          </p>
+          {description ? (
+            <p className="text-sm leading-6 text-muted-foreground">
+              {description}
+            </p>
+          ) : null}
         </div>
         <div className="grid gap-3 text-sm">
           <SummaryRow label="Audience" value={targetAudience} />
@@ -227,10 +226,6 @@ export const CompletionRulesCard = ({
         <CardTitle className="text-lg font-semibold text-foreground">
           Completion rules
         </CardTitle>
-        <CardDescription className="leading-6">
-          Publishing requires a title, cohort size, timezone, at least one
-          session, and a title on every session.
-        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-3 border-t border-border/70 pt-6 text-sm text-muted-foreground">
         <ChecklistItem checked={hasTitle} label="Workshop title" />

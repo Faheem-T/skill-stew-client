@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import {
   Card,
@@ -37,6 +37,11 @@ export const WorkshopSessionDetailsStep = ({
     payload: Pick<SessionEditorItem, "title" | "description" | "startTime">,
   ) => Promise<void>;
 }) => {
+  const handleNext = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    onNext();
+  };
+
   return (
     <Card className="border-border/80 shadow-none">
       <CardHeader className="space-y-2">
@@ -60,7 +65,7 @@ export const WorkshopSessionDetailsStep = ({
           <ArrowLeft className="h-4 w-4" />
           Back to schedule
         </Button>
-        <Button type="button" onClick={onNext}>
+        <Button type="button" onClick={handleNext}>
           Review and publish
           <ArrowRight className="h-4 w-4" />
         </Button>
@@ -91,12 +96,14 @@ const SessionEditorCard = ({
   const trimmedDescription = item.description.trim();
   const missingTitle = trimmedTitle.length === 0;
   const missingDescription = trimmedDescription.length === 0;
+  const [hasInteracted, setHasInteracted] = useState(false);
+  const showValidation = hasInteracted && (missingTitle || missingDescription);
   const validationMessage =
-    missingTitle && missingDescription
+    showValidation && missingTitle && missingDescription
       ? "Add both a session title and description before this session can be saved."
-      : missingTitle
+      : showValidation && missingTitle
         ? "Add a session title before this session can be saved."
-        : missingDescription
+        : showValidation && missingDescription
           ? "Add a session description before this session can be saved."
           : null;
 
@@ -159,10 +166,12 @@ const SessionEditorCard = ({
             <Input
               value={item.title}
               disabled={disabled}
-              aria-invalid={missingTitle}
-              onChange={(event) =>
-                onFieldChange(item.id, "title", event.target.value)
-              }
+              aria-invalid={showValidation && missingTitle}
+              onChange={(event) => {
+                setHasInteracted(true);
+                onFieldChange(item.id, "title", event.target.value);
+              }}
+              onBlur={() => setHasInteracted(true)}
               placeholder="Week 1 kickoff"
             />
           </div>
@@ -188,11 +197,13 @@ const SessionEditorCard = ({
           <Textarea
             value={item.description}
             disabled={disabled}
-            aria-invalid={missingDescription}
+            aria-invalid={showValidation && missingDescription}
             className="min-h-24 resize-none"
-            onChange={(event) =>
-              onFieldChange(item.id, "description", event.target.value)
-            }
+            onChange={(event) => {
+              setHasInteracted(true);
+              onFieldChange(item.id, "description", event.target.value);
+            }}
+            onBlur={() => setHasInteracted(true)}
             placeholder="Add the session agenda, focus, or prep guidance."
           />
         </div>

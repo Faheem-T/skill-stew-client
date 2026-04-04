@@ -17,6 +17,8 @@ import type {
   WorkshopStatus,
 } from "@/features/workshop/types/types";
 import { RoutePath } from "@/shared/config/routes";
+import { useExpertCohorts } from "@/features/cohort/hooks/useExpertCohorts";
+import { summarizeWorkshopCohorts } from "@/features/cohort/lib/cohort";
 
 const STATUS_OPTIONS: Array<{ value: WorkshopStatus; label: string }> = [
   { value: "published", label: "Published" },
@@ -51,6 +53,28 @@ export const ExpertWorkshopsPage = () => {
 
   const { data: workshops, isLoading, error, refetch } =
     useExpertWorkshops(currentStatus);
+  const { data: cohorts } = useExpertCohorts();
+
+  const cohortSummaryByWorkshopId = useMemo(() => {
+    const grouped = (cohorts ?? []).reduce<Record<string, typeof cohorts>>(
+      (acc, cohort) => {
+        if (!acc[cohort.workshopId]) {
+          acc[cohort.workshopId] = [];
+        }
+
+        acc[cohort.workshopId]?.push(cohort);
+        return acc;
+      },
+      {},
+    );
+
+    return Object.fromEntries(
+      Object.entries(grouped).map(([workshopId, workshopCohorts]) => [
+        workshopId,
+        summarizeWorkshopCohorts(workshopCohorts),
+      ]),
+    );
+  }, [cohorts]);
 
   const updateStatus = (status: WorkshopStatus) => {
     setSearchParams(status === "published" ? {} : { status });
@@ -145,7 +169,11 @@ export const ExpertWorkshopsPage = () => {
         {!isLoading && !error && workshops && workshops.length > 0 && (
           <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {workshops.map((workshop) => (
-              <WorkshopListCard key={workshop.id} workshop={workshop} />
+              <WorkshopListCard
+                key={workshop.id}
+                workshop={workshop}
+                cohortSummary={cohortSummaryByWorkshopId[workshop.id] ?? null}
+              />
             ))}
           </section>
         )}
@@ -154,7 +182,13 @@ export const ExpertWorkshopsPage = () => {
   );
 };
 
-const WorkshopListCard = ({ workshop }: { workshop: WorkshopListItem }) => {
+const WorkshopListCard = ({
+  workshop,
+  cohortSummary,
+}: {
+  workshop: WorkshopListItem;
+  cohortSummary: string | null;
+}) => {
   return (
     <Link to={getWorkshopDetailPath(workshop.id)} className="block">
       <Card className="border-border/80 h-full overflow-hidden shadow-none transition-colors hover:border-primary/40">
@@ -198,6 +232,11 @@ const WorkshopListCard = ({ workshop }: { workshop: WorkshopListItem }) => {
             <div className="text-xs uppercase tracking-[0.08em] text-muted-foreground">
               Updated {formatUpdatedAt(workshop.updatedAt)}
             </div>
+            {cohortSummary ? (
+              <div className="rounded-sm border border-border bg-background px-3 py-2 text-xs leading-5 text-muted-foreground">
+                {cohortSummary}
+              </div>
+            ) : null}
           </div>
         </CardContent>
       </Card>

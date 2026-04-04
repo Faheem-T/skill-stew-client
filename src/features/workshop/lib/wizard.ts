@@ -42,10 +42,28 @@ export const createDefaultScheduleSession = (
 ): ScheduleDraftSession => ({
   localId: crypto.randomUUID(),
   weekNumber: 1,
-  dayOfWeek: 1,
+  dayOfWeek: 0,
   sessionOrder: index + 1,
   startTime: "18:00",
 });
+
+export const createNextScheduleSession = (
+  sessions: ScheduleDraftSession[],
+): ScheduleDraftSession => {
+  const previousSession = sessions[sessions.length - 1];
+
+  if (!previousSession) {
+    return createDefaultScheduleSession(0);
+  }
+
+  return {
+    localId: crypto.randomUUID(),
+    weekNumber: previousSession.weekNumber + 1,
+    dayOfWeek: previousSession.dayOfWeek,
+    sessionOrder: previousSession.sessionOrder + 1,
+    startTime: previousSession.startTime,
+  };
+};
 
 export const getBrowserTimezone = () =>
   Intl.DateTimeFormat().resolvedOptions().timeZone || "";

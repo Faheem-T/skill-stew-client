@@ -5,7 +5,6 @@ import { AlertCircle, ArrowLeft, Check, Loader2, Plus, Trash2 } from "lucide-rea
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/shared/components/ui/card";
@@ -87,10 +86,6 @@ export const WorkshopScheduleStep = ({
         <CardTitle className="text-2xl font-semibold text-foreground">
           Step 2. Build the structural schedule
         </CardTitle>
-        <CardDescription className="leading-6">
-          Set the workshop timezone here and define the weekly session
-          structure.
-        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6 border-t border-border/70 pt-6">
         <div className="grid gap-5 md:grid-cols-[minmax(0,280px)_1fr]">
@@ -106,10 +101,6 @@ export const WorkshopScheduleStep = ({
                 }
               />
             </div>
-            <p className="text-sm leading-6 text-muted-foreground">
-              Session start times are interpreted as wall-clock times in this
-              timezone.
-            </p>
           </div>
         </div>
 

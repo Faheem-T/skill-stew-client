@@ -10,7 +10,7 @@ import {
   Loader2,
   Users,
 } from "lucide-react";
-import { Link, useParams } from "react-router";
+import { Link, useNavigate, useParams } from "react-router";
 import { AppNavbar } from "@/shared/components/layout/AppNavbar";
 import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
@@ -40,6 +40,8 @@ import { RoutePath } from "@/shared/config/routes";
 import { InlineStatus } from "@/features/workshop/components/WorkshopWizardShared";
 import { WorkshopUnavailablePanel } from "@/features/workshop/components/WorkshopStatusPanels";
 import type { ReviewErrorGroup } from "@/features/workshop/lib/wizard";
+import { useExpertCohorts } from "@/features/cohort/hooks/useExpertCohorts";
+import { ExpertWorkshopCohortSection } from "@/features/cohort/components/ExpertWorkshopCohortSection";
 
 const getEditPath = (id: string) =>
   RoutePath.ExpertWorkshopEdit.replace(":id", id);
@@ -52,8 +54,10 @@ const formatDateTime = (value: string) =>
 
 export const ExpertWorkshopDetailPage = () => {
   const { id = "" } = useParams();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { data: workshop, isLoading, error } = useExpertWorkshopDetails(id);
+  const { data: cohorts } = useExpertCohorts({ workshopId: id });
   const [publishMessage, setPublishMessage] = useState<string | null>(null);
   const [publishErrors, setPublishErrors] = useState<ReviewErrorGroup[]>([]);
 
@@ -104,6 +108,7 @@ export const ExpertWorkshopDetailPage = () => {
       await queryClient.invalidateQueries({
         queryKey: [EXPERT_WORKSHOPS_QUERY_KEY],
       });
+      navigate(RoutePath.ExpertWorkshops, { replace: true });
     } catch (caughtError) {
       if (!(caughtError instanceof AxiosError)) {
         setPublishMessage("Unable to publish the workshop right now.");
@@ -193,6 +198,7 @@ export const ExpertWorkshopDetailPage = () => {
 
   const sortedSessions = sortWorkshopSessions(workshop.sessions);
   const isDraft = workshop.status === "draft";
+  const hasCohorts = (cohorts?.length ?? 0) > 0;
 
   return (
     <div className="min-h-screen bg-background">
@@ -210,7 +216,7 @@ export const ExpertWorkshopDetailPage = () => {
 
         <section
           className={
-            isDraft
+            isDraft || hasCohorts
               ? "grid gap-6 lg:grid-cols-[minmax(0,1fr)_280px]"
               : "grid gap-6"
           }
@@ -245,7 +251,7 @@ export const ExpertWorkshopDetailPage = () => {
             </CardContent>
           </Card>
 
-          {isDraft && (
+          {isDraft && !hasCohorts && (
             <Card className="border-border/80 h-fit shadow-none">
               <CardHeader className="space-y-2">
                 <CardTitle className="text-lg font-semibold text-foreground">
@@ -274,6 +280,16 @@ export const ExpertWorkshopDetailPage = () => {
               </CardContent>
             </Card>
           )}
+
+          {hasCohorts ? (
+            <Card className="border-warning/20 h-fit bg-warning-muted shadow-none">
+              <CardHeader className="space-y-2">
+                <CardTitle className="text-lg font-semibold text-foreground">
+                  Workshop frozen by cohorts
+                </CardTitle>
+              </CardHeader>
+            </Card>
+          ) : null}
         </section>
 
         <section className="grid gap-4 md:grid-cols-3">
@@ -363,6 +379,11 @@ export const ExpertWorkshopDetailPage = () => {
           </Card>
         </section>
 
+        <ExpertWorkshopCohortSection
+          workshopId={workshop.id}
+          workshopStatus={workshop.status}
+        />
+
         {publishMessage && (
           <InlineStatus
             variant={publishErrors.length > 0 ? "error" : "default"}
@@ -412,7 +433,7 @@ export const ExpertWorkshopDetailPage = () => {
                       </li>
                     ))}
                   </ul>
-                  {isDraft && (
+                  {isDraft && !hasCohorts && (
                     <Button asChild variant="outline">
                       <Link to={getEditPath(workshop.id)}>Edit workshop</Link>
                     </Button>

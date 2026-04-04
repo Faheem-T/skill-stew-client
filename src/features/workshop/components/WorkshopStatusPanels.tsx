@@ -66,11 +66,6 @@ export const WorkshopPublishedPanel = ({
         <CardTitle className="text-3xl font-semibold text-foreground">
           {workshop?.title || "Workshop"} is live
         </CardTitle>
-        <CardDescription className="max-w-2xl leading-6">
-          The workshop has been published successfully. You can return to the
-          expert dashboard now while workshop management screens are still being
-          built.
-        </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-4 border-t border-border/70 pt-6 md:grid-cols-3">
         <SummaryMetric label="Status" value={workshop?.status ?? "published"} />

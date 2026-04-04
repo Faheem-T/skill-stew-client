@@ -1,3 +1,8 @@
+import type {
+  CohortEnrollmentStatus,
+  CohortListItem,
+} from "@/features/cohort/types/types";
+
 export type WorkshopStatus = "draft" | "published" | "archived";
 
 export type ApiErrorItem = {
@@ -41,6 +46,33 @@ export type WorkshopListItem = {
   timezone: string | null;
   updatedAt: string;
   sessionCount: number;
+};
+
+export type PublicWorkshopCohortListItem = CohortListItem & {
+  currentUserEnrollment:
+    | {
+        membershipId: string | null;
+        status: CohortEnrollmentStatus;
+        joinedAt: string | null;
+        expiresAt: string | null;
+        requiresPayment: boolean;
+      }
+    | null;
+};
+
+export type PublishedWorkshopDetails = {
+  id: string;
+  expertId: string;
+  expertName: string | null;
+  title: string;
+  description: string | null;
+  targetAudience: string | null;
+  bannerImageKey: string | null;
+  bannerImageUrl: string | null;
+  status: "published";
+  timezone: string | null;
+  sessions: WorkshopSession[];
+  cohorts: PublicWorkshopCohortListItem[];
 };
 
 export type WorkshopBasicsDraft = {

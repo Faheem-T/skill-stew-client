@@ -15,7 +15,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { loginSchema, loginRequest } from "@/features/auth/api/LoginRequest";
 import type { ApiErrorResponseType } from "@/shared/api/baseApi";
-import { useNavigate } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 import { useAppStore } from "@/app/store";
 import { GoogleLoginButton } from "@/features/auth/components/GoogleAuthButton";
 import { PasswordInput } from "@/shared/components/ui/password-input";
@@ -30,10 +30,14 @@ import { Link } from "react-router";
 
 export const LoginPage = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const setAccessToken = useAppStore((state) => state.setAccessToken);
   const queryClient = useQueryClient();
 
   const { data: userProfile, isLoading } = useCurrentUserProfile();
+  const redirectPath = searchParams.get("redirect");
+  const safeRedirect =
+    redirectPath && redirectPath.startsWith("/") ? redirectPath : null;
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -69,7 +73,7 @@ export const LoginPage = () => {
       queryClient.invalidateQueries({
         queryKey: CURRENT_USER_PROFILE_QUERY_KEY,
       });
-      navigate(RoutePath.Dashboard, { replace: true });
+      navigate(safeRedirect ?? RoutePath.Dashboard, { replace: true });
     },
   });
 
@@ -79,9 +83,9 @@ export const LoginPage = () => {
 
   useEffect(() => {
     if (userProfile) {
-      navigate(RoutePath.Home, { replace: true });
+      navigate(safeRedirect ?? RoutePath.Home, { replace: true });
     }
-  }, [userProfile, navigate]);
+  }, [userProfile, navigate, safeRedirect]);
 
   if (isLoading) {
     return <InitialLoadScreen />;
