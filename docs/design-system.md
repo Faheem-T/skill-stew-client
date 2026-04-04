@@ -209,6 +209,19 @@ Uppercase label tracking:  0.08em
 - Always pair with `letter-spacing: 0.08em`
 - Never use uppercase for body copy or headings
 
+## 5.1 Microcopy
+
+- UI copy should be sparse, direct, and product-facing
+- Prefer interfaces that explain themselves through structure, labels, affordances, and state
+- Do not write explanatory helper text about the mechanics of the UI itself
+- Avoid copy such as:
+  - "invalid dates are disabled"
+  - "click here to"
+  - "the frontend shows"
+  - "exact dates appear after save"
+- Reserve helper text for domain rules or consequences the interface cannot make obvious on its own
+- If a sentence can be removed without losing task comprehension, remove it
+
 ---
 
 ## 6. Spacing Scale
