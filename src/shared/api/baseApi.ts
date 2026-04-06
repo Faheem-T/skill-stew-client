@@ -9,9 +9,14 @@ export const api = axios.create({
 });
 
 api.interceptors.request.use((request) => {
-  request.headers.setAuthorization(
-    `Bearer ${useAppStore.getState().accessToken}`,
-  );
+  const accessToken = useAppStore.getState().accessToken;
+
+  if (accessToken) {
+    request.headers.setAuthorization(`Bearer ${accessToken}`);
+  } else {
+    request.headers.delete("Authorization");
+  }
+
   return request;
 });
 
