@@ -33,5 +33,6 @@ export const RoutePath = {
   Notifications: "/notifications",
   PublicProfile: "/user/:id",
   PublicWorkshopDetail: "/workshops/:id",
+  PublicCohortDetail: "/cohorts/:id",
   TestRoute: "/test",
 } as const;

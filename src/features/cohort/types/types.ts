@@ -75,10 +75,25 @@ export type CohortEnrollmentResponse = {
   joinedAt: string | null;
   expiresAt: string | null;
   requiresPayment: boolean;
+  paymentId: string | null;
+  checkoutSessionId: string | null;
+  checkoutUrl: string | null;
 };
 
-export type CurrentUserCohortEnrollment =
-  | (CohortEnrollmentResponse & {
-      membershipId: string | null;
-    })
-  | null;
+export type PublicEnrollmentContext = {
+  membershipId: string;
+  cohortId: string;
+  status: CohortEnrollmentStatus;
+};
+
+export type PublicCohortSummary = CohortListItem & {
+  isEnrollable: boolean;
+  myEnrollment: PublicEnrollmentContext | null;
+  hasEnrollmentInAnotherCohort: boolean;
+};
+
+export type PublicCohortDetails = CohortDetails & {
+  isEnrollable: boolean;
+  myEnrollment: PublicEnrollmentContext | null;
+  hasEnrollmentInAnotherCohort: boolean;
+};

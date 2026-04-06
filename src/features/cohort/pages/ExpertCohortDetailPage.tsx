@@ -194,8 +194,8 @@ export const ExpertCohortDetailPage = () => {
                   <AlertDialogHeader>
                     <AlertDialogTitle>Delete this cohort?</AlertDialogTitle>
                     <AlertDialogDescription>
-                      Only empty cohorts can be deleted. This action cannot be
-                      undone.
+                      Only cohorts without held seats can be deleted. This
+                      action cannot be undone.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
@@ -214,15 +214,19 @@ export const ExpertCohortDetailPage = () => {
 
         {!canEditPricingFields ? (
           <div className="rounded-lg border border-warning/20 bg-warning-muted px-4 py-3 text-sm text-foreground">
-            Members already joined. Pricing, currency, and start date are locked.
+            Held seats already exist. Pricing, currency, and start date are
+            locked.
           </div>
         ) : null}
 
         <section className="grid gap-4 md:grid-cols-4">
           <MetricCard label="Seats" value={formatCohortSeatLabel(cohort)} />
-          <MetricCard label="Held seats" value={String(cohort.heldSeats)} />
+          <MetricCard
+            label="Held seats"
+            value={`${cohort.heldSeats} total`}
+          />
           <MetricCard label="Timezone" value={cohort.workshopTimezone} />
-          <MetricCard label="Members" value={String(cohort.activeSeats)} />
+          <MetricCard label="Active members" value={String(cohort.activeSeats)} />
         </section>
 
         <section>

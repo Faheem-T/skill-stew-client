@@ -34,6 +34,7 @@ import { ExpertCohortDetailPage } from "@/features/cohort/pages/ExpertCohortDeta
 import { ExpertCohortMembersPage } from "@/features/cohort/pages/ExpertCohortMembersPage";
 import { PublicWorkshopDetailPage } from "@/features/workshop/pages/PublicWorkshopDetailPage";
 import { WorkshopsLandingPage } from "@/features/workshop/pages/WorkshopsLandingPage";
+import { PublicCohortDetailPage } from "@/features/cohort/pages/PublicCohortDetailPage";
 
 export const queryClient = new QueryClient();
 
@@ -59,6 +60,10 @@ export const router = createBrowserRouter([
       {
         path: RoutePath.PublicWorkshopDetail,
         element: <PublicWorkshopDetailPage />,
+      },
+      {
+        path: RoutePath.PublicCohortDetail,
+        element: <PublicCohortDetailPage />,
       },
       {
         // Guest only routes

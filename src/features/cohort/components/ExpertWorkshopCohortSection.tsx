@@ -146,14 +146,16 @@ export const ExpertWorkshopCohortSection = ({
                       </div>
                       <div className="flex items-center gap-2">
                         <Users className="h-4 w-4 text-primary" />
-                        <span>{cohort.activeSeats} active seats</span>
+                        <span>
+                          {cohort.activeSeats} active • {cohort.heldSeats} held
+                        </span>
                       </div>
                       <div className="flex items-center gap-2">
                         <PencilLine className="h-4 w-4 text-primary" />
                         <span>
                           {cohort.heldSeats === 0
                             ? "Pricing and start date still editable"
-                            : "Only capacity can change now"}
+                            : "Held seats lock pricing and start date"}
                         </span>
                       </div>
                     </div>

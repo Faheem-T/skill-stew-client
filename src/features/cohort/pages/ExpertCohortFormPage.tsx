@@ -302,7 +302,7 @@ export const ExpertCohortFormPage = () => {
                 >
                   {!canEditPricing && cohort ? (
                     <div className="rounded-lg border border-warning/20 bg-warning-muted px-4 py-3 text-sm text-foreground">
-                      Members already joined. Only seats can change.
+                      Held seats already exist. Only capacity can change.
                     </div>
                   ) : null}
 
