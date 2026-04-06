@@ -9,9 +9,12 @@ import { getCurrentUserProfile } from "@/shared/api/currentUserProfile";
 export const CURRENT_USER_PROFILE_QUERY_KEY = ["currentUserProfile"] as const;
 
 export function useCurrentUserProfile(
-  options?: UseQueryOptions<
-    CurrentUserProfile | undefined,
-    ApiErrorResponseType
+  options?: Omit<
+    UseQueryOptions<
+      CurrentUserProfile | undefined,
+      ApiErrorResponseType
+    >,
+    "queryKey" | "queryFn"
   >,
 ) {
   return useQuery<CurrentUserProfile | undefined, ApiErrorResponseType>({

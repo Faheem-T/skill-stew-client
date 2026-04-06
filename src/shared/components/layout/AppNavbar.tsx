@@ -32,7 +32,16 @@ export const AppNavbar: React.FC = () => {
     useCurrentUserProfile();
   const location = useLocation();
 
-  const isActive = (path: string) => location.pathname === path;
+  const isActive = (path: string) => {
+    if (path === RoutePath.Workshops) {
+      return (
+        location.pathname === RoutePath.Workshops ||
+        location.pathname.startsWith("/workshops/")
+      );
+    }
+
+    return location.pathname === path;
+  };
 
   if (isProfilePending) {
     return <InitialLoadScreen />;

@@ -26,6 +26,15 @@ import { NotificationsPage } from "@/features/notification/pages/NotificationsPa
 import { NotFoundPage } from "./pages/NotFoundPage";
 import { ExpertApplicationPage } from "@/features/expert/pages/ExpertApplicationPage";
 import { ExpertDashboardPage } from "@/features/expert/pages/ExpertDashboardPage";
+import { WorkshopCreatePage } from "@/features/workshop/pages/WorkshopCreatePage";
+import { ExpertWorkshopsPage } from "@/features/workshop/pages/ExpertWorkshopsPage";
+import { ExpertWorkshopDetailPage } from "@/features/workshop/pages/ExpertWorkshopDetailPage";
+import { ExpertCohortFormPage } from "@/features/cohort/pages/ExpertCohortFormPage";
+import { ExpertCohortDetailPage } from "@/features/cohort/pages/ExpertCohortDetailPage";
+import { ExpertCohortMembersPage } from "@/features/cohort/pages/ExpertCohortMembersPage";
+import { PublicWorkshopDetailPage } from "@/features/workshop/pages/PublicWorkshopDetailPage";
+import { WorkshopsLandingPage } from "@/features/workshop/pages/WorkshopsLandingPage";
+import { PublicCohortDetailPage } from "@/features/cohort/pages/PublicCohortDetailPage";
 
 export const queryClient = new QueryClient();
 
@@ -35,7 +44,7 @@ export const router = createBrowserRouter([
     loader: initialLoader,
     element: <AppRoot />,
     children: [
-
+      { path: RoutePath.TestRoute, element: <InitialLoadScreen /> },
       {
         path: RoutePath.Home,
         element: <HomePage />,
@@ -43,6 +52,18 @@ export const router = createBrowserRouter([
       {
         path: RoutePath.PublicProfile,
         element: <PublicUserProfilePage />,
+      },
+      {
+        path: RoutePath.Workshops,
+        element: <WorkshopsLandingPage />,
+      },
+      {
+        path: RoutePath.PublicWorkshopDetail,
+        element: <PublicWorkshopDetailPage />,
+      },
+      {
+        path: RoutePath.PublicCohortDetail,
+        element: <PublicCohortDetailPage />,
       },
       {
         // Guest only routes
@@ -114,6 +135,38 @@ export const router = createBrowserRouter([
           {
             path: RoutePath.ExpertDashboard,
             element: <ExpertDashboardPage />,
+          },
+          {
+            path: RoutePath.ExpertWorkshops,
+            element: <ExpertWorkshopsPage />,
+          },
+          {
+            path: RoutePath.ExpertWorkshopCreate,
+            element: <WorkshopCreatePage />,
+          },
+          {
+            path: RoutePath.ExpertWorkshopDetail,
+            element: <ExpertWorkshopDetailPage />,
+          },
+          {
+            path: RoutePath.ExpertWorkshopEdit,
+            element: <WorkshopCreatePage />,
+          },
+          {
+            path: RoutePath.ExpertWorkshopCohortCreate,
+            element: <ExpertCohortFormPage />,
+          },
+          {
+            path: RoutePath.ExpertWorkshopCohortDetail,
+            element: <ExpertCohortDetailPage />,
+          },
+          {
+            path: RoutePath.ExpertWorkshopCohortEdit,
+            element: <ExpertCohortFormPage />,
+          },
+          {
+            path: RoutePath.ExpertWorkshopCohortMembers,
+            element: <ExpertCohortMembersPage />,
           },
         ],
       },

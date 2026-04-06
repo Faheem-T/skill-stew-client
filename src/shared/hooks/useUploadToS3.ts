@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
-import { generatePresignedUploadUrlRequest } from "@/features/onboarding/api/GeneratePresignedUploadUrl";
-import type { GeneratePresignedUploadUrlResponse } from "@/features/onboarding/api/GeneratePresignedUploadUrl";
+import { generatePresignedUploadUrlRequest } from "@/shared/api/GeneratePresignedUploadUrl";
+import type { GeneratePresignedUploadUrlResponse } from "@/shared/api/GeneratePresignedUploadUrl";
 import type { ImageUploadType } from "@/shared/config/imageUploadTypes";
 
 export interface UseUploadToS3Return {
@@ -26,7 +26,7 @@ export const useUploadToS3 = (): UseUploadToS3Return => {
         const mimetype = file.type as "image/png" | "image/jpeg" | "image/webp";
 
         const response = await generatePresignedUploadUrlRequest({
-          type: imageType as "avatar" | "banner",
+          type: imageType,
           mimetype,
         });
 
