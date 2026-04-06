@@ -198,7 +198,7 @@ export const ProfileStep: React.FC<ProfileStepProps> = ({
         </div>
       </div>
       {/* Navigation buttons at bottom */}
-      <div className="flex justify-between gap-4 px-8 py-4 border-t border-slate-200 bg-slate-50 shrink-0">
+      <div className="bg-card border-border flex shrink-0 justify-between gap-4 border-t px-8 py-4">
         {onBack ? (
           <Button
             type="button"
