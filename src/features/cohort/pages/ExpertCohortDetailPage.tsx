@@ -1,10 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  ArrowLeft,
-  PencilLine,
-  Trash2,
-  Users,
-} from "lucide-react";
+import { ArrowLeft, PencilLine, Trash2, Users } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router";
 import toast from "react-hot-toast";
 import { deleteCohortRequest } from "@/features/cohort/api/cohorts";
@@ -17,9 +12,9 @@ import {
   canEditCohortPricing,
   formatCalendarDate,
   formatCohortSeatLabel,
-  formatCurrencyAmount,
   formatDateTime,
 } from "@/features/cohort/lib/cohort";
+import { formatCurrencyAmount } from "../lib/currency";
 import { AppNavbar } from "@/shared/components/layout/AppNavbar";
 import { Button } from "@/shared/components/ui/button";
 import {
@@ -54,10 +49,10 @@ const getEditPath = (workshopId: string, cohortId: string) =>
   );
 
 const getMembersPath = (workshopId: string, cohortId: string) =>
-  RoutePath.ExpertWorkshopCohortMembers.replace(":workshopId", workshopId).replace(
-    ":cohortId",
-    cohortId,
-  );
+  RoutePath.ExpertWorkshopCohortMembers.replace(
+    ":workshopId",
+    workshopId,
+  ).replace(":cohortId", cohortId);
 
 export const ExpertCohortDetailPage = () => {
   const { workshopId = "", cohortId = "" } = useParams();
@@ -152,7 +147,10 @@ export const ExpertCohortDetailPage = () => {
                 </h1>
                 <p className="text-sm leading-6 text-muted-foreground md:text-base">
                   Starts {formatCalendarDate(cohort.startDate)} •{" "}
-                  {formatCurrencyAmount(cohort.spotPriceAmount, cohort.currency)}
+                  {formatCurrencyAmount(
+                    cohort.spotPriceAmount,
+                    cohort.currency,
+                  )}
                 </p>
               </div>
             </CardContent>
@@ -221,12 +219,12 @@ export const ExpertCohortDetailPage = () => {
 
         <section className="grid gap-4 md:grid-cols-4">
           <MetricCard label="Seats" value={formatCohortSeatLabel(cohort)} />
-          <MetricCard
-            label="Held seats"
-            value={`${cohort.heldSeats} total`}
-          />
+          <MetricCard label="Held seats" value={`${cohort.heldSeats} total`} />
           <MetricCard label="Timezone" value={cohort.workshopTimezone} />
-          <MetricCard label="Active members" value={String(cohort.activeSeats)} />
+          <MetricCard
+            label="Active members"
+            value={String(cohort.activeSeats)}
+          />
         </section>
 
         <section>
@@ -256,8 +254,14 @@ export const ExpertCohortDetailPage = () => {
                 label="Last session"
                 value={formatDateTime(cohort.lastSessionStartsAt)}
               />
-              <DetailRow label="Created" value={formatDateTime(cohort.createdAt)} />
-              <DetailRow label="Updated" value={formatDateTime(cohort.updatedAt)} />
+              <DetailRow
+                label="Created"
+                value={formatDateTime(cohort.createdAt)}
+              />
+              <DetailRow
+                label="Updated"
+                value={formatDateTime(cohort.updatedAt)}
+              />
             </CardContent>
           </Card>
         </section>

@@ -4,8 +4,8 @@ import { useExpertCohorts } from "@/features/cohort/hooks/useExpertCohorts";
 import {
   formatCalendarDate,
   formatCohortSeatLabel,
-  formatCurrencyAmount,
 } from "@/features/cohort/lib/cohort";
+import { formatCurrencyAmount } from "../lib/currency";
 import { CohortStatusBadge } from "@/features/cohort/components/CohortStatusBadge";
 import { Button } from "@/shared/components/ui/button";
 import {

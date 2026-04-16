@@ -10,14 +10,17 @@ import { CohortStatusBadge } from "@/features/cohort/components/CohortStatusBadg
 import {
   formatCalendarDate,
   formatCohortSeatLabel,
-  formatCurrencyAmount,
 } from "@/features/cohort/lib/cohort";
+import { formatCurrencyAmount } from "@/features/cohort/lib/currency";
 import {
   getEnrollmentStatusLabel,
   getPublicEnrollmentState,
 } from "@/features/cohort/lib/publicEnrollment";
 import { usePublicWorkshopDetails } from "@/features/workshop/hooks/usePublicWorkshopDetails";
-import { formatWorkshopStructure, sortWorkshopSessions } from "@/features/workshop/lib/workshop";
+import {
+  formatWorkshopStructure,
+  sortWorkshopSessions,
+} from "@/features/workshop/lib/workshop";
 import { TopBar } from "@/shared/components/layout/TopBar";
 import { AppNavbar } from "@/shared/components/layout/AppNavbar";
 import { Button } from "@/shared/components/ui/button";
@@ -36,9 +39,9 @@ import useCurrentUserProfile from "@/shared/hooks/useCurrentUserProfile";
 const getPublicCohortPath = (id: string) =>
   RoutePath.PublicCohortDetail.replace(":id", id);
 
-const getEnrollmentSummary = (status: Parameters<
-  typeof getPublicEnrollmentState
->[0]) => {
+const getEnrollmentSummary = (
+  status: Parameters<typeof getPublicEnrollmentState>[0],
+) => {
   const state = getPublicEnrollmentState(status);
 
   switch (state) {
@@ -239,7 +242,10 @@ export const PublicWorkshopDetailPage = () => {
                 };
 
                 return (
-                  <Card key={cohort.id} className="border-border/80 shadow-none">
+                  <Card
+                    key={cohort.id}
+                    className="border-border/80 shadow-none"
+                  >
                     <CardContent className="space-y-4 pt-6">
                       <div className="flex flex-wrap items-center justify-between gap-3">
                         <div className="flex flex-wrap items-center gap-2">
@@ -297,7 +303,10 @@ export const PublicWorkshopDetailPage = () => {
                       </div>
 
                       <Button asChild variant="outline">
-                        <Link to={getPublicCohortPath(cohort.id)} state={linkState}>
+                        <Link
+                          to={getPublicCohortPath(cohort.id)}
+                          state={linkState}
+                        >
                           View cohort
                           <ArrowRight className="h-4 w-4" />
                         </Link>
