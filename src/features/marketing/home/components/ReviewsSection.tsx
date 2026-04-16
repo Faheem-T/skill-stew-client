@@ -54,7 +54,7 @@ export const ReviewsSection: React.FC = () => {
             <p className="text-muted-foreground text-[11px] font-medium uppercase tracking-[0.08em]">
               Testimonials
             </p>
-            <h2 className="mt-4 text-3xl font-semibold text-foreground md:text-4xl">
+            <h2 className="mt-4 font-serif text-3xl font-semibold text-foreground md:text-4xl">
               See what our users have to say
             </h2>
             <p className="text-muted-foreground mt-4 text-lg leading-relaxed">
@@ -83,16 +83,20 @@ export const ReviewsSection: React.FC = () => {
           <div className="relative">
             <ReviewCard {...reviews[activeIndex]} />
 
-            <div className="flex justify-center gap-2 mt-6">
+            <div className="flex justify-center mt-6">
               {reviews.map((_, index) => (
                 <button
                   key={index}
                   onClick={() => setActiveIndex(index)}
-                  className={`w-2 h-2 rounded-full transition-colors ${
-                    index === activeIndex ? "bg-primary" : "bg-border"
-                  }`}
+                  className="flex h-11 w-11 items-center justify-center"
                   aria-label={`Go to review ${index + 1}`}
-                />
+                >
+                  <span
+                    className={`block h-2 w-2 rounded-full transition-colors ${
+                      index === activeIndex ? "bg-primary" : "bg-border"
+                    }`}
+                  />
+                </button>
               ))}
             </div>
           </div>

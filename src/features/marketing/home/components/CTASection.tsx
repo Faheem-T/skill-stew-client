@@ -15,8 +15,8 @@ export const CTASection: React.FC = () => {
               <p className="text-muted-foreground text-[11px] font-medium uppercase tracking-[0.08em]">
                 Start learning
               </p>
-              <h2 className="mt-4 text-3xl font-semibold text-foreground md:text-4xl lg:text-5xl">
-              Ready to start learning?
+              <h2 className="mt-4 font-serif text-3xl font-semibold text-foreground md:text-4xl lg:text-5xl">
+                Ready to start learning?
               </h2>
               <p className="text-muted-foreground mt-4 max-w-xl text-lg">
                 Join a platform built around live teaching, trusted experts,
