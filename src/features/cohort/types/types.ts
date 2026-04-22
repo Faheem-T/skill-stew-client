@@ -80,6 +80,17 @@ export type CohortEnrollmentResponse = {
   checkoutUrl: string | null;
 };
 
+export type StripeCheckoutReturnStatus = "success" | "cancelled";
+
+export type StripeCheckoutReturnParams = {
+  paymentStatus: StripeCheckoutReturnStatus;
+  paymentId: string | null;
+  membershipId: string | null;
+  cohortId: string | null;
+  workshopId: string | null;
+  sessionId: string | null;
+};
+
 export type PublicEnrollmentContext = {
   membershipId: string;
   cohortId: string;

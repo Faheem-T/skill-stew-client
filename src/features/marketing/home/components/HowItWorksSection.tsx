@@ -8,7 +8,7 @@ export const HowItWorksSection: React.FC = () => {
           <p className="text-muted-foreground text-[11px] font-medium uppercase tracking-[0.08em]">
             How it works
           </p>
-          <h2 className="mt-4 text-3xl font-semibold text-foreground md:text-4xl">
+          <h2 className="mt-4 font-serif text-3xl font-semibold text-foreground md:text-4xl">
             How expert workshops work
           </h2>
           <p className="text-muted-foreground mt-4 text-lg">
@@ -35,7 +35,7 @@ export const HowItWorksSection: React.FC = () => {
           />
           <StepCard
             step="04"
-            title="Learn & grow!"
+            title="Learn & grow"
             description="Attend live sessions, ask experts in real-time, and access recordings forever."
           />
         </div>

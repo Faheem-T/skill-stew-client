@@ -9,13 +9,14 @@ export const Footer: React.FC = () => {
       <div className="mx-auto max-w-[1200px] px-4 md:px-20">
         <div className="grid md:grid-cols-4 gap-8 md:gap-12">
           <div className="md:col-span-2">
-            <div className="flex items-center gap-2.5">
-              <img src="/logo.png" className="h-8 w-8 object-contain" />
+            <div className="flex items-center gap-2">
+              <img src="/logo.png" alt={APP_NAME} className="h-8 w-8 object-contain" />
               <span className="text-lg font-semibold text-foreground">{APP_NAME}</span>
             </div>
             <p className="text-muted-foreground mt-4 max-w-sm leading-relaxed">
-              Connect with people who have the skills you need, and share your
-              expertise in return. Learn, teach, and grow together.
+              A learning platform connecting you with verified domain experts
+              through live, cohort-based workshops. Built for completion, not
+              just signups.
             </p>
           </div>
 

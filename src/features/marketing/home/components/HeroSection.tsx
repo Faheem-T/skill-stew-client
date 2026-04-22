@@ -14,7 +14,8 @@ export const HeroSection: React.FC<{
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,var(--color-accent),transparent_28%)] opacity-25" />
 
       <div className="mx-auto max-w-[1200px] px-4 py-24 md:px-20 md:py-32">
-        <div className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
+        <div className="grid gap-16 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+          {/* Left — headline copy */}
           <div className="max-w-3xl">
             <motion.div
               className="bg-secondary text-secondary-foreground inline-flex items-center gap-2 rounded-sm px-2 py-0.5 text-[11px] font-medium uppercase tracking-[0.08em]"
@@ -32,7 +33,8 @@ export const HeroSection: React.FC<{
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
             >
-              Learn practical skills in rooms built for completion, not just signups.
+              Learn practical skills in rooms built for completion, not just
+              signups.
             </motion.h1>
 
             <motion.p
@@ -42,7 +44,8 @@ export const HeroSection: React.FC<{
               transition={{ duration: 0.5, delay: 0.2 }}
             >
               Skill Stew pairs verified experts with live cohorts, recorded
-              access, and a community layer that keeps momentum between sessions.
+              access, and a community layer that keeps momentum between
+              sessions.
             </motion.p>
 
             <motion.div
@@ -51,46 +54,63 @@ export const HeroSection: React.FC<{
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
             >
-              <Button size="lg" className="px-8" onClick={() => navigate(RoutePath.Register)}>
+              <Button
+                size="lg"
+                className="px-8"
+                onClick={() => navigate(RoutePath.Register)}
+              >
                 Get Started
                 <ArrowRight className="ml-2 h-4 w-4" strokeWidth={1.5} />
               </Button>
-              <Button variant="outline" size="lg" className="px-8" onClick={onLearnMoreButtonClick}>
+              <Button
+                variant="outline"
+                size="lg"
+                className="px-8"
+                onClick={onLearnMoreButtonClick}
+              >
                 Learn More
               </Button>
             </motion.div>
           </div>
 
-          <motion.div
-            className="grid gap-4 sm:grid-cols-2"
+          {/* Right — pull quote */}
+          <motion.blockquote
+            className="relative"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
           >
-            {[
-              {
-                value: "89%",
-                label: "Completion rate across structured cohorts",
-              },
-              {
-                value: "500+",
-                label: "Experts building trust through verification",
-              },
-              {
-                value: "2k+",
-                label: "Learners moving through live sessions",
-              },
-              {
-                value: "24/7",
-                label: "Recorded replay access after missed workshops",
-              },
-            ].map((item) => (
-              <div key={item.label} className="bg-card border-border rounded-lg border p-6">
-                <p className="text-primary text-3xl font-semibold">{item.value}</p>
-                <p className="text-muted-foreground mt-3 text-sm">{item.label}</p>
+            {/* Decorative opening mark */}
+            <span
+              className="font-serif text-primary pointer-events-none select-none absolute -top-6 -left-1 text-9xl leading-none"
+              aria-hidden="true"
+            >
+              &ldquo;
+            </span>
+
+            <p className="font-serif text-xl text-foreground leading-relaxed pt-10">
+              I completed the advanced Python workshop and landed a job as a
+              junior developer within 3 months. The expert instructors and
+              cohort support made all the difference.
+            </p>
+
+            <footer className="mt-8 flex items-center gap-3">
+              <div
+                className="bg-secondary text-primary h-10 w-10 rounded-full flex items-center justify-center text-sm font-semibold shrink-0"
+                aria-hidden="true"
+              >
+                S
               </div>
-            ))}
-          </motion.div>
+              <div>
+                <cite className="not-italic font-medium text-foreground text-sm">
+                  Sarah M.
+                </cite>
+                <p className="text-muted-foreground text-sm">
+                  Junior Developer
+                </p>
+              </div>
+            </footer>
+          </motion.blockquote>
         </div>
       </div>
     </section>

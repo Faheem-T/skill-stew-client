@@ -14,9 +14,9 @@ export const InfoSection = forwardRef<HTMLDivElement, unknown>(
         <div className="mx-auto max-w-[1200px] px-4 md:px-20">
           <div className="max-w-3xl">
             <p className="text-muted-foreground text-[11px] font-medium uppercase tracking-[0.08em]">
-              What is {APP_NAME}
+              About the platform
             </p>
-            <h2 className="mt-4 text-3xl font-semibold text-foreground md:text-5xl">
+            <h2 className="mt-4 font-serif text-3xl font-semibold text-foreground md:text-5xl">
               What is {APP_NAME}?
             </h2>
             <p className="text-muted-foreground mt-4 text-lg leading-relaxed md:text-xl">
@@ -32,12 +32,12 @@ export const InfoSection = forwardRef<HTMLDivElement, unknown>(
 
           <div className="grid md:grid-cols-2 gap-6 mt-12">
             <InfoCard
-              icon={<GraduationCap className="w-6 h-6" />}
+              icon={<GraduationCap className="h-5 w-5" strokeWidth={1.5} />}
               title="Expert-Led Workshops"
               description="Learn from verified industry professionals. Structured curriculum, live Q&A sessions, and real-time feedback to ensure you master practical skills."
             />
             <InfoCard
-              icon={<Users className="w-6 h-6" />}
+              icon={<Users className="h-5 w-5" strokeWidth={1.5} />}
               title="Community Learning"
               description="Join group chats and forums with your cohort. Share ideas, collaborate on projects, and stay motivated with peers on the same learning journey."
             />

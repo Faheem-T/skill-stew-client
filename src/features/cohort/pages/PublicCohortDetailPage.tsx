@@ -1,3 +1,4 @@
+import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   ArrowRight,
@@ -5,11 +6,18 @@ import {
   CalendarDays,
   CircleAlert,
   CreditCard,
+  RefreshCw,
   Loader2,
   LogIn,
   Users,
 } from "lucide-react";
-import { Link, useLocation, useNavigate, useParams } from "react-router";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router";
 import toast from "react-hot-toast";
 import { useAppStore } from "@/app/store";
 import { enrollInCohortRequest } from "@/features/cohort/api/cohorts";
@@ -19,14 +27,22 @@ import { PUBLIC_COHORT_DETAILS_QUERY_KEY } from "@/features/cohort/hooks/usePubl
 import {
   formatCalendarDate,
   formatCohortSeatLabel,
-  formatCurrencyAmount,
   formatDateTime,
   getCohortSessionLabel,
 } from "@/features/cohort/lib/cohort";
+import { formatCurrencyAmount } from "../lib/currency";
 import {
   getEnrollmentStatusLabel,
   getPublicEnrollmentState,
 } from "@/features/cohort/lib/publicEnrollment";
+import {
+  getPaymentReturnPanelCopy,
+  isStableEnrollmentStatus,
+  parseStripeCheckoutReturnParams,
+  STRIPE_RETURN_POLL_INTERVAL_MS,
+  STRIPE_RETURN_POLL_TIMEOUT_MS,
+  STRIPE_RETURN_QUERY_PARAM_KEYS,
+} from "@/features/cohort/lib/paymentReturn";
 import { PUBLIC_WORKSHOP_DETAILS_QUERY_KEY } from "@/features/workshop/hooks/usePublicWorkshopDetails";
 import { TopBar } from "@/shared/components/layout/TopBar";
 import { AppNavbar } from "@/shared/components/layout/AppNavbar";
@@ -96,13 +112,25 @@ export const PublicCohortDetailPage = () => {
   const { id = "" } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const navigationState = (location.state as PublicCohortLocationState | null) ?? null;
+  const [searchParams] = useSearchParams();
+  const navigationState =
+    (location.state as PublicCohortLocationState | null) ?? null;
   const queryClient = useQueryClient();
   const accessToken = useAppStore((state) => state.accessToken);
+  const [isPaymentReturnPolling, setIsPaymentReturnPolling] = useState(false);
   const { data: currentUser } = useCurrentUserProfile({
     enabled: Boolean(accessToken),
   });
-  const { data: cohort, isLoading, error } = usePublicCohortDetails(id);
+  const {
+    data: cohort,
+    isLoading,
+    error,
+    refetch: refetchCohort,
+  } = usePublicCohortDetails(id);
+  const paymentReturn = useMemo(
+    () => parseStripeCheckoutReturnParams(searchParams, id),
+    [id, searchParams],
+  );
 
   const mutation = useMutation({
     mutationFn: enrollInCohortRequest,
@@ -139,6 +167,122 @@ export const PublicCohortDetailPage = () => {
       );
     },
   });
+
+  useEffect(() => {
+    if (!paymentReturn || !id) {
+      setIsPaymentReturnPolling(false);
+      return;
+    }
+
+    let isDisposed = false;
+    let intervalId: number | undefined;
+    let timeoutId: number | undefined;
+
+    const clearPaymentReturnParams = () => {
+      const nextSearchParams = new URLSearchParams(searchParams);
+      let changed = false;
+
+      STRIPE_RETURN_QUERY_PARAM_KEYS.forEach((key) => {
+        if (nextSearchParams.has(key)) {
+          nextSearchParams.delete(key);
+          changed = true;
+        }
+      });
+
+      if (!changed) {
+        return;
+      }
+
+      const nextSearch = nextSearchParams.toString();
+
+      navigate(
+        {
+          pathname: location.pathname,
+          search: nextSearch ? `?${nextSearch}` : "",
+        },
+        { replace: true, state: navigationState },
+      );
+    };
+
+    const invalidateRelatedQueries = async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: [PUBLIC_COHORT_DETAILS_QUERY_KEY, id],
+        }),
+        paymentReturn.workshopId
+          ? queryClient.invalidateQueries({
+              queryKey: [
+                PUBLIC_WORKSHOP_DETAILS_QUERY_KEY,
+                paymentReturn.workshopId,
+              ],
+            })
+          : Promise.resolve(),
+      ]);
+    };
+
+    const startPolling = async () => {
+      setIsPaymentReturnPolling(true);
+      await invalidateRelatedQueries();
+
+      const initialResult = await refetchCohort();
+
+      if (isDisposed) {
+        return;
+      }
+
+      if (isStableEnrollmentStatus(initialResult.data?.myEnrollment?.status)) {
+        setIsPaymentReturnPolling(false);
+        clearPaymentReturnParams();
+        return;
+      }
+
+      intervalId = window.setInterval(async () => {
+        const nextResult = await refetchCohort();
+
+        if (isDisposed) {
+          return;
+        }
+
+        if (isStableEnrollmentStatus(nextResult.data?.myEnrollment?.status)) {
+          setIsPaymentReturnPolling(false);
+          clearPaymentReturnParams();
+        }
+      }, STRIPE_RETURN_POLL_INTERVAL_MS);
+
+      timeoutId = window.setTimeout(() => {
+        if (isDisposed) {
+          return;
+        }
+
+        setIsPaymentReturnPolling(false);
+        clearPaymentReturnParams();
+      }, STRIPE_RETURN_POLL_TIMEOUT_MS);
+    };
+
+    void startPolling();
+
+    return () => {
+      isDisposed = true;
+      setIsPaymentReturnPolling(false);
+
+      if (intervalId) {
+        window.clearInterval(intervalId);
+      }
+
+      if (timeoutId) {
+        window.clearTimeout(timeoutId);
+      }
+    };
+  }, [
+    id,
+    location.pathname,
+    navigate,
+    navigationState,
+    paymentReturn,
+    queryClient,
+    refetchCohort,
+    searchParams,
+  ]);
 
   const shell = accessToken ? <AppNavbar /> : <TopBar />;
 
@@ -214,16 +358,19 @@ export const PublicCohortDetailPage = () => {
   const statusPanel = exactEnrollment
     ? getStatusPanelCopy(exactEnrollment.status)
     : null;
+  const paymentReturnPanel = paymentReturn
+    ? getPaymentReturnPanelCopy({
+        paymentReturn,
+        enrollmentStatus: exactEnrollment?.status,
+        isPolling: isPaymentReturnPolling,
+      })
+    : null;
   const isBlockedByAnotherCohort =
     cohort.hasEnrollmentInAnotherCohort && !exactEnrollment;
   const enrolledCohortId =
     navigationState?.enrolledCohortId &&
     navigationState.enrolledCohortId !== cohort.id
       ? navigationState.enrolledCohortId
-      : null;
-  const seatNote =
-    cohort.heldSeats > cohort.activeSeats
-      ? "Availability includes live payment reservations."
       : null;
   const isUser = currentUser?.role === "USER";
   const canResumePayment = enrollmentState === "payment_needed";
@@ -329,8 +476,11 @@ export const PublicCohortDetailPage = () => {
             <CardContent className="space-y-4 border-t border-border/70 pt-6 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
                 <CreditCard className="h-4 w-4 text-primary" />
-                <span>
-                  {formatCurrencyAmount(cohort.spotPriceAmount, cohort.currency)}
+                <span className="text-2xl font-semibold">
+                  {formatCurrencyAmount(
+                    cohort.spotPriceAmount,
+                    cohort.currency,
+                  )}
                 </span>
               </div>
               <div className="flex items-center gap-2">
@@ -345,7 +495,6 @@ export const PublicCohortDetailPage = () => {
                 <BookOpen className="h-4 w-4 text-primary" />
                 <span>{cohort.sessions.length} scheduled sessions</span>
               </div>
-              {seatNote ? <p>{seatNote}</p> : null}
               {cta?.href && cta ? (
                 <Button asChild className="w-full">
                   <Link to={cta.href}>
@@ -392,6 +541,42 @@ export const PublicCohortDetailPage = () => {
           </div>
         ) : null}
 
+        {paymentReturnPanel ? (
+          <div
+            className={
+              paymentReturnPanel.tone === "success"
+                ? "rounded-lg border border-success/20 bg-success-muted px-4 py-4"
+                : paymentReturnPanel.tone === "warning"
+                  ? "rounded-lg border border-warning/20 bg-warning-muted px-4 py-4"
+                  : "rounded-lg border border-info/20 bg-info-muted px-4 py-4"
+            }
+          >
+            <div className="flex items-start gap-3">
+              {isPaymentReturnPolling ? (
+                <RefreshCw className="mt-0.5 h-4 w-4 animate-spin text-info" />
+              ) : (
+                <CircleAlert
+                  className={
+                    paymentReturnPanel.tone === "success"
+                      ? "mt-0.5 h-4 w-4 text-success"
+                      : paymentReturnPanel.tone === "warning"
+                        ? "mt-0.5 h-4 w-4 text-warning"
+                        : "mt-0.5 h-4 w-4 text-info"
+                  }
+                />
+              )}
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-foreground">
+                  {paymentReturnPanel.title}
+                </p>
+                <p className="text-sm leading-6 text-muted-foreground">
+                  {paymentReturnPanel.body}
+                </p>
+              </div>
+            </div>
+          </div>
+        ) : null}
+
         {isBlockedByAnotherCohort ? (
           <div className="rounded-lg border border-info/20 bg-info-muted px-4 py-4">
             <div className="flex items-start gap-3">
@@ -424,7 +609,9 @@ export const PublicCohortDetailPage = () => {
           </div>
         ) : null}
 
-        {!cohort.isEnrollable && !exactEnrollment && !isBlockedByAnotherCohort ? (
+        {!cohort.isEnrollable &&
+        !exactEnrollment &&
+        !isBlockedByAnotherCohort ? (
           <div className="rounded-lg border border-border bg-card px-4 py-4">
             <p className="text-sm font-medium text-foreground">
               Enrollment is closed for this cohort.
@@ -480,7 +667,10 @@ export const PublicCohortDetailPage = () => {
                 value={formatDateTime(cohort.lastSessionStartsAt)}
               />
               <DetailRow label="Timezone" value={cohort.workshopTimezone} />
-              <DetailRow label="Active seats" value={String(cohort.activeSeats)} />
+              <DetailRow
+                label="Active seats"
+                value={String(cohort.activeSeats)}
+              />
               <DetailRow label="Held seats" value={String(cohort.heldSeats)} />
               <DetailRow
                 label="Available seats"
@@ -507,7 +697,10 @@ const DetailRow = ({
     <div className="flex items-start justify-between gap-4 border-b border-border/70 pb-3 last:border-b-0 last:pb-0">
       <span className="text-sm text-muted-foreground">{label}</span>
       {href ? (
-        <Link to={href} className="text-right text-sm font-medium text-foreground">
+        <Link
+          to={href}
+          className="text-right text-sm font-medium text-foreground"
+        >
           {value}
         </Link>
       ) : (

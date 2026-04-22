@@ -10,11 +10,16 @@ import {
   updateCohortRequest,
 } from "@/features/cohort/api/cohorts";
 import { CohortSessionList } from "@/features/cohort/components/CohortSessionList";
+import { canEditCohortPricing } from "@/features/cohort/lib/cohort";
 import {
-  canEditCohortPricing,
   formatCurrencyAmount,
-} from "@/features/cohort/lib/cohort";
-import { cohortFormSchema, type CohortFormValues } from "@/features/cohort/schemas";
+  SUPPORTED_CURRENCIES,
+  toMinorUnits,
+} from "../lib/currency";
+import {
+  cohortFormSchema,
+  type CohortFormValues,
+} from "@/features/cohort/schemas";
 import { useExpertCohortDetails } from "@/features/cohort/hooks/useExpertCohortDetails";
 import { EXPERT_COHORTS_QUERY_KEY } from "@/features/cohort/hooks/useExpertCohorts";
 import { AppNavbar } from "@/shared/components/layout/AppNavbar";
@@ -47,15 +52,22 @@ import {
   WEEKDAY_OPTIONS,
 } from "@/features/workshop/lib/workshop";
 import type { ApiErrorResponseType } from "@/shared/api/baseApi";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/shared/components/ui/select";
 
 const getWorkshopPath = (workshopId: string) =>
   RoutePath.ExpertWorkshopDetail.replace(":id", workshopId);
 
 const getCohortPath = (workshopId: string, cohortId: string) =>
-  RoutePath.ExpertWorkshopCohortDetail.replace(":workshopId", workshopId).replace(
-    ":cohortId",
-    cohortId,
-  );
+  RoutePath.ExpertWorkshopCohortDetail.replace(
+    ":workshopId",
+    workshopId,
+  ).replace(":cohortId", cohortId);
 
 const toDateInputValue = (date: Date) => {
   const year = date.getFullYear();
@@ -108,8 +120,8 @@ export const ExpertCohortFormPage = () => {
   const requiredStartDay = earliestSession?.dayOfWeek ?? null;
   const requiredStartDayLabel =
     requiredStartDay !== null
-      ? (WEEKDAY_OPTIONS.find((option) => option.value === requiredStartDay)?.label ??
-        "matching day")
+      ? (WEEKDAY_OPTIONS.find((option) => option.value === requiredStartDay)
+          ?.label ?? "matching day")
       : "matching day";
 
   const form = useForm<CohortFormValues>({
@@ -121,7 +133,7 @@ export const ExpertCohortFormPage = () => {
       maxStudents: cohort
         ? String(cohort.maxStudents)
         : workshop
-      ? String(workshop.maxCohortSize)
+          ? String(workshop.maxCohortSize)
           : "",
     },
   });
@@ -145,8 +157,13 @@ export const ExpertCohortFormPage = () => {
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, body }: { id: string; body: Parameters<typeof updateCohortRequest>[1] }) =>
-      updateCohortRequest(id, body),
+    mutationFn: ({
+      id,
+      body,
+    }: {
+      id: string;
+      body: Parameters<typeof updateCohortRequest>[1];
+    }) => updateCohortRequest(id, body),
     onSuccess: async (response) => {
       await queryClient.invalidateQueries({
         queryKey: [EXPERT_COHORTS_QUERY_KEY],
@@ -177,7 +194,10 @@ export const ExpertCohortFormPage = () => {
 
     const payload = {
       startDate: values.startDate,
-      spotPriceAmount: Number(values.spotPriceAmount),
+      spotPriceAmount: toMinorUnits(
+        Number(values.spotPriceAmount),
+        values.currency.toUpperCase(),
+      ),
       currency: values.currency.toUpperCase(),
       maxStudents: Number(values.maxStudents),
     };
@@ -211,17 +231,17 @@ export const ExpertCohortFormPage = () => {
       const apiError = error as ApiErrorResponseType;
       const errorsByField = mapErrorsByField(getApiErrorItems(apiError));
 
-      (["startDate", "spotPriceAmount", "currency", "maxStudents"] as const).forEach(
-        (field) => {
-          const message = errorsByField[field]?.[0];
-          if (message) {
-            form.setError(field, {
-              type: "manual",
-              message,
-            });
-          }
-        },
-      );
+      (
+        ["startDate", "spotPriceAmount", "currency", "maxStudents"] as const
+      ).forEach((field) => {
+        const message = errorsByField[field]?.[0];
+        if (message) {
+          form.setError(field, {
+            type: "manual",
+            message,
+          });
+        }
+      });
 
       if (!form.formState.errors.root) {
         form.setError("root", {
@@ -393,10 +413,24 @@ export const ExpertCohortFormPage = () => {
                         <FormItem>
                           <FormLabel>Currency</FormLabel>
                           <FormControl>
-                            <Input
+                            <Select
                               disabled={isEditMode && !canEditPricing}
+                              onValueChange={(value) => {
+                                field.onChange(value);
+                              }}
                               {...field}
-                            />
+                            >
+                              <SelectTrigger className="w-44">
+                                <SelectValue placeholder="All statuses" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {SUPPORTED_CURRENCIES.map((currency) => (
+                                  <SelectItem key={currency} value={currency}>
+                                    {currency}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -426,7 +460,9 @@ export const ExpertCohortFormPage = () => {
 
                   <div className="flex flex-wrap gap-3">
                     <Button type="submit" disabled={isBusy}>
-                      {isBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+                      {isBusy ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : null}
                       {isEditMode ? "Save cohort" : "Create cohort"}
                     </Button>
                     <Button type="button" variant="outline" asChild>
@@ -452,7 +488,10 @@ export const ExpertCohortFormPage = () => {
                 {cohort ? (
                   <p>
                     Current price:{" "}
-                    {formatCurrencyAmount(cohort.spotPriceAmount, cohort.currency)}
+                    {formatCurrencyAmount(
+                      cohort.spotPriceAmount,
+                      cohort.currency,
+                    )}
                   </p>
                 ) : null}
               </CardContent>
@@ -463,7 +502,11 @@ export const ExpertCohortFormPage = () => {
         {structureOnlySessions.length > 0 ? (
           <CohortSessionList
             sessions={structureOnlySessions}
-            title={isEditMode ? "Cohort session calendar" : "Workshop session structure"}
+            title={
+              isEditMode
+                ? "Cohort session calendar"
+                : "Workshop session structure"
+            }
             showDerivedDate={isEditMode}
           />
         ) : null}

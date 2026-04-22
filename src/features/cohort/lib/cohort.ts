@@ -24,18 +24,6 @@ export const getCohortStatusTone = (status: CohortStatus) => {
   return "warning";
 };
 
-export const formatCurrencyAmount = (amount: number, currency: string) => {
-  try {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency,
-      maximumFractionDigits: 2,
-    }).format(amount);
-  } catch {
-    return `${currency} ${amount.toFixed(2)}`;
-  }
-};
-
 export const formatCalendarDate = (value: string) =>
   new Intl.DateTimeFormat("en-US", {
     dateStyle: "medium",
@@ -47,16 +35,16 @@ export const formatDateTime = (value: string) =>
     timeStyle: "short",
   }).format(new Date(value));
 
-export const formatCohortSeatLabel = (cohort: Pick<
-  CohortListItem,
-  "activeSeats" | "heldSeats" | "availableSeats" | "maxStudents"
->) =>
-  `${cohort.availableSeats} open of ${cohort.maxStudents}`;
+export const formatCohortSeatLabel = (
+  cohort: Pick<
+    CohortListItem,
+    "activeSeats" | "heldSeats" | "availableSeats" | "maxStudents"
+  >,
+) => `${cohort.availableSeats} open of ${cohort.maxStudents}`;
 
-export const getCohortSessionLabel = (session: Pick<
-  CohortSession,
-  "weekNumber" | "dayOfWeek" | "sessionOrder"
->) =>
+export const getCohortSessionLabel = (
+  session: Pick<CohortSession, "weekNumber" | "dayOfWeek" | "sessionOrder">,
+) =>
   formatWorkshopStructure(
     session.weekNumber,
     session.dayOfWeek,
@@ -66,7 +54,8 @@ export const getCohortSessionLabel = (session: Pick<
 export const canEditCohortPricing = (cohort: CohortDetails) =>
   cohort.heldSeats === 0;
 
-export const canDeleteCohort = (cohort: CohortDetails) => cohort.heldSeats === 0;
+export const canDeleteCohort = (cohort: CohortDetails) =>
+  cohort.heldSeats === 0;
 
 export const isPaidCohort = (cohort: Pick<CohortListItem, "spotPriceAmount">) =>
   cohort.spotPriceAmount > 0;
